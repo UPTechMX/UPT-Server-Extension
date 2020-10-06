@@ -9,7 +9,7 @@ import fi.nls.oskari.cache.JedisManager;
 import fi.nls.oskari.control.*;
 import fi.nls.oskari.domain.map.DataProvider;
 import fi.nls.oskari.domain.map.OskariLayer;
-import fi.nls.oskari.domain.map.wfs.WFSLayerConfiguration;
+// import fi.nls.oskari.domain.map.wfs.WFSLayerConfiguration;
 import fi.nls.oskari.log.LogFactory;
 import fi.nls.oskari.log.Logger;
 import fi.nls.oskari.map.layer.DataProviderService;
@@ -24,8 +24,8 @@ import fi.nls.oskari.service.capabilities.OskariLayerCapabilitiesHelper;
 import fi.nls.oskari.util.*;
 import org.oskari.log.AuditLog;
 import fi.nls.oskari.wfs.GetGtWFSCapabilities;
-import fi.nls.oskari.wfs.WFSLayerConfigurationService;
-import fi.nls.oskari.wfs.util.WFSParserConfigs;
+// import fi.nls.oskari.wfs.WFSLayerConfigurationService;
+// import fi.nls.oskari.wfs.util.WFSParserConfigs;
 import fi.nls.oskari.wmts.WMTSCapabilitiesParser;
 import fi.nls.oskari.wmts.domain.WMTSCapabilities;
 import org.json.JSONArray;
@@ -54,11 +54,11 @@ public class STLayerSave extends AbstractLayerAdminHandler {
 
     private OskariLayerService mapLayerService = ServiceFactory.getMapLayerService();
     private ViewService viewService = ServiceFactory.getViewService();
-    private WFSLayerConfigurationService wfsLayerService = ServiceFactory.getWfsLayerService();
+    // private WFSLayerConfigurationService wfsLayerService = ServiceFactory.getWfsLayerService();
     private DataProviderService dataProviderService = ServiceFactory.getDataProviderService();
     private OskariLayerGroupLinkService layerGroupLinkService = ServiceFactory.getOskariLayerGroupLinkService();
     private CapabilitiesCacheService capabilitiesService = ServiceFactory.getCapabilitiesCacheService();
-    private WFSParserConfigs wfsParserConfigs = new WFSParserConfigs();
+    // private WFSParserConfigs wfsParserConfigs = new WFSParserConfigs();
     private static final Logger LOG = LogFactory.getLogger(STLayerSave.class);
 
     private static final String PARAM_LAYER_ID = "layer_id";
@@ -219,7 +219,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
                 }
 
                 //TODO: WFS spesific property update
-                if (OskariLayer.TYPE_WFS.equals(ml.getType())) {
+                /* if (OskariLayer.TYPE_WFS.equals(ml.getType())) {
                     final WFSLayerConfiguration wfsl = wfsLayerService.findConfiguration(ml.getId());
                     wfsl.setAttributes(ml.getAttributes());
                     handleRequestToWfsLayer(params, wfsl);
@@ -231,7 +231,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
                     // Remove old redis data of WFSLayer_xx, new wfs conf data is inserted automatically
                     JedisManager.delAll(WFSLayerConfiguration.KEY + Integer.toString(ml.getId()));
                     JedisManager.delAll(WFSLayerConfiguration.IMAGE_KEY + Integer.toString(ml.getId()));
-                }
+                }*/
 
                 LOG.debug(ml);
                 result.layerId = ml.getId();
@@ -275,7 +275,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
                     mapLayerService.update(ml);
                 }
                 // Wfs
-                if(OskariLayer.TYPE_WFS.equals(ml.getType())) {
+                /* if(OskariLayer.TYPE_WFS.equals(ml.getType())) {
                     final WFSLayerConfiguration wfsl = new WFSLayerConfiguration();
                     wfsl.setDefaults();
                     wfsl.setLayerId(Integer.toString(id));
@@ -289,7 +289,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
 
                     // Styles setup
                     handleWfsLayerStyles(params, wfsl);
-                }
+                }*/
 
                 addPermissionsForRoles(ml,
                         getPermissionSet(params.getHttpParam(PARAM_VIEW_PERMISSIONS)),
@@ -465,7 +465,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
         }
     }
 
-    private void handleRequestToWfsLayer(final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException {
+    /* private void handleRequestToWfsLayer(final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException {
         wfsl.setGML2Separator(ConversionHelper.getBoolean(params.getHttpParam(PARAM_GML2_SEPARATOR), wfsl.isGML2Separator()));
         wfsl.setGMLGeometryProperty(params.getHttpParam(PARAM_GML_GEOMETRY_PROPERTY));
         wfsl.setGMLVersion(params.getHttpParam(PARAM_GML_VERSION));
@@ -488,9 +488,9 @@ public class STLayerSave extends AbstractLayerAdminHandler {
         wfsl.setTileBuffer(params.getHttpParam(PARAM_TILE_BUFFER));
         wfsl.setTileRequest(ConversionHelper.getBoolean(params.getHttpParam(PARAM_TILE_REQUEST), wfsl.isTileRequest()));
         wfsl.setJobType(params.getHttpParam(PARAM_JOB_TYPE));
-    }
+    }*/
 
-    private void handleFESpesificToWfsLayer(  final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException, ServiceException {
+    /* private void handleFESpesificToWfsLayer(  final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException, ServiceException {
         if (wfsl == null) {
             return;
         }
@@ -520,9 +520,9 @@ public class STLayerSave extends AbstractLayerAdminHandler {
             wfsl.setJobType(OSKARI_FEATURE_ENGINE);
             wfsl.setTileBuffer("{ \"default\" : 1, \"oskari_custom\" : 1}");;
         }
-    }
+    }*/
 
-        private void handleWfsLayerStyles(final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException, ServiceException {
+        /* private void handleWfsLayerStyles(final ActionParameters params, WFSLayerConfiguration wfsl) throws ActionException, ServiceException {
 
 
         if (wfsl != null && params.getHttpParam(PARAM_STYLE_SELECTION) != null) {
@@ -542,7 +542,7 @@ public class STLayerSave extends AbstractLayerAdminHandler {
                 List<Integer> ids = wfsLayerService.insertSLDStyles(wfsl.getId(), sldIds);
             }
         }
-    }
+    }*/
 
     private void validateInsertLayer(final ActionParameters params, OskariLayer ml) throws ActionException {
 
@@ -552,14 +552,14 @@ public class STLayerSave extends AbstractLayerAdminHandler {
         if(params.getHttpParam(PARAM_JOB_TYPE) != null && params.getHttpParam(PARAM_JOB_TYPE).equals(OSKARI_FEATURE_ENGINE) ) {
             try {
 
-                JSONArray feaconf = wfsParserConfigs.getFeatureTypeConfig(params.getHttpParam(PARAM_FEATURE_NAMESPACE) + ":" + params.getHttpParam(PARAM_FEATURE_ELEMENT));
+                /*JSONArray feaconf = wfsParserConfigs.getFeatureTypeConfig(params.getHttpParam(PARAM_FEATURE_NAMESPACE) + ":" + params.getHttpParam(PARAM_FEATURE_ELEMENT));
                 if (feaconf == null) {
                     feaconf = wfsParserConfigs.getFeatureTypeConfig("default");
                 }
 
                 if (feaconf == null) {
                     throw new ActionException(ERROR_FE_PARSER_CONFIG_MISSING);
-                }
+                }*/
             } catch (Exception e) {
                 if (e instanceof ActionException) {
                     throw (ActionException) e;

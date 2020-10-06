@@ -28,6 +28,11 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>fi.nls.oskari</groupId>
+            <artifactId>download-basket</artifactId>
+        </dependency>
+
         <!-- Replace icu4j version included by axiom-api with newer version
         which does not brake .jar investigation performed by jetty-maven plugin  -->
         <dependency>

@@ -131,7 +131,7 @@ public class STStandardizationMethodHandler extends RestActionHandler {
             
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO public.st_normalization_method_options(\n"
-                    + "method, value, language, label)\n"
+                    + "value, language, label)\n"
                     + "VALUES (?, ?, ?);");
 
             statement.setLong(1, value);

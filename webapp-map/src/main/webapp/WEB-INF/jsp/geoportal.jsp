@@ -4,9 +4,10 @@
 
             <!DOCTYPE html>
             <html>
+            <!--viewName-->
 
             <head>
-                <title>${viewName}</title>
+                <title>Geoportal</title>
 
                 <!-- ############# css ################# -->
                 <link rel="stylesheet" type="text/css" href="/Oskari${path}/icons.css" />
@@ -457,19 +458,17 @@
                             border: #4E565E !important;
                             min-width: 2.5em !important;
                         }
-
                         app-root .ui-button.ui-state-default.ui-button-warning,
                         app-root .ui-button.ui-state-default.ui-button-warning:hover,
-                        app-root .ui-button.ui-state-default.ui-button-warning:focus, 
-                        app-root .ui-buttonset.ui-button-warning > .ui-button.ui-state-default,
-                        app-root .ui-buttonset.ui-button-warning > .ui-button.ui-state-default:hover,
-                        app-root .ui-buttonset.ui-button-warning > .ui-button.ui-state-default:focus {
-                            color:#333 !important;
-                            background-color:#ffba01 !important;
+                        app-root .ui-button.ui-state-default.ui-button-warning:focus,
+                        app-root .ui-buttonset.ui-button-warning>.ui-button.ui-state-default,
+                        app-root .ui-buttonset.ui-button-warning>.ui-button.ui-state-default:hover,
+                        app-root .ui-buttonset.ui-button-warning>.ui-button.ui-state-default:focus {
+                            color: #333 !important;
+                            background-color: #ffba01 !important;
                             border: 1px solid#ffba01 !important;
                             min-width: 2.5em !important;
                         }
-
                         app-root .toolbarbtn.ui-button {
                             background-color: #323232 !important;
                             color: #FFFFFF !important;
@@ -544,7 +543,6 @@
                             color: #333 !important;
                             border-color: #a0a0a0 !important;
                         }
-
                         app-root .btn.disabled,
                         app-root .btn:disabled,
                         app-root .ui-state-disabled,
@@ -552,7 +550,6 @@
                         app-root .ui-button:disabled {
                             opacity: 0.15 !important;
                         }
-
                         app-root .geoportal-dialog .ui-inputtext:hover,
                         app-root .geoportal-dialog .ui-inputtext:focus,
                         app-root .geoportal-dialog .ui-multiselect:hover,
@@ -568,7 +565,6 @@
                         app-root .geoportal-dialog .ui-chkbox-box:active {
                             border-color: #7e9baf !important;
                         }
-
                         app-root .geoportal-dialog .ui-button,
                         app-root .geoportal-dialog .ui-button:hover,
                         app-root .geoportal-dialog .ui-button:focus {
@@ -576,17 +572,14 @@
                             min-width: 0 !important;
                             border: #7e9baf !important;
                         }
-
                         app-root .geoportal-dialog .ui-button:enabled:focus {
                             box-shadow: 0 0 0 0.2em #7e9baf !important;
                         }
-
                         app-root .geoportal-dialog .ui-multiselect-item.ui-state-highlight,
                         app-root .geoportal-dialog .ui-dropdown-item.ui-state-highlight,
                         app-root .geoportal-dialog .ui-treenode-label.ui-state-highlight {
                             background-color: #7e9baf !important;
                         }
-
                         app-root .geoportal-dialog .ui-button,
                         app-root .geoportal-dialog .ui-chkbox-box.ui-state-active {
                             background-color: #7e9baf !important;
@@ -595,7 +588,7 @@
                     }
                 </style>
                 <!-- ############# /css ################# -->
-                <link rel="stylesheet" href="/Oskari${path}/PLID/styles.aa8ee104adf91a39d229.css">
+                <link rel="stylesheet" href="/Oskari${path}/PLID/styles.css">
                 <script>
                     window.__session_active = false;
                 </script>
@@ -605,6 +598,8 @@
                 <app-root id="pltools"></app-root>
                 <nav id="maptools">
                     <div id="logobar">
+                    </div>
+                    <div id="language-selector-root">
                     </div>
                     <div id="menubar">
                     </div>
@@ -692,22 +687,22 @@
                     var controlParams = ${controlParams};
                 </script>
                 <%-- Pre-compiled application JS, empty unless created by build job --%>
-                <script type="text/javascript" src="/Oskari${path}/oskari.min.js">
-                </script>
-                <%--language files --%>
-                <script type="text/javascript" src="/Oskari${path}/oskari_lang_${language}.js">
-                </script>
+                    <script type="text/javascript" src="/Oskari${path}/oskari.min.js">
+                    </script>
+                    <%--language files --%>
+                        <script type="text/javascript" src="/Oskari${path}/oskari_lang_${language}.js">
+                        </script>
 
-                <script type="text/javascript" src="/Oskari${path}/index.js">
-                </script>
-                
-                <!-- ############# /Javascript ################# -->
-                <script src="/Oskari${path}/PLID/runtime-es2015.c5fa8325f89fc516600b.js" type="module"></script>
-                <script src="/Oskari${path}/PLID/runtime-es5.c5fa8325f89fc516600b.js" nomodule defer></script>
-                <script src="/Oskari${path}/PLID/polyfills-es5.9b39a7c3ad50d2eaa6ef.js" nomodule defer></script>
-                <script src="/Oskari${path}/PLID/polyfills-es2015.7183d4df5cd77a2ca03b.js" type="module"></script>
-                <script src="/Oskari${path}/PLID/main-es2015.2ecefe3fbc39c53b7eca.js" type="module"></script>
-                <script src="/Oskari${path}/PLID/main-es5.2ecefe3fbc39c53b7eca.js" nomodule defer></script>
-    </body>
+                        <script type="text/javascript" src="/Oskari${path}/index.js">
+                        </script>
 
-</html>
+                        <!-- ############# /Javascript ################# -->
+                        <script src="/Oskari${path}/PLID/runtime-es2015.js" type="module"></script>
+                        <script src="/Oskari${path}/PLID/runtime-es5.js" nomodule defer></script>
+                        <script src="/Oskari${path}/PLID/polyfills-es5.js" nomodule defer></script>
+                        <script src="/Oskari${path}/PLID/polyfills-es2015.js" type="module"></script>
+                        <script src="/Oskari${path}/PLID/main-es2015.js" type="module"></script>
+                        <script src="/Oskari${path}/PLID/main-es5.js" nomodule defer></script>
+            </body>
+
+            </html>

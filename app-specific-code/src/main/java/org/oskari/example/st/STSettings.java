@@ -14,7 +14,7 @@ public class STSettings {
     public STSettings(Long st_layers_id) {
         id = 0L;
         st_layer_id = st_layers_id;
-        normalization_method = 1;
+        normalization_method = 3;
         range_min = 0.0;
         range_max = 1.0;
         smaller_better = 0;

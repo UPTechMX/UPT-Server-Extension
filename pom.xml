@@ -11,7 +11,7 @@
     <name>demo.oskari.org</name>
 
     <properties>
-        <oskari.version>1.54.1</oskari.version>
+        <oskari.version>1.55.1</oskari.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
     </properties>
@@ -26,6 +26,13 @@
             <id>oskari_org_snapshot</id>
             <name>Oskari.org snapshot repository</name>
             <url>https://oskari.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
         </repository>
     </repositories>
 

@@ -269,12 +269,12 @@
                             border-top: 1px solid #3c3c3c !important;
                         }
                         app-root .gp_modal.urbanperformance .nav-item .nav-link {
-                            background: #343E46 !important;
+                            background: #2e2f2f !important;
                             color: #FF8680 !important;
                         }
                         app-root #suitability.gp_modal .nav-item .nav-link,
                         app-root .suitability.gp_modal .nav-item .nav-link {
-                            background: #343E46 !important;
+                            background: #2e2f2f !important;
                             color: #47A599 !important;
                         }
                         app-root .urbanperformance.gp_modal .nav-item .active,
@@ -444,18 +444,25 @@
                             border: #47A599 !important;
                             min-width: 2.5em !important;
                         }
-                        app-root .geoportal-btn.tools-geoportal .ui-button,
-                        app-root .geoportal-btn.tools-geoportal .ui-button:hover,
-                        app-root .geoportal-btn.tools-geoportal .ui-button:focus,
-                        app-root .geoportal-btn.tools-geoportal.ui-button,
-                        app-root .geoportal-btn.tools-geoportal.ui-button:hover,
-                        app-root .geoportal-btn.tools-geoportal.ui-button:focus,
                         app-root .geoportal-btn.advanced-geoportal .ui-button,
                         app-root .geoportal-btn.advanced-geoportal .ui-button:hover,
                         app-root .geoportal-btn.advanced-geoportal .ui-button:focus {
                             background-color: #4E565E !important;
                             border: #4E565E !important;
-                            min-width: 2.5em !important;
+                        }
+                        app-root .geoportal-btn.tools-geoportal .ui-button,
+                        app-root .geoportal-btn.tools-geoportal.ui-button {
+                            background-color: #d9d9d9!important;
+                            border: 1px solid #d9d9d9!important;
+                            color: #196480!important;
+                        }
+                        app-root .geoportal-btn.tools-geoportal .ui-button:hover,
+                        app-root .geoportal-btn.tools-geoportal .ui-button:focus,
+                        app-root .geoportal-btn.tools-geoportal.ui-button:hover,
+                        app-root .geoportal-btn.tools-geoportal.ui-button:focus {
+                            background-color: #f5ad3c!important;
+                            border: 1px solid #f5ad3c!important;
+                            color: #ffffff!important;
                         }
                         app-root .ui-button.ui-state-default.ui-button-warning,
                         app-root .ui-button.ui-state-default.ui-button-warning:hover,
@@ -584,6 +591,11 @@
                             background-color: #7e9baf !important;
                             border-color: #7e9baf !important;
                         }
+                        app-root .suitability .ui-button.uh-delete-btn,
+                        app-root .suitability .ui-button:enabled:focus {
+                            background-color: #B71C2A !important;
+                            border-color: #B71C2A !important;
+                        }
                     }
                 </style>
                 <!-- ############# /css ################# -->
@@ -674,7 +686,9 @@
 
                 <script type="text/javascript">
                     var ajaxUrl = '${ajaxUrl}';
-                    var controlParams = ${controlParams};
+                    var controlParams = $ {
+                        controlParams
+                    };
                 </script>
                 <%-- Pre-compiled application JS, empty unless created by build job --%>
                     <script type="text/javascript" src="/Oskari${path}/oskari.min.js">

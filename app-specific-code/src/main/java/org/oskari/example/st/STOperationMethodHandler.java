@@ -65,7 +65,7 @@ public class STOperationMethodHandler extends RestActionHandler {
                         stPassword);) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             PreparedStatement statement = connection.prepareStatement(
@@ -122,7 +122,7 @@ public class STOperationMethodHandler extends RestActionHandler {
                         stPassword);) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") ){
+            if (!roles.contains("uptadmin") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -173,7 +173,7 @@ public class STOperationMethodHandler extends RestActionHandler {
                         stPassword);) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") ){
+            if (!roles.contains("uptadmin") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -222,7 +222,7 @@ public class STOperationMethodHandler extends RestActionHandler {
                         stPassword);) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") ){
+            if (!roles.contains("uptadmin") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             

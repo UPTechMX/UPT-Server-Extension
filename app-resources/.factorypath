@@ -153,4 +153,5 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/xml/bind/jaxb-api/2.3.1/jaxb-api-2.3.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/annotation/javax.annotation-api/1.2/javax.annotation-api-1.2.jar" enabled="true" runInBatchMode="false"/>
-</factorypath>
+    <factorypathentry kind="VARJAR" id="M2_REPO/fi/nls/oskari/download-basket/1.55.1/download-basket-1.55.1.jar" enabled="true" runInBatchMode="false"/>
+    </factorypath>

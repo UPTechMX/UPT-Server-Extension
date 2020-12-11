@@ -62,7 +62,7 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upPassword)) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -103,7 +103,7 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upPassword)) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -138,7 +138,7 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upPassword)) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
 
@@ -174,7 +174,7 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upPassword)) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             

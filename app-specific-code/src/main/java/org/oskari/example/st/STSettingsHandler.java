@@ -68,7 +68,7 @@ public class STSettingsHandler extends RestActionHandler {
                         stPassword);) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -163,7 +163,7 @@ public class STSettingsHandler extends RestActionHandler {
                 );) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -218,7 +218,7 @@ public class STSettingsHandler extends RestActionHandler {
                 );) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -265,7 +265,7 @@ public class STSettingsHandler extends RestActionHandler {
                 PreparedStatement statement = connection.prepareStatement("delete from public.st_settings where  id = ?;");) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             

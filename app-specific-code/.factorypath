@@ -224,4 +224,5 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-aop/4.3.15.RELEASE/spring-aop-4.3.15.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-expression/4.3.15.RELEASE/spring-expression-4.3.15.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/oskari/control-userlayer/1.54.1/control-userlayer-1.54.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/fi/nls/oskari/download-basket/1.55.1/download-basket-1.55.1.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

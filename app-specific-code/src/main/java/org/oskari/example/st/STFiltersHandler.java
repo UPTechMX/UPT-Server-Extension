@@ -91,7 +91,7 @@ public class STFiltersHandler extends RestActionHandler {
                         + "select distinct id,user_layer_id,st_filter_label,label from all_layers  order by label ");) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
             
@@ -163,7 +163,7 @@ public class STFiltersHandler extends RestActionHandler {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO public.st_filters( user_layer_id, st_filter_label)VALUES ( ?, ?);");) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
 
@@ -203,7 +203,7 @@ public class STFiltersHandler extends RestActionHandler {
                 PreparedStatement statement = connection.prepareStatement("update public.st_filters set st_filter_label =? where id=?;");) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
 
@@ -246,7 +246,7 @@ public class STFiltersHandler extends RestActionHandler {
                 PreparedStatement statement = connection.prepareStatement("delete from public.st_filters where id = ?;");) {
             params.requireLoggedInUser();
             ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("UPTAdmin") && !roles.contains("UPTUser") ){
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
                 throw new Exception("User privilege is not enough for this action");
             }
 

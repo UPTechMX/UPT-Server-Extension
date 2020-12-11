@@ -118,19 +118,20 @@ public class UPAssumptionsHandler extends RestActionHandler {
                     java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            ResponseHelper.writeResponse(params, out);
+            ResponseHelper.writeResponse(params, new JSONObject().put("Errors", errors));
 
         } catch (Exception e) {
+            errorMsg = errorMsg + e.getMessage();
+            log.error(e, errorMsg);
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                ResponseHelper.writeError(null, "", 500, new JSONObject().put("Errors", errors));
+                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(CopyDataHandler.class.getName()).log(Level.SEVERE, null, ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(CopyDataHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-            errorMsg = errorMsg + e.toString();
-            log.error(e, errorMsg);
         }
     }
 

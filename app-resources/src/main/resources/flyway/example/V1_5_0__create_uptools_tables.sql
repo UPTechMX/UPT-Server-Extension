@@ -396,7 +396,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','pop_total'
+       'English','inhabitants','Total population'
         ,(select min(id) as id from up_indicators where indicator='pop_total' )
     ) on conflict(up_indicators_id,language) do nothing;
 
@@ -407,7 +407,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','footprint_km2'
+       'English','km2','Urban footprint'
         ,(select min(id) as id from up_indicators where indicator='footprint_km2' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -418,7 +418,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','land_consumption_km'
+       'English','km2','Land consumption'
         ,(select min(id) as id from up_indicators where indicator='land_consumption_km' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -429,7 +429,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','infill_area_km2'
+       'English','km2','Infill area'
         ,(select min(id) as id from up_indicators where indicator='infill_area_km2' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -440,7 +440,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','pop_density'
+       'English','pop/km2','Population density'
         ,(select min(id) as id from up_indicators where indicator='pop_density' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -451,8 +451,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'ghg_emissions'
+       'English','kgCO2eq/capita/annum'
+        ,'GHG emissions'
         ,(select min(id) as id from up_indicators where indicator='ghg_emissions' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -463,8 +463,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_consumption'
+       'English','kWh/capita/annum'
+        ,'Energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_consumption' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -475,8 +475,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'tot_water'
+       'English','m3/capita/annum'
+        ,'Water consumption'
         ,(select min(id) as id from up_indicators where indicator='tot_water' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -487,8 +487,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_lighting'
+       'English','kWh/capita/annum'
+        ,'Public lighting energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_lighting' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -499,8 +499,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_water'
+       'English','kWh/capita/annum'
+        ,'Water provision energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_water' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -511,8 +511,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_transport'
+       'English','kWh/capita/annum'
+        ,'Commuting energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_transport' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -523,8 +523,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_swaste'
+       'English','kWh/capita/annum'
+        ,'Solid waste collection energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_swaste' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -535,8 +535,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_buildings'
+       'English','kWh/capita/annum'
+        ,'Dwellings energy consumption'
         ,(select min(id) as id from up_indicators where indicator='energy_buildings' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -547,8 +547,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'municipal_service_costs'
+       'English','MXN/capita/annum'
+        ,'Municipal services cost'
         ,(select min(id) as id from up_indicators where indicator='municipal_service_costs' )
     )on conflict(up_indicators_id,language) do nothing;
 
@@ -558,8 +558,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'infrastructure_costs'
+       'English','USD'
+        ,'Infrastructure costs'
         ,(select min(id) as id from up_indicators where indicator='infrastructure_costs' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -570,8 +570,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'infrastructure_new_costs'
+       'English','USD'
+        ,'Expansion costs'
         ,(select min(id) as id from up_indicators where indicator='infrastructure_new_costs' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -582,8 +582,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'infrastructure_infill_costs'
+       'English','USD'
+        ,'Infill costs'
         ,(select min(id) as id from up_indicators where indicator='infrastructure_infill_costs' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -594,8 +594,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'job_prox'
+       'English','%'
+        ,'Job proximity'
         ,(select min(id) as id from up_indicators where indicator='job_prox' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -606,8 +606,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'transit_prox'
+       'English','%'
+        ,'Public transport proximity'
         ,(select min(id) as id from up_indicators where indicator='transit_prox' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -618,8 +618,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'school_proximity'
+       'English','%'
+        ,'School proximity'
         ,(select min(id) as id from up_indicators where indicator='school_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -630,8 +630,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'elementary_school_proximity'
+       'English','%'
+        ,'Elementary school proximity'
         ,(select min(id) as id from up_indicators where indicator='elementary_school_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -642,8 +642,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'secondary_school_proximity'
+       'English','%'
+        ,'Secondary school proximity'
         ,(select min(id) as id from up_indicators where indicator='secondary_school_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -654,8 +654,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'high_school_proximity'
+       'English','%'
+        ,'High school proximity'
         ,(select min(id) as id from up_indicators where indicator='high_school_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -666,8 +666,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'public_space_proximity'
+       'English','%'
+        ,'Public space proximity'
         ,(select min(id) as id from up_indicators where indicator='public_space_proximity' )
     )on conflict(up_indicators_id,language) do nothing;
     insert into up_indicators_translation(
@@ -676,8 +676,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2',
-        'sports_proximity',
+       'English','%',
+        'Sports facility proximity',
         (select min(id) as id from up_indicators where indicator='sports_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -688,8 +688,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'worship_proximity'
+       'English','%'
+        ,'Worship place proximity'
         ,(select min(id) as id from up_indicators where indicator='worship_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -700,8 +700,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'university_proximity'
+       'English','%'
+        ,'University proximity'
         ,(select min(id) as id from up_indicators where indicator='university_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -712,8 +712,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'health_proximity'
+       'English','%'
+        ,'Health facility proximity'
         ,(select min(id) as id from up_indicators where indicator='health_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -724,8 +724,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'nursery_proximity'
+       'English','%'
+        ,'Nursery proximity'
         ,(select min(id) as id from up_indicators where indicator='nursery_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -736,8 +736,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'public_service_proximity'
+       'English','%'
+        ,'Public building proximity'
         ,(select min(id) as id from up_indicators where indicator='public_service_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -748,8 +748,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cultural_facility_proximity'
+       'English','%'
+        ,'Cultural space proximity'
         ,(select min(id) as id from up_indicators where indicator='cultural_facility_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -760,8 +760,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'market_proximity'
+       'English','%'
+        ,'Market proximity'
         ,(select min(id) as id from up_indicators where indicator='market_proximity' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -772,8 +772,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'hazard_exp'
+       'English','%'
+        ,'Exposure to hazards'
         ,(select min(id) as id from up_indicators where indicator='hazard_exp' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -784,8 +784,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'hu_tot'
+       'English','hu'
+        ,'Total housing units'
         ,(select min(id) as id from up_indicators where indicator='hu_tot' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -797,11 +797,11 @@ begin;
     )
     values(
        'English','km2'
-        ,'vhu_tot'
+        ,'Vacant housing units'
         ,(select min(id) as id from up_indicators where indicator='vhu_tot' )
     )on conflict(up_indicators_id,language) do nothing;
 
-    insert into up_indicators_translation(
+    /* insert into up_indicators_translation(
     language, units,
     label,
     up_indicators_id
@@ -810,7 +810,7 @@ begin;
        'English','km2','vhu_tot' 
         ,(select min(id) as id from up_indicators where indicator='vhu_tot' )
     ) 
-    on conflict(up_indicators_id,language) do nothing;
+    on conflict(up_indicators_id,language) do nothing; */
 
     insert into up_indicators_translation(
     language, units,
@@ -818,8 +818,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'land_consumption_pct'
+       'English','%'
+        ,'Percentage of land consumed'
         ,(select min(id) as id from up_indicators where indicator='land_consumption_pct' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -830,8 +830,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_gasoline'
+       'English','kWh/capita/annum'
+        ,'Energy gasoline consumed'
         ,(select min(id) as id from up_indicators where indicator='energy_gasoline' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -842,8 +842,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_diesel'
+       'English','kWh/capita/annum'
+        ,'Energy diesel consumed'
         ,(select min(id) as id from up_indicators where indicator='energy_diesel' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -854,8 +854,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'transport_energy'
+       'English','kWh/capita/annum'
+        ,'Energy used to transport waste'
         ,(select min(id) as id from up_indicators where indicator='transport_energy' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -866,8 +866,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'collection_energy'
+       'English','kWh/capita/annum'
+        ,'Energy used in the collection stage'
         ,(select min(id) as id from up_indicators where indicator='collection_energy' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -878,8 +878,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_jobs'
+       'English','inhabitants'
+        ,'Number of inhabitants with proximity to jobs'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_jobs' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -890,8 +890,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_transit'
+       'English','inhabitants'
+        ,'Number of inhabitants with proximity to public transport'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_transit' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -902,8 +902,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_school'
+       'English','inhabitants'
+        ,'Population with proximity to schools'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_school' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -914,8 +914,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_elementary_school'
+       'English','inhabitants'
+        ,'Population with proximity to an elementary school'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_elementary_school' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -926,8 +926,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_secondary_school'
+       'English','inhabitants'
+        ,'Population with proximity to a secondary school'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_secondary_school' )
     )on conflict(up_indicators_id,language) do nothing;
 
@@ -937,7 +937,7 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2','pop_prox_high_school'
+       'English','inhabitants','Population with proximity to a high school'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_high_school' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -948,8 +948,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_public_service'
+       'English','inhabitants'
+        ,'Population with proximity to public service buildings'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_public_service' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -960,8 +960,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_sports'
+       'English','inhabitants'
+        ,'Population with proximity to sports facilities'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_sports' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -972,8 +972,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_worship'
+       'English','inhabitants'
+        ,'Population with proximity to worship places'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_worship' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -984,8 +984,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_university'
+       'English','inhabitants'
+        ,'Population with proximity to universities'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_university' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -996,8 +996,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_health'
+       'English','inhabitants'
+        ,'Population with proximity to health facilities'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_health' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1008,8 +1008,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_nursery'
+       'English','inhabitants'
+        ,'Population with proximity to nursery facilities'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_nursery' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1020,8 +1020,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_public_space'
+       'English','inhabitants'
+        ,'Population with proximity to public spaces'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_public_space' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1032,8 +1032,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_cultural_facility'
+       'English','inhabitants'
+        ,'Population with proximity to cultural facilities'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_cultural_facility' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1044,8 +1044,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_market'
+       'English','inhabitants'
+        ,'Population with proximity to markets'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_market' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1056,21 +1056,22 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_hazards'
+       'English','inhabitants'
+        ,'Population with proximity to hazards'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_hazards' )
     )on conflict(up_indicators_id,language) do nothing;
-    insert into up_indicators_translation(
+
+    /* insert into up_indicators_translation(
     language, units,
     label,
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_hazards'
+       'English','inhabitants'
+        ,'Population inside expansion polygon'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_hazards' )
     ) 
-    on conflict(up_indicators_id,language) do nothing;
+    on conflict(up_indicators_id,language) do nothing; */
 
     insert into up_indicators_translation(
     language, units,
@@ -1078,12 +1079,13 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_expan'
+       'English','inhabitants'
+        ,'Population inside expansion polygon'
         ,(select min(id) as id from up_indicators where indicator='pop_expan' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /* Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1091,11 +1093,12 @@ begin;
     )
     values(
        'English','km2'
-        ,'overcrowding'
+        ,'Overcrowding'
         ,(select min(id) as id from up_indicators where indicator='overcrowding' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /* Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1108,6 +1111,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /* Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1126,12 +1130,13 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'intersections_density'
+       'English','int/km2'
+        ,'Intersections per square kilometer'
         ,(select min(id) as id from up_indicators where indicator='intersections_density' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1144,6 +1149,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1156,6 +1162,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1168,6 +1175,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1180,6 +1188,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1190,6 +1199,8 @@ begin;
         ,'energy_metering'
         ,(select min(id) as id from up_indicators where indicator='energy_metering' )
     )on conflict(up_indicators_id,language) do nothing;
+
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1202,6 +1213,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1214,6 +1226,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1232,8 +1245,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'prim_road_km'
+       'English','km'
+        ,'Kilometers of primary roads'
         ,(select min(id) as id from up_indicators where indicator='prim_road_km' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1244,8 +1257,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'prim_road_km2'
+       'English','km/km2'
+        ,'Kilometers of primary roads per square kilometer'
         ,(select min(id) as id from up_indicators where indicator='prim_road_km2' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1256,8 +1269,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'sec_road_km'
+       'English','km'
+        ,'Kilometers of secondary roads'
         ,(select min(id) as id from up_indicators where indicator='sec_road_km' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1268,8 +1281,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'sec_road_km2'
+       'English','km/km2'
+        ,'Kilometers of secondary roads per square kilometer'
         ,(select min(id) as id from up_indicators where indicator='sec_road_km2' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1280,8 +1293,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'ter_road_km'
+       'English','km'
+        ,'Kilometers of tertiary roads'
         ,(select min(id) as id from up_indicators where indicator='ter_road_km' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1293,11 +1306,12 @@ begin;
     )
     values(
        'English','km2'
-        ,'ter_road_km2'
+        ,'Kilometers of tertiary roads per square kilometer'
         ,(select min(id) as id from up_indicators where indicator='ter_road_km2' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1316,11 +1330,12 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'hu_cost'
+       'English','$/hu'
+        ,'Construction cost per housing unit'
         ,(select min(id) as id from up_indicators where indicator='hu_cost' )
     )on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1332,6 +1347,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1350,12 +1366,13 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'municipal_revenue_pop'
+       'English','$/inhabitants'
+        ,'Municipal forecasted revenue'
         ,(select min(id) as id from up_indicators where indicator='municipal_revenue_pop' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1368,6 +1385,7 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1386,8 +1404,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'tree_cover'
+       'English','m2/capita'
+        ,'Tree canopy cover'
         ,(select min(id) as id from up_indicators where indicator='tree_cover' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1398,8 +1416,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'carbon_sequestration'
+       'English','TonCO2e/annum'
+        ,'Carbon sequestration by natural reserve'
         ,(select min(id) as id from up_indicators where indicator='carbon_sequestration' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1410,8 +1428,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'tot_cycle'
+       'English','km'
+        ,'Cycle track kilometers'
         ,(select min(id) as id from up_indicators where indicator='tot_cycle' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1422,8 +1440,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cycle_cover'
+       'English','km/km2'
+        ,'Cycle track density'
         ,(select min(id) as id from up_indicators where indicator='cycle_cover' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1434,8 +1452,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'avge_cycle_track'
+       'English','km'
+        ,'Cycle track length'
         ,(select min(id) as id from up_indicators where indicator='avge_cycle_track' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1446,8 +1464,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'covkwh'
+       'English','KgCOV/capita/annum'
+        ,'Volatile organic compound emissions NEW'
         ,(select min(id) as id from up_indicators where indicator='covkwh' )
     )on conflict(up_indicators_id,language) do nothing;
 
@@ -1457,8 +1475,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cotkwh'
+       'English','KgCOT/capita/annum'
+        ,'Total organic compound emissions'
         ,(select min(id) as id from up_indicators where indicator='cotkwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1469,8 +1487,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'so2kwh'
+       'English','KgSO2/capita/annum'
+        ,'Sulfur dioxide emissions'
         ,(select min(id) as id from up_indicators where indicator='so2kwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1481,8 +1499,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pm2_5kwh'
+       'English','KgPM2.5/capita/annum'
+        ,'Particulate emissions PM2.5'
         ,(select min(id) as id from up_indicators where indicator='pm2_5kwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1493,8 +1511,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'noxkwh'
+       'English','KgNOx/capita/annum'
+        ,'Nitric oxide emisssions'
         ,(select min(id) as id from up_indicators where indicator='noxkwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1505,8 +1523,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cokwh'
+       'English','KgCO/capita/annum'
+        ,'Carbon monoxide emissions'
         ,(select min(id) as id from up_indicators where indicator='cokwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1517,8 +1535,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pm10kwh'
+       'English','KgPM10/capita/annum'
+        ,'Particulate emissions PM10'
         ,(select min(id) as id from up_indicators where indicator='pm10kwh' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1529,8 +1547,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'carbon_seq_nr'
+       'English','TonCO2e/annum'
+        ,'Carbon sequestration by natural reserve'
         ,(select min(id) as id from up_indicators where indicator='carbon_seq_nr' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1541,12 +1559,13 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pop_prox_cycle'
+       'English','inhabitants'
+        ,'Population with proximity to cycle'
         ,(select min(id) as id from up_indicators where indicator='pop_prox_cycle' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1559,14 +1578,15 @@ begin;
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'pspace_capita'
+       'English','km2/inhabitant'
+        ,'Green area per capita'
         ,(select min(id) as id from up_indicators where indicator='pspace_capita' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1577,20 +1597,21 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cycle_prox'
+       'English','%'
+        ,'Cycle proximity'
         ,(select min(id) as id from up_indicators where indicator='cycle_prox' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /*Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'roads_density'
+       'English','km/km2'
+        ,'Roads density'
         ,(select min(id) as id from up_indicators where indicator='roads_density' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1601,8 +1622,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'emissions_transport'
+       'English','kgCO2eq/capita/annum'
+        ,'Commuting emissions'
         ,(select min(id) as id from up_indicators where indicator='emissions_transport' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1614,7 +1635,7 @@ begin;
     )
     values(
        'English','km2'
-        ,'agric_consumption'
+        ,'Agricultural land consumption'
         ,(select min(id) as id from up_indicators where indicator='agric_consumption' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1626,7 +1647,7 @@ begin;
     )
     values(
        'English','km2'
-        ,'greenland_consumption'
+        ,'Green land consumption'
         ,(select min(id) as id from up_indicators where indicator='greenland_consumption' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1638,7 +1659,7 @@ begin;
     )
     values(
        'English','km2'
-        ,'other_land_consumption'
+        ,'Other land consumption'
         ,(select min(id) as id from up_indicators where indicator='other_land_consumption' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1650,7 +1671,7 @@ begin;
     )
     values(
        'English','km2'
-        ,'energy_security'
+        ,'Energy security - Electricity'
         ,(select min(id) as id from up_indicators where indicator='energy_security' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1661,12 +1682,13 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'ren_energy'
+       'English','%'
+        ,'Renewable energy'
         ,(select min(id) as id from up_indicators where indicator='ren_energy' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
 
+    /* Pending*/
     insert into up_indicators_translation(
     language, units,
     label,
@@ -1685,8 +1707,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cwrunning_cost'
+       'English','USD/capita/annum'
+        ,'Construction waste management running cost'
         ,(select min(id) as id from up_indicators where indicator='cwrunning_cost' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1697,8 +1719,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'solidw_coverage'
+       'English','%'
+        ,'Solid waste management coverage'
         ,(select min(id) as id from up_indicators where indicator='solidw_coverage' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1709,8 +1731,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'city_data'
+       'English','unit'
+        ,'Data obtained from the city'
         ,(select min(id) as id from up_indicators where indicator='city_data' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1721,8 +1743,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'indirect_data'
+       'English','unit'
+        ,'Data obtained from indirect sources'
         ,(select min(id) as id from up_indicators where indicator='indirect_data' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1733,8 +1755,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'borrowed_data'
+       'English','unit'
+        ,'Borrowed data'
         ,(select min(id) as id from up_indicators where indicator='borrowed_data' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1745,8 +1767,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'energy_wwt'
+       'English','kWh/capita/annum'
+        ,'Energy associated to wastewater treatment'
         ,(select min(id) as id from up_indicators where indicator='energy_wwt' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1757,8 +1779,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'wwt_pct'
+       'English','%'
+        ,'Wastewater treated percentage'
         ,(select min(id) as id from up_indicators where indicator='wwt_pct' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1769,8 +1791,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'wwtrunning_cost'
+       'English','USD/capita/annum'
+        ,'Wastewater treatment running cost'
         ,(select min(id) as id from up_indicators where indicator='wwtrunning_cost' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1781,8 +1803,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'inv_cost'
+       'English','Million $'
+        ,'Investment cost'
         ,(select min(id) as id from up_indicators where indicator='inv_cost' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1793,8 +1815,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'cw_coverage'
+       'English','%'
+        ,'Construction waste management coverage'
         ,(select min(id) as id from up_indicators where indicator='cw_coverage' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1805,8 +1827,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'localren_energy'
+       'English','GWh/year'
+        ,'Ammount of energy generated locally with renewable sources'
         ,(select min(id) as id from up_indicators where indicator='localren_energy' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1817,8 +1839,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'local_energy'
+       'English','GWh/year'
+        ,'Locally produced electricity'
         ,(select min(id) as id from up_indicators where indicator='local_energy' )
     ) 
     on conflict(up_indicators_id,language) do nothing;
@@ -1829,8 +1851,8 @@ begin;
     up_indicators_id
     )
     values(
-       'English','km2'
-        ,'ww'
+       'English','m3/year'
+        ,'Total volume of waste water generated in the city'
         ,(select min(id) as id from up_indicators where indicator='ww' )
     )
     on conflict(up_indicators_id,language) do nothing;
@@ -2066,7 +2088,7 @@ begin;
         CONSTRAINT st_normalization_name_key UNIQUE (name)
     );
 
-    insert into st_normalization(name) values ('observe'),('reference'),('standarize') on conflict(name) do nothing;
+    insert into st_normalization(name) values ('benchmark'),('standardize') on conflict(name) do nothing;
 
     create table if not exists st_normalization_method_options(
 	id serial not null,
@@ -2085,9 +2107,9 @@ begin;
 
     INSERT INTO public.st_normalization_method_options(
 	value, language, label)
-	VALUES (1,'english','Observe'),
-        (2,'english','Reference'),
-        (3,'english','Standarize') on conflict(value,  language) do nothing;
+	VALUES 
+        (2,'english','Benchmark'),
+        (3,'english','Standardize') on conflict(value,  language) do nothing;
 
     create table if not exists st_normalization_type_options(
             id serial not null,
@@ -2162,5 +2184,34 @@ begin;
     (user_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
+    
+    CREATE TABLE if not exists st_tables
+    (
+        id serial,
+        language character varying(20) COLLATE pg_catalog."default" NOT NULL,
+        name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        label character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        description text COLLATE pg_catalog."default",
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_tables_pkey PRIMARY KEY (id),
+        CONSTRAINT st_tables_language_name_key UNIQUE (language, name)
+    );
+    CREATE TABLE if not exists st_tables_fields
+    (
+        id serial,
+        st_tables_id integer NOT NULL,
+        name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        label character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        language character varying(20) COLLATE pg_catalog."default",
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_tables_fields_pkey PRIMARY KEY (id),
+        CONSTRAINT st_tables_fields_st_tables_id_language_name_key UNIQUE (st_tables_id, language, name),
+        CONSTRAINT st_tables_fields_st_tables_id_fkey FOREIGN KEY (st_tables_id)
+            REFERENCES st_tables (id) MATCH SIMPLE
+            ON UPDATE NO ACTION
+            ON DELETE CASCADE
+    );
 end;
 

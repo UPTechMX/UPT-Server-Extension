@@ -73,9 +73,6 @@
                         #maptools {
                             padding-top: 4em;
                         }
-                        #logobar {
-                            display: none;
-                        }
                         div.mapplugins .mappluginsContainer .mappluginsContent .mapplugin.scalebar {
                             z-index: 1100 !important;
                         }

@@ -2029,6 +2029,26 @@ begin;
     (user_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
+    create table if not exists st_public_layers(
+        id bigserial not null,
+        public_layer_id bigint not null,
+        layer_field text NOT NULL,
+        layer_mmu_code text NOT NULL,
+        st_layer_label text NOT NULL,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_layers_pkey PRIMARY KEY (id),
+        CONSTRAINT st_layers_public_layer_id_fkey FOREIGN KEY (public_layer_id) REFERENCES oskari_maplayer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT st_layers_public_layer_id_key UNIQUE (public_layer_id)
+    );
+    CREATE INDEX  if not exists st_layers_public_layer_id
+    ON public.st_public_layers USING btree
+    (public_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
     create table if not exists st_settings(
         id bigserial not null,
 	st_layers_id BIGINT not null,
@@ -2198,6 +2218,18 @@ begin;
         CONSTRAINT st_tables_pkey PRIMARY KEY (id),
         CONSTRAINT st_tables_language_name_key UNIQUE (language, name)
     );
+    insert into st_tables(
+        language,name, label
+    )
+    values(
+        'english','mmu','Source layer'
+    );
+    insert into st_tables(
+        language,name, label
+    )
+    values(
+        'english','amenities','Target features'
+    );
     CREATE TABLE if not exists st_tables_fields
     (
         id serial,
@@ -2213,6 +2245,24 @@ begin;
             REFERENCES st_tables (id) MATCH SIMPLE
             ON UPDATE NO ACTION
             ON DELETE CASCADE
+    );
+    insert into st_tables_fields(
+        st_tables_id, name, label, language
+    )
+    values(
+        1, 'location','Location','english'
+    );
+    insert into st_tables_fields(
+        st_tables_id, name, label, language
+    )
+    values(
+        2, 'fclass','Fclass','english'
+    );
+    insert into st_tables_fields(
+        st_tables_id, name, label, language
+    )
+    values(
+        2, 'location','Location','english'
     );
 end;
 

@@ -1923,7 +1923,7 @@ begin;
     );
 
     create table if not exists st_table_fields(
-        id serial,
+        id serial NOT NULL,
         "table" character varying(45) COLLATE pg_catalog."default" NOT NULL,
         name character varying(45) COLLATE pg_catalog."default" NOT NULL,
         label character varying(45) COLLATE pg_catalog."default" NOT NULL,
@@ -1933,7 +1933,6 @@ begin;
         CONSTRAINT st_layers_fields_pkey PRIMARY KEY (id),
         CONSTRAINT st_table_fields_language_name_key UNIQUE ("table", name, language)
     );
-
     
     create table if not exists up_scenario_modules(
         id serial NOT NULL,
@@ -2005,6 +2004,26 @@ begin;
     CREATE INDEX  if not exists st_layers_user_layer_id
     ON public.st_layers USING btree
     (user_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    create table if not exists st_public_layers(
+        id bigserial not null,
+        public_layer_id bigint not null,
+        layer_field text NOT NULL,
+        layer_mmu_code text NOT NULL,
+        st_layer_label text NOT NULL,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_layers_pkey PRIMARY KEY (id),
+        CONSTRAINT st_layers_public_layer_id_fkey FOREIGN KEY (public_layer_id) REFERENCES oskari_maplayer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT st_layers_public_layer_id_key UNIQUE (public_layer_id)
+    );
+    CREATE INDEX  if not exists st_layers_public_layer_id
+    ON public.st_public_layers USING btree
+    (public_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
     create table if not exists st_settings(

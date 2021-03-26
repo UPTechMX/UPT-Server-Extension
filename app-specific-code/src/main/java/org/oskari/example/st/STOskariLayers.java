@@ -117,15 +117,21 @@ public class STOskariLayers extends RestActionHandler {
                     "    from user_layer\n" +
                     "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
                     "    where user_layer.uuid=? or upt_user_layer_scope.is_public=1\n" +
+                    "), public_layers as(\n" +
+                    "   select name as id, layer_name, capabilities::json->>'geom' as wkt from oskari_maplayer" +
                     ")\n" +
                     "select id,layer_name\n" +
                     "from user_layers\n" +
                     ",study_area\n" +
+                    ",public_layers\n" +
                     "where st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
-                    "st_transform(st_setsrid(study_area.geometry,?),4326))");) {
+                    "st_transform(st_setsrid(study_area.geometry,?),4326)) \n" +
+                    "or st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
+                    "st_transform(st_setsrid(study_area.geometry,?),4326)) \n");) {
             statement.setLong(1, studyArea);
             statement.setString(2, user_uuid);
             statement.setInt(3, Integer.parseInt(stProjection));
+            statement.setInt(4, Integer.parseInt(stProjection));
             boolean status = statement.execute();
             if (status) {
                 ResultSet data = statement.getResultSet();

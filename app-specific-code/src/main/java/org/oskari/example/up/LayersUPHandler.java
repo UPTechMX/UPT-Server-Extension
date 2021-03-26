@@ -560,7 +560,7 @@ public class LayersUPHandler extends RestActionHandler {
             ResultSet data = statement.executeQuery();
             while (data.next()) {
                 StudyAreaUP child = new StudyAreaUP();
-                child.setId(data.getInt("id"));
+                child.setId("" + data.getInt("id"));
                 child.setName(data.getString("layer_name"));
                 layers.add(child);
             }

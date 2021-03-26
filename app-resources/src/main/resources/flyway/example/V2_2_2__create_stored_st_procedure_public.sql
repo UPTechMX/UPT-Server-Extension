@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.suitability_index_values(
+CREATE OR REPLACE FUNCTION public.suitability_public_index_values(
 	layers_list integer[],
         public_layers_list integer[],
 	filters_list integer[],
@@ -100,9 +100,9 @@ BEGIN
     SELECT
         st_astext (geometry) INTO study_area_wkt
     FROM
-        user_layer_data
+        public_layer_data
     WHERE
-        user_layer_id = study_area;
+        public_layer_id = study_area;
     
     -- Normal code
     insert into mmu_layers(user_layer_id, mmu_code, value, geometry)

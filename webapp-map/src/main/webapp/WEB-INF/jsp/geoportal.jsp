@@ -7,9 +7,12 @@
             <!--viewName-->
 
             <head>
-                <title>Geoportal</title>
+                <title>Contagion Hotspots</title>
 
                 <!-- ############# css ################# -->
+                <link rel="icon" type="image/png" href="/Oskari${path}/PLID/assets/img/16x16 CH.png" sizes="16x16">
+                <link rel="icon" type="image/png" href="/Oskari${path}/PLID/assets/img/32x32 CH.png" sizes="32x32">
+                <link rel="icon" type="image/png" href="/Oskari${path}/PLID/assets/img/96x96 CH.png" sizes="96x96">
                 <link rel="stylesheet" type="text/css" href="/Oskari${path}/icons.css" />
                 <link rel="stylesheet" type="text/css" href="/Oskari${path}/oskari.min.css" />
                 <style type="text/css">

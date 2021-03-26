@@ -72,8 +72,7 @@ public class StudyAreaHandler extends RestActionHandler {
                     "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
                     "    where (user_layer.uuid=? or upt_user_layer_scope.is_public=1) and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'\n" +
                     ")\n" +
-                    "select id,layer_name\n" +
-                    "from user_layers" 
+                    "select id,layer_name from user_layers"
                     //"select id,layer_name from user_layer where uuid=? and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'"
             );
             statement.setString(1, user_uuid);
@@ -81,7 +80,7 @@ public class StudyAreaHandler extends RestActionHandler {
             ResultSet data = statement.getResultSet();
             while (data.next()) {
                 StudyAreaUP child = new StudyAreaUP();
-                child.setId(data.getInt("id"));
+                child.setId("priv_" + data.getInt("id"));
                 child.setName(data.getString("layer_name"));
                 layers.add(child);
             }

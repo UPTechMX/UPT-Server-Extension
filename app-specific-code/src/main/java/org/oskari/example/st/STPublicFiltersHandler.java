@@ -24,8 +24,8 @@ import org.json.JSONObject;
 import org.oskari.example.PostStatus;
 import org.oskari.example.UPTRoles;
 
-@OskariActionRoute("st_filters")
-public class STFiltersHandler extends RestActionHandler {
+@OskariActionRoute("st_public_filters")
+public class STPublicFiltersHandler extends RestActionHandler {
   private static String stURL;
   private static String stUser;
   private static String stPassword;
@@ -62,7 +62,7 @@ public class STFiltersHandler extends RestActionHandler {
       );
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
-        "	select geometry from user_layer_data where user_layer_id=?\n" +
+        "	select geometry FROM public_layer_data where public_layer_id = ?\n" +
         "), user_layers as(\n" +
         "	select distinct st_filters.id,st_filters.user_layer_id,st_filter_label,st_filter_label as label\n" +
         "	from st_filters\n" +

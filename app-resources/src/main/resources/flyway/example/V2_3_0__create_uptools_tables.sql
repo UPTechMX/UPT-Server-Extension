@@ -1933,7 +1933,48 @@ begin;
         CONSTRAINT st_layers_fields_pkey PRIMARY KEY (id),
         CONSTRAINT st_table_fields_language_name_key UNIQUE ("table", name, language)
     );
-
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_layers', 'user_layer_id', 'Layer ID', 'english'
+    )
+    on conflict(id) do nothing;
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_filters', 'user_layer_id', 'Layer ID', 'english'
+    )
+    on conflict(id) do nothing;
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_layers', 'layer_field', 'Layer value', 'english'
+    )
+    on conflict(id) do nothing;
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_filters', 'st_filter_label', 'Filter label', 'english'
+    )
+    on conflict(id) do nothing;
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_layers', 'layer_mmu_code', 'Minimal mapping unit ID', 'english'
+    )
+    on conflict(id) do nothing;
+    insert into st_table_fields(
+        "table", name, label, language
+    )
+    values(
+        'st_layers', 'st_layer_label', 'Layer label', 'english'
+    )
+    on conflict(id) do nothing;
     
     create table if not exists up_scenario_modules(
         id serial NOT NULL,
@@ -1987,6 +2028,20 @@ begin;
                 ON UPDATE NO ACTION
                 ON DELETE CASCADE
     );
+
+    create table if not exists public_layers_space(
+        id bigserial not null,
+        public_layer_id int not null,
+        space VARCHAR(50),-- allowed values public, suitability, urbanperformance
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT public_layers_space_pkey PRIMARY KEY (id),
+        CONSTRAINT layers_space_public_layer_id_fkey FOREIGN KEY (public_layer_id)
+                REFERENCES public.oskari_maplayer(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE
+    );
+
     create table if not exists st_layers(
         id bigserial not null,
         user_layer_id bigint not null,
@@ -2007,6 +2062,26 @@ begin;
     (user_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
+    create table if not exists st_public_layers(
+        id bigserial not null,
+        public_layer_id bigint not null,
+        layer_field text NOT NULL,
+        layer_mmu_code text NOT NULL,
+        st_layer_label text NOT NULL,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_public_layers_pkey PRIMARY KEY (id),
+        CONSTRAINT st_layers_public_layer_id_fkey FOREIGN KEY (public_layer_id) REFERENCES oskari_maplayer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT st_layers_public_layer_id_key UNIQUE (public_layer_id)
+    );
+    CREATE INDEX  if not exists st_layers_public_layer_id
+    ON public.st_public_layers USING btree
+    (public_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
     create table if not exists st_settings(
         id bigserial not null,
 	st_layers_id BIGINT not null,
@@ -2025,6 +2100,27 @@ begin;
     );
     CREATE INDEX  if not exists  st_settings_st_layers_id_idx
     ON public.st_settings USING btree
+    (st_layers_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    create table if not exists st_public_settings(
+        id bigserial not null,
+	st_layers_id BIGINT not null,
+	normalization_method  int not null,
+	range_min double PRECISION not null,
+	range_max double PRECISION not null,
+	smaller_better integer not null,
+	weight double PRECISION not null,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+	CONSTRAINT st_public_settings_pkey PRIMARY KEY (id),
+	CONSTRAINT st_public_settings_st_layers_id_fkey FOREIGN KEY (st_layers_id)
+            REFERENCES public.st_public_layers(id) MATCH SIMPLE
+            ON UPDATE NO ACTION
+            ON DELETE CASCADE
+    );
+    CREATE INDEX  if not exists  st_public_settings_st_layers_id_idx
+    ON public.st_public_settings USING btree
     (st_layers_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
@@ -2116,6 +2212,24 @@ begin;
     CREATE INDEX  if not exists st_filters_user_layer_id_idx
     ON public.st_filters USING btree
     (user_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    create table if not exists st_public_filters(
+        id bigserial not null,
+        public_layer_id bigint not null,
+        st_filter_label text NOT NULL,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_public_filters_pkey PRIMARY KEY (id),
+        CONSTRAINT st_public_filters_user_layer_id_fkey FOREIGN KEY (public_layer_id) REFERENCES oskari_maplayer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT st_public_filters_public_layer_id_key UNIQUE (public_layer_id)
+    );
+    CREATE INDEX  if not exists st_public_filters_public_layer_id_idx
+    ON public.st_public_filters USING btree
+    (public_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
     create table if not exists institutions(

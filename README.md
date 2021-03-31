@@ -19,7 +19,7 @@ This project provides the backend for the Urban Performance and Suitability tool
 
 ## How To Use
 
-This Oskari's server extension is intended to be used in an instance of oskari-server-v1.54.1, the oskari-server-v1.54.1 is available at [https://github.com/oskariorg/oskari-server/tree/1.54.1](https://github.com/oskariorg/oskari-server/tree/1.54.1)
+This Oskari's server extension is intended to be used in an instance of oskari-server-v1.55.1, the oskari-server-v1.55.1 is available at [https://github.com/oskariorg/oskari-server/tree/1.55.1](https://github.com/oskariorg/oskari-server/tree/1.55.1)
 
 ### Compilation
 

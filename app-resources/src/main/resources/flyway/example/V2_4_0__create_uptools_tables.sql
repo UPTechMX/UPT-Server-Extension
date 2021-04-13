@@ -1868,6 +1868,26 @@ begin;
                 ON UPDATE NO ACTION
                 ON DELETE CASCADE
     );
+
+    CREATE TABLE  if not exists public.up_public_scenario(
+        id serial,
+        name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        description character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        owner_id integer,
+        is_base integer,
+        study_area bigint,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT public_scenario_pkey PRIMARY KEY (id),
+        CONSTRAINT up_public_scenario_oskari_users_id_fkey FOREIGN KEY (owner_id)
+                REFERENCES public.oskari_users(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_public_scenario_user_layer_id_fkey FOREIGN KEY (study_area)
+                REFERENCES public.oskari_maplayer(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE
+    );
     
     CREATE TABLE  if not exists public.up_assumptions(
         id serial,
@@ -1892,7 +1912,30 @@ begin;
                 ON DELETE CASCADE,
         CONSTRAINT up_assumptions_study_area_scenario_category_name_key UNIQUE (study_area,scenario,category,name)
     );
-    
+
+    CREATE TABLE  if not exists public.up_public_assumptions(
+        id serial,
+        study_area bigint,
+        scenario int,
+        category varchar(45),
+        name varchar(45),
+        value double precision,
+        units text,
+        description text,
+        "source" text,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT up_public_assumptions_pkey PRIMARY KEY (id),
+        CONSTRAINT up_public_assumptions_public_layer_id_fkey FOREIGN KEY (study_area)
+                REFERENCES public.oskari_maplayer(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_public_assumptions_up_scenario_id_fkey FOREIGN KEY (scenario) REFERENCES up_public_scenario (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_public_assumptions_study_area_scenario_category_name_key UNIQUE (study_area,scenario,category,name)
+    );
     
     CREATE TABLE  if not exists public.up_layers(
         id serial,
@@ -1923,7 +1966,7 @@ begin;
     );
 
     create table if not exists st_table_fields(
-        id serial NOT NULL,
+        id serial,
         "table" character varying(45) COLLATE pg_catalog."default" NOT NULL,
         name character varying(45) COLLATE pg_catalog."default" NOT NULL,
         label character varying(45) COLLATE pg_catalog."default" NOT NULL,
@@ -1950,6 +1993,23 @@ begin;
                 ON UPDATE NO ACTION
                 ON DELETE CASCADE
     );
+
+    create table if not exists up_public_scenario_modules(
+        id serial NOT NULL,
+        module integer NOT NULL,
+        scenario integer NOT NULL,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT up_public_scenario_modules_pkey PRIMARY KEY (id),
+        CONSTRAINT up_public_scenario_modules_up_modules_translation_id_fkey FOREIGN KEY (module)
+                REFERENCES public.up_modules_translation(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_scenario_modules_up_scenario_id_fkey FOREIGN KEY (scenario)
+                REFERENCES public.up_public_scenario(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE
+    );
     
     create table if not exists up_scenarios_layers(
         id serial NOT NULL,
@@ -1968,6 +2028,29 @@ begin;
                 ON UPDATE NO ACTION
                 ON DELETE CASCADE,
         CONSTRAINT up_scenarios_layers_up_layers_id_fkey FOREIGN KEY (target_layer)
+                REFERENCES public.up_layers(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE       
+        
+    );
+
+    create table if not exists up_public_scenarios_layers(
+        id serial NOT NULL,
+        up_scenarios_id integer,
+        source_layer int,
+        target_layer int,
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT up_public_scenarios_layers_pkey PRIMARY KEY (id),
+        CONSTRAINT up_public_scenarios_layers_up_scenario_id_fkey FOREIGN KEY (up_scenarios_id)
+        REFERENCES public.up_public_scenario(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_public_scenarios_layers_public_layer_id_fkey FOREIGN KEY (source_layer)
+                REFERENCES public.oskari_maplayer(id) MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT up_public_scenarios_layers_up_layers_id_fkey FOREIGN KEY (target_layer)
                 REFERENCES public.up_layers(id) MATCH SIMPLE
                 ON UPDATE NO ACTION
                 ON DELETE CASCADE       
@@ -2216,6 +2299,22 @@ begin;
     CREATE INDEX  if not exists  up_scenario_buffers_user_layer_id_idx
     ON public.up_scenario_buffers USING btree
     (user_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    create table if not exists up_public_scenario_buffers(
+        id bigserial not null,
+        scenario integer,
+        public_layer_id bigint not null,
+        CONSTRAINT up_public_scenario_buffers_public_layer_id_fkey FOREIGN KEY (public_layer_id) REFERENCES oskari_maplayer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT public_scenario_public_layer_id_key UNIQUE (scenario,public_layer_id)
+    );
+
+    CREATE INDEX  if not exists  up_public_scenario_buffers_public_layer_id_idx
+    ON public.up_public_scenario_buffers USING btree
+    (public_layer_id ASC NULLS LAST)
     TABLESPACE pg_default;
 
     create table if not exists upt_user_layer_scope(

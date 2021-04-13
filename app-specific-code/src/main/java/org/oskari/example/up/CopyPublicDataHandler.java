@@ -26,8 +26,8 @@ import org.oskari.example.Tables;
 import org.oskari.example.UPTRoles;
 import org.springframework.web.client.RestTemplate;
 
-@OskariActionRoute("copy_data")
-public class CopyDataHandler extends RestActionHandler {
+@OskariActionRoute("copy_public_data")
+public class CopyPublicDataHandler extends RestActionHandler {
   private static String upURL;
   private static String upUser;
   private static String upPassword;
@@ -38,6 +38,8 @@ public class CopyDataHandler extends RestActionHandler {
 
   private JSONArray errors;
   private ObjectMapper Obj;
+
+  String user_uuid;
 
   private static final Logger log = LogFactory.getLogger(CopyDataHandler.class);
 
@@ -57,6 +59,7 @@ public class CopyDataHandler extends RestActionHandler {
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
+    user_uuid = params.getUser().getUuid();
     errors = new JSONArray();
     Obj = new ObjectMapper();
   }
@@ -272,7 +275,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += " user_layer_data.id as " + tableUP[i];
+          values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
           values +=
@@ -301,10 +304,13 @@ public class CopyDataHandler extends RestActionHandler {
       query =
         "select distinct " +
         values +
-        " from user_layer\n" +
-        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-        " where user_layer.id=" +
-        layer;
+        " from oskari_maplayer\n" +
+        " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+        " where oskari_maplayer.id=" +
+        layer +
+        " and public_layer_data.uuid='" +
+        user_uuid +
+        "'";
 
       errors.put(
         JSONHelper.createJSONObject(
@@ -414,7 +420,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
           break;
@@ -437,10 +443,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -522,7 +531,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += " user_layer_data.id as " + tableUP[i];
+          values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
           values +=
@@ -551,10 +560,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -626,7 +638,7 @@ public class CopyDataHandler extends RestActionHandler {
             "' AS text))::double precision as value";
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -653,10 +665,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -738,7 +753,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += " user_layer_data.id as " + tableUP[i];
+          values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
           values +=
@@ -767,10 +782,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -848,7 +866,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
           break;
@@ -871,10 +889,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPTransitInfo> data_in = new ArrayList<>();
 
@@ -942,7 +963,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += " user_layer_data.id as " + tableUP[i];
+          values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
           values +=
@@ -972,10 +993,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -1053,7 +1077,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
           break;
@@ -1077,10 +1101,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -1160,7 +1187,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += " user_layer_data.id as " + tableUP[i];
+          values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
           values +=
@@ -1190,10 +1217,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
     ResultSet data = statement.executeQuery(query);
 
     ArrayList<UPJobs> data_in = new ArrayList<>();
@@ -1262,7 +1292,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
           break;
@@ -1285,10 +1315,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -1410,13 +1443,17 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
       layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'" +
       " group by " +
       group;
 
+    System.out.println(query);
     errors.put(
       JSONHelper.createJSONObject(
         Obj.writeValueAsString(
@@ -1499,7 +1536,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as scenario";
           break;
         case "oskari_code":
-          values += " user_layer_data.id as oskari_code";
+          values += " public_layer_data.id as oskari_code";
           break;
         default:
           values +=
@@ -1528,10 +1565,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(
@@ -1608,7 +1648,7 @@ public class CopyDataHandler extends RestActionHandler {
           values += scenarioId + " as " + tableUP[i];
           break;
         case "oskari_code":
-          values += "user_layer_data.id as " + tableUP[i];
+          values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
           break;
@@ -1632,10 +1672,13 @@ public class CopyDataHandler extends RestActionHandler {
     query =
       "select distinct " +
       values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+      " from oskari_maplayer\n" +
+      " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+      " where oskari_maplayer.id=" +
+      layer +
+      " and public_layer_data.uuid='" +
+      user_uuid +
+      "'";
 
     errors.put(
       JSONHelper.createJSONObject(

@@ -149,9 +149,8 @@ public class UPTImportPublicLayerData extends RestActionHandler {
     PostStatus status = new PostStatus();
     String query = "";
     Long user_id = params.getUser().getId();
-    user_uuid = params.getUser().getUuid();
-    Long study_area;
-    study_area = Long.parseLong(params.getRequiredParam("study_area"));
+    String[] study_areas;
+    study_areas = params.getRequest().getParameterValues("studyAreasId");
     try (
       Connection connection = DriverManager.getConnection(
         stURL,
@@ -168,86 +167,92 @@ public class UPTImportPublicLayerData extends RestActionHandler {
       PreparedStatement statement = connection.prepareStatement(
         "INSERT INTO public.public_layer_data(public_layer_id, uuid, feature_id,property_json, geometry)VALUES ( ?, ?, ?,?::json,ST_GeomFromText(?));"
       );
-
       connection.setAutoCommit(false);
-      OskariLayer ml = LAYER_SERVICE.find(study_area.intValue());
-      JSONArray featureArray = new JSONArray();
-      CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857", true);
-      // PropertyUtil.addProperty("oskari.native.srs", "EPSG:" + stProjection, true);
-      PropertyUtil.addProperty("oskari.native.srs", "EPSG:3857", true);
-      Envelope envelope = new Envelope(
-        -20016250.811,
-        19934883.938,
-        20097617.684,
-        -19772150.192
-      );
-      ReferencedEnvelope bbox = new ReferencedEnvelope(envelope, webMercator);
 
-      SimpleFeatureCollection sfc = handler.featureClient.getFeatures(
-        study_area.toString(),
-        ml,
-        bbox,
-        webMercator,
-        Optional.empty()
-      );
-      SimpleFeatureIterator iterator = sfc.features();
-      try {
-        while (iterator.hasNext()) {
-          SimpleFeature feature = iterator.next();
-          JSONArray names = new JSONArray();
-          JSONArray attributes = new JSONArray(feature.getAttributes());
-          JSONObject fullFeature = new JSONObject();
-          List<AttributeDescriptor> list = feature
-            .getType()
-            .getAttributeDescriptors();
-          Iterator<AttributeDescriptor> attrIterator = list.iterator();
-          try {
-            while (attrIterator.hasNext()) {
-              AttributeDescriptor attr = attrIterator.next();
-              names.put(attr.getLocalName());
+      for (String ids : study_areas) {
+        OskariLayer ml = LAYER_SERVICE.find(Integer.parseInt(ids));
+        JSONArray featureArray = new JSONArray();
+        CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857", true);
+        // PropertyUtil.addProperty("oskari.native.srs", "EPSG:" + stProjection, true);
+        PropertyUtil.addProperty("oskari.native.srs", "EPSG:3857", true);
+        Envelope envelope = new Envelope(
+          -20016250.811,
+          19934883.938,
+          20097617.684,
+          -19772150.192
+        );
+        ReferencedEnvelope bbox = new ReferencedEnvelope(envelope, webMercator);
+
+        SimpleFeatureCollection sfc = handler.featureClient.getFeatures(
+          ids.toString(),
+          ml,
+          bbox,
+          webMercator,
+          Optional.empty()
+        );
+        SimpleFeatureIterator iterator = sfc.features();
+        try {
+          while (iterator.hasNext()) {
+            SimpleFeature feature = iterator.next();
+            JSONArray names = new JSONArray();
+            JSONArray attributes = new JSONArray(feature.getAttributes());
+            JSONObject fullFeature = new JSONObject();
+            List<AttributeDescriptor> list = feature
+              .getType()
+              .getAttributeDescriptors();
+            Iterator<AttributeDescriptor> attrIterator = list.iterator();
+            try {
+              while (attrIterator.hasNext()) {
+                AttributeDescriptor attr = attrIterator.next();
+                names.put(attr.getLocalName());
+              }
+            } finally {}
+            //attributes.put(attributes);
+            for (int i = 0; i < names.length(); i++) {
+              fullFeature.put(
+                names.get(i).toString(),
+                attributes.get(i).toString()
+              );
             }
-          } finally {}
-          //attributes.put(attributes);
-          for (int i = 0; i < names.length(); i++) {
-            fullFeature.put(
-              names.get(i).toString(),
-              attributes.get(i).toString()
+            Iterator<String> featureKeys = fullFeature.keys();
+            String geomKey = "";
+            try {
+              while (featureKeys.hasNext()) {
+                String tmp = featureKeys.next();
+                if (tmp.contains("geom")) {
+                  geomKey = tmp;
+                }
+              }
+            } finally {}
+            //featureArray.put(fullFeature);
+
+            statement.setLong(1, Long.parseLong(ids));
+            statement.setString(2, user_uuid);
+            statement.setString(3, feature.getID());
+            statement.setString(4, fullFeature.toString());
+            statement.setString(5, fullFeature.get(geomKey).toString());
+            statement.addBatch();
+
+            CoordinateReferenceSystem actualCRS = sfc
+              .getSchema()
+              .getGeometryDescriptor()
+              .getCoordinateReferenceSystem();
+            assertTrue(CRS.equalsIgnoreMetadata(webMercator, actualCRS));
+            errors.put(
+              JSONHelper.createJSONObject(
+                Obj.writeValueAsString(
+                  new PostStatus(
+                    "OK",
+                    "Executing query: " + statement.toString()
+                  )
+                )
+              )
             );
           }
-          Iterator<String> featureKeys = fullFeature.keys();
-          String geomKey = "";
-          try {
-            while (featureKeys.hasNext()) {
-              String tmp = featureKeys.next();
-              if (tmp.contains("geom")) {
-                geomKey = tmp;
-              }
-            }
-          } finally {}
-          //featureArray.put(fullFeature);
-
-          statement.setLong(1, study_area);
-          statement.setString(2, user_uuid);
-          statement.setString(3, feature.getID());
-          statement.setString(4, fullFeature.toString());
-          statement.setString(5, fullFeature.get(geomKey).toString());
-          statement.addBatch();
+        } finally {
+          iterator.close();
         }
-      } finally {
-        iterator.close();
       }
-      CoordinateReferenceSystem actualCRS = sfc
-        .getSchema()
-        .getGeometryDescriptor()
-        .getCoordinateReferenceSystem();
-      assertTrue(CRS.equalsIgnoreMetadata(webMercator, actualCRS));
-      errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(
-            new PostStatus("OK", "Executing query: " + statement.toString())
-          )
-        )
-      );
       int[] inserted = statement.executeBatch();
       connection.commit();
       statement.close();
@@ -383,9 +388,9 @@ public class UPTImportPublicLayerData extends RestActionHandler {
   @Override
   public void handleDelete(ActionParameters params) throws ActionException {
     String errorMsg = "Layers get";
-    Long id;
-    id = Long.parseLong(params.getRequiredParam("id"));
     user_uuid = params.getUser().getUuid();
+    String[] study_areas;
+    study_areas = params.getRequest().getParameterValues("studyAreasId");
     PostStatus status = new PostStatus();
     String query = "";
     try (
@@ -404,9 +409,13 @@ public class UPTImportPublicLayerData extends RestActionHandler {
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
+      connection.setAutoCommit(false);
 
-      statement.setLong(1, id);
-      statement.setString(2, user_uuid);
+      for (String ids : study_areas) {
+        statement.setLong(1, Long.parseLong(ids));
+        statement.setString(2, user_uuid);
+        statement.addBatch();
+      }
 
       errors.put(
         JSONHelper.createJSONObject(
@@ -416,7 +425,9 @@ public class UPTImportPublicLayerData extends RestActionHandler {
         )
       );
 
-      statement.execute();
+      int[] inserted = statement.executeBatch();
+      connection.commit();
+      statement.close();
 
       errors.put(
         JSONHelper.createJSONObject(

@@ -2164,5 +2164,55 @@ begin;
         CONSTRAINT scenario_user_layer_id_key UNIQUE (scenario,user_layer_id)
     );
 
+    CREATE INDEX  if not exists  up_scenario_buffers_user_layer_id_idx
+    ON public.up_scenario_buffers USING btree
+    (user_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    create table if not exists upt_user_layer_scope(
+        id bigserial not null,
+        user_layer_id bigint not null,
+        is_public int,
+        CONSTRAINT upt_user_layer_scope_user_layer_id_fkey FOREIGN KEY (user_layer_id) REFERENCES user_layer (id)
+            MATCH SIMPLE
+                ON UPDATE NO ACTION
+                ON DELETE CASCADE,
+        CONSTRAINT upt_user_layer_scope_id_key UNIQUE (user_layer_id)
+    );
+
+    CREATE INDEX  if not exists  upt_user_layer_scope_user_layer_id_idx
+    ON public.upt_user_layer_scope USING btree
+    (user_layer_id ASC NULLS LAST)
+    TABLESPACE pg_default;
+
+    
+    CREATE TABLE if not exists st_tables
+    (
+        id serial,
+        language character varying(20) COLLATE pg_catalog."default" NOT NULL,
+        name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        label character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        description text COLLATE pg_catalog."default",
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_tables_pkey PRIMARY KEY (id),
+        CONSTRAINT st_tables_language_name_key UNIQUE (language, name)
+    );
+    CREATE TABLE if not exists st_tables_fields
+    (
+        id serial,
+        st_tables_id integer NOT NULL,
+        name character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        label character varying(45) COLLATE pg_catalog."default" NOT NULL,
+        language character varying(20) COLLATE pg_catalog."default",
+        created timestamp with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated timestamp with time zone,
+        CONSTRAINT st_tables_fields_pkey PRIMARY KEY (id),
+        CONSTRAINT st_tables_fields_st_tables_id_language_name_key UNIQUE (st_tables_id, language, name),
+        CONSTRAINT st_tables_fields_st_tables_id_fkey FOREIGN KEY (st_tables_id)
+            REFERENCES st_tables (id) MATCH SIMPLE
+            ON UPDATE NO ACTION
+            ON DELETE CASCADE
+    );
 end;
 

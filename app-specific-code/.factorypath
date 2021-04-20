@@ -171,7 +171,6 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/geotools/gt-ogr-core/19.1/gt-ogr-core-19.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/geotools/gt-ogr-bridj/19.1/gt-ogr-bridj-19.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/nativelibs4java/bridj/0.6/bridj-0.6-c-only.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/asm/asm/3.3.1/asm-3.3.1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/commons/commons-csv/1.0/commons-csv-1.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/poi/poi-ooxml/3.13/poi-ooxml-3.13.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/poi/poi/3.13/poi-3.13.jar" enabled="true" runInBatchMode="false"/>

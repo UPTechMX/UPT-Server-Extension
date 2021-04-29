@@ -61,7 +61,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @OskariActionRoute("evaluate_public_distances_new_layers")
-public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
+public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
   private static final Logger LOG = LogFactory.getLogger(
     STDistancesGeoJsonHandler.class
   );

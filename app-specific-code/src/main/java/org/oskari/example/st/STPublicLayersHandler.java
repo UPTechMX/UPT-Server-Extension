@@ -105,7 +105,7 @@ public class STPublicLayersHandler extends RestActionHandler {
           layer.id = data.getLong("id");
           layer.label = data.getString("label");
           layer.st_layer_label = data.getString("st_layer_label");
-          layer.public_layer_id = data.getLong("user_layer_id");
+          layer.public_layer_id = data.getLong("public_layer_id");
           layer.layer_field = data.getString("layer_field");
           layer.layer_mmu_code = data.getString("layer_mmu_code");
           modules.add(layer);

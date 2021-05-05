@@ -1,3 +1,13 @@
+CREATE SEQUENCE public.public_layer_data_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.public_layer_data_id_seq
+    OWNER TO oskari;
+
 CREATE TABLE public.public_layer_data
 (
     id bigint NOT NULL DEFAULT nextval('public_layer_data_id_seq'::regclass),
@@ -55,16 +65,6 @@ CREATE TRIGGER trigger_public_layer_update
 -- SEQUENCE: public.user_layer_data_id_seq
 
 -- DROP SEQUENCE public.user_layer_data_id_seq;
-
-CREATE SEQUENCE public.public_layer_data_id_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 9223372036854775807
-    CACHE 1;
-
-ALTER SEQUENCE public.public_layer_data_id_seq
-    OWNER TO oskari;
 
 -- Table: public.public_layer_data
 

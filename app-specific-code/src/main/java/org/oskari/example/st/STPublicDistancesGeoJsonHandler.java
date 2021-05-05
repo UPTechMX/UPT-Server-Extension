@@ -197,13 +197,13 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         }
 
         PreparedStatement statement2 = connection.prepareStatement(
-          "select layer_name from oskari_maplayer where id=? limit 1"
+          "select name from oskari_maplayer where id=? limit 1"
         );
         statement2.setLong(1, index.study_area);
         ResultSet study_areas_name = statement2.executeQuery();
 
         if (study_areas_name.next()) {
-          Study_area_name = study_areas_name.getString("layer_name");
+          Study_area_name = study_areas_name.getString("name");
         }
 
         mapSrs = "EPSG:" + stProjection;

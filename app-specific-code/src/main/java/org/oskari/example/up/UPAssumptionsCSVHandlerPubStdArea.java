@@ -160,7 +160,12 @@ public class UPAssumptionsCSVHandlerPubStdArea extends RestActionHandler {
             "values(?,?,?,?,?,?,?,?) \n" +
             "on conflict(study_area, scenario, category, name) do nothing \n"
           );
+          System.out.println(
+            ArrayUtils.toString(nextLine, "No source provided")
+          );
+          System.out.println(ArrayUtils.getLength(nextLine));
           if (!headers) {
+            System.out.println(ArrayUtils.toString(header));
             statement.setLong(1, study_area);
             statement.setInt(2, scenario_id);
             statement.setString(
@@ -194,7 +199,6 @@ public class UPAssumptionsCSVHandlerPubStdArea extends RestActionHandler {
             headers = false;
           }
         }
-
         setCreateAssumptions(
           scenario_id,
           params.getRequiredParam("study_area")
@@ -366,12 +370,12 @@ public class UPAssumptionsCSVHandlerPubStdArea extends RestActionHandler {
         "        scenarios_assumptions.units,\n" +
         "        scenarios_assumptions.description,\n" +
         "        scenarios_assumptions.source,\n" +
-        "        up_assumptions.scenario as scenario2\n" +
+        "        up_public_assumptions.scenario as scenario2\n" +
         "    from scenarios_assumptions\n" +
         "    left join up_assumptions\n" +
-        "    on scenarios_assumptions.scenario = up_assumptions.scenario\n" +
-        "    and scenarios_assumptions.category = up_assumptions.category\n" +
-        "    and scenarios_assumptions.name = up_assumptions.name\n" +
+        "    on scenarios_assumptions.scenario = up_public_assumptions.scenario\n" +
+        "    and scenarios_assumptions.category = up_public_assumptions.category\n" +
+        "    and scenarios_assumptions.name = up_public_assumptions.name\n" +
         "\n" +
         ")insert into up_public_assumptions(scenario,study_area,category,name,value,units,description,source)\n" +
         "select scenario,study_area,category,name,value,units,description,source from all_assumptions\n" +

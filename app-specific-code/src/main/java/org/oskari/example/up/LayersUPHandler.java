@@ -528,7 +528,7 @@ public class LayersUPHandler extends RestActionHandler {
       PreparedStatement statement = connection.prepareStatement(
         "with public_layers as(\n" +
         "   SELECT distinct oskari_maplayer.id, name as layer_name FROM oskari_maplayer\n" +
-        "   INNER JOIN public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id WHERE type = 'wfslayer' AND public_layer_data.uuid = ?\n" +
+        "   INNER JOIN public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id WHERE type = 'wfslayer' OR type = 'wmslayer' AND public_layer_data.uuid = ?\n" +
         "   AND lower(name) not like '%buffer%' and lower(name) not like '%distance%'\n" +
         "   )\n" +
         "select id, layer_name from public_layers"

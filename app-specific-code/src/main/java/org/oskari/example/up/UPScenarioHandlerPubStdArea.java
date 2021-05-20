@@ -449,14 +449,14 @@ public class UPScenarioHandlerPubStdArea extends RestActionHandler {
           upPassword
         );
         PreparedStatement statement = connection.prepareStatement(
-          "SELECT public_layer_id FROM up_scenario_buffers where scenario=?"
+          "SELECT public_layer_id FROM up_public_scenario_buffers where scenario=?"
         );
         statement.setInt(1, scenarioId);
         statement.executeQuery();
         ResultSet res = statement.getResultSet();
         while (res.next()) {
           HttpServletRequest requestParam = params.getRequest();
-          row = deleteBuffersUP(params, res.getLong("user_layer_id"));
+          row = deleteBuffersUP(params, res.getLong("public_layer_id"));
         }
       }
       if (row) {

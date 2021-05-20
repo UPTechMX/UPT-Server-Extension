@@ -116,6 +116,7 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
         JSONObject json = null;
         try {
           json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
+          System.out.println(json.toString());
           out.put(json);
         } catch (JsonProcessingException ex) {
           java

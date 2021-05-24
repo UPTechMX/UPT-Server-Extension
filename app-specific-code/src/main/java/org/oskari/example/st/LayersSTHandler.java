@@ -1545,7 +1545,7 @@ public class LayersSTHandler extends RestActionHandler {
       PreparedStatement statement = connection.prepareStatement(
         "SELECT \n" +
         "	st_public_settings.id, \n" +
-        "	st_layers_id as st_public_layer_id, \n" +
+        "	st_layers_id, \n" +
         "	normalization_method, \n" +
         "	range_min, \n" +
         "	range_max, \n" +

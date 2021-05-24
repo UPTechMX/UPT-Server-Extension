@@ -108,7 +108,7 @@ public class STPublicSettingsHandlerPubLyr extends RestActionHandler {
 
       ResultSet data = statement.executeQuery();
       while (data.next()) {
-        STPublicSettings layer = new STPublicSettings(layerId);
+        STPublicSettings layer = new STPublicSettings(String.valueOf(layerId));
         layer.id = data.getLong("id");
         layer.normalization_method =
           data.getInt("normalization_method") != 0
@@ -128,7 +128,7 @@ public class STPublicSettingsHandlerPubLyr extends RestActionHandler {
         modules.add(layer);
       }
       if (modules.isEmpty()) {
-        STPublicSettings layer = new STPublicSettings(layerId);
+        STPublicSettings layer = new STPublicSettings(String.valueOf(layerId));
         modules.add(layer);
       }
       JSONArray out = new JSONArray();

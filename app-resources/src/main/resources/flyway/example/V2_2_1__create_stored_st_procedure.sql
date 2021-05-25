@@ -444,7 +444,7 @@ BEGIN
                     RIGHT JOIN (
                             SELECT
                                     st_public_layers.public_layer_id as user_layer_id,
-                                    (config.value ->> 'st_public_layer_id')::int AS st_layers_id,
+                                    (config.value ->> 'st_layer_id')::int AS st_layers_id,
                                     (config.value ->> 'normalization_method')::int AS normalization_method,
                                     (config.value ->> 'smaller_better')::int AS smaller_better,
                                     (config.value ->> 'range_max')::double precision AS range_max,
@@ -452,7 +452,7 @@ BEGIN
                                     (config.value ->> 'weight')::double precision AS weight
                             FROM
                                     json_array_elements((SELECT unnest(public_settings_list)::json)) as config
-                                    INNER JOIN st_public_layers ON (config.value ->> 'st_public_layer_id')::bigint = st_public_layers.id
+                                    INNER JOIN st_public_layers ON (config.value ->> 'st_layer_id')::bigint = st_public_layers.id
                     ) as user_config ON st_public_settings.id = user_config.st_layers_id
                     INNER JOIN (
                             SELECT

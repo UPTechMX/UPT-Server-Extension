@@ -1926,15 +1926,10 @@ public class LayersSTHandler extends RestActionHandler {
         //PreparedStatement statement = connection.prepareStatement(query
       );
     ) {
-      String[] tmpLayers = params
-        .getRequest()
-        .getParameterValues("public_layers");
-      int tmpLayersLength = tmpLayers.length;
-      int[] tmpLayersInt = new int[tmpLayersLength + 1];
-      for (String lyr : tmpLayers) {
-        tmpLayersInt.add(Integer.parseInt(lyr));
-      }
-      Array layers = connection.createArrayOf("INTEGER", tmpLayers);
+      Array layers = connection.createArrayOf(
+        "INTEGER",
+        params.getRequest().getParameterValues("layers")
+      );
 
       Array public_layers = connection.createArrayOf(
         "INTEGER",
@@ -1972,7 +1967,6 @@ public class LayersSTHandler extends RestActionHandler {
       );
       statement.setInt(8, params.getRequiredParamInt("joinMethod"));
       statement.setInt(9, Integer.parseInt(stProjection));
-      System.out.println(statement.toString());
       errors.put(
         JSONHelper.createJSONObject(
           Obj.writeValueAsString(new PostStatus("OK", statement.toString()))
@@ -1988,6 +1982,7 @@ public class LayersSTHandler extends RestActionHandler {
         geoJson.put(json);
         break;
       }
+      System.out.println(geoJSON.toString());
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();

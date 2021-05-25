@@ -1967,6 +1967,7 @@ public class LayersSTHandler extends RestActionHandler {
       );
       statement.setInt(8, params.getRequiredParamInt("joinMethod"));
       statement.setInt(9, Integer.parseInt(stProjection));
+      System.out.println(statement.toString());
       errors.put(
         JSONHelper.createJSONObject(
           Obj.writeValueAsString(new PostStatus("OK", statement.toString()))

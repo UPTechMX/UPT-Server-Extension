@@ -1926,10 +1926,13 @@ public class LayersSTHandler extends RestActionHandler {
         //PreparedStatement statement = connection.prepareStatement(query
       );
     ) {
-      Array layers = connection.createArrayOf(
-        "INTEGER",
-        params.getRequest().getParameterValues("layers")
-      );
+      String[] tmpLayers = params
+        .getRequest()
+        .getParameterValues("public_layers");
+      for (String lyr : tmpLayers) {
+        lyr = Integer.parseInt(lyr);
+      }
+      Array layers = connection.createArrayOf("INTEGER", tmpLayers);
 
       Array public_layers = connection.createArrayOf(
         "INTEGER",

@@ -1963,8 +1963,8 @@ public class LayersSTHandler extends RestActionHandler {
         );
         geoJson.put(json);
       }
-      data.close();
-      statement.close();
+      //data.close();
+      //statement.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();
@@ -2088,8 +2088,8 @@ public class LayersSTHandler extends RestActionHandler {
         geoJson.put(json);
         break;
       }
-      data.close();
-      statement.close();
+      //data.close();
+      //statement.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();

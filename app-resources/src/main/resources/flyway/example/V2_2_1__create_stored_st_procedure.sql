@@ -316,8 +316,8 @@ BEGIN
             mmu_code,
             total.num_layers;
 	
-    CREATE INDEX mmu_index_resutls_value_idx
-    ON mmu_index_resutls USING btree
+    CREATE INDEX mmu_index_results_value_idx
+    ON mmu_index_results USING btree
     (value);
 	--
     DROP TABLE IF EXISTS test_geoms;
@@ -329,13 +329,13 @@ BEGIN
             FROM
                     (
                             SELECT
-                                    mmu_index_resutls.value,
+                                    mmu_index_results.value,
                                     st_union(st_collectionextract (unique_mmu.geometry, 3)) AS geometry
                             FROM
-                                    mmu_index_resutls
-                                    INNER JOIN unique_mmu ON unique_mmu.mmu_code = mmu_index_resutls.mmu_code
+                                    mmu_index_results
+                                    INNER JOIN unique_mmu ON unique_mmu.mmu_code = mmu_index_results.mmu_code
                             GROUP BY
-                                    mmu_index_resutls.value,unique_mmu.geometry
+                                    mmu_index_results.value,unique_mmu.geometry
                     ) as mmu_geometries
     );
     -- Public layers code
@@ -524,8 +524,8 @@ BEGIN
             mmu_code,
             public_total.num_layers;
 	
-    CREATE INDEX public_mmu_index_resutls_value_idx
-    ON public_mmu_index_resutls USING btree
+    CREATE INDEX public_mmu_index_results_value_idx
+    ON public_mmu_index_results USING btree
     (value);
 	--
     DROP TABLE IF EXISTS test_public_geoms;
@@ -537,21 +537,21 @@ BEGIN
             FROM
                     (
                             SELECT
-                                    public_mmu_index_resutls.value,
+                                    public_mmu_index_results.value,
                                     st_union(st_collectionextract (unique_public_mmu.geometry, 3)) AS geometry
                             FROM
-                                    public_mmu_index_resutls
-                                    INNER JOIN unique_public_mmu ON unique_public_mmu.mmu_code = public_mmu_index_resutls.mmu_code
+                                    public_mmu_index_results
+                                    INNER JOIN unique_public_mmu ON unique_public_mmu.mmu_code = public_mmu_index_results.mmu_code
                             GROUP BY
-                                    public_mmu_index_resutls.value,unique_public_mmu.geometry
+                                    public_mmu_index_results.value,unique_public_mmu.geometry
                             UNION SELECT
-                                    mmu_index_resutls.value,
+                                    mmu_index_results.value,
                                     st_union(st_collectionextract (unique_mmu.geometry, 3)) AS geometry
                             FROM
-                                    mmu_index_resutls
-                                    INNER JOIN unique_mmu ON unique_mmu.mmu_code = mmu_index_resutls.mmu_code
+                                    mmu_index_results
+                                    INNER JOIN unique_mmu ON unique_mmu.mmu_code = mmu_index_results.mmu_code
                             GROUP BY
-                                    mmu_index_resutls.value,unique_mmu.geometry
+                                    mmu_index_results.value,unique_mmu.geometry
                     ) as public_mmu_geometries
     );
 

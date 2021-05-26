@@ -918,8 +918,9 @@ public class LayersSTHandler extends RestActionHandler {
       PostStatus status = null;
       if ("index_values".equals(params.getRequiredParam("action"))) {
         indexSuitability(params);
-      }
-      if ("public_index_values".equals(params.getRequiredParam("action"))) {
+      } else if (
+        "public_index_values".equals(params.getRequiredParam("action"))
+      ) {
         publicIndexSuitability(params);
       } else if ("copy_data".equals(params.getRequiredParam("action"))) {
         if (
@@ -1975,14 +1976,16 @@ public class LayersSTHandler extends RestActionHandler {
       //ResultSet data = statement.executeQuery();
       ResultSet data = statement.executeQuery();
       JSONArray geoJson = new JSONArray();
-      while (data.next()) {
+      if (data.next()) {
         final JSONObject json = JSONHelper.createJSONObject(
           data.getString("json")
         );
         geoJson.put(json);
-        break;
       }
       System.out.println(geoJson.toString());
+      resultSet.close();
+      stament.close();
+      connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();

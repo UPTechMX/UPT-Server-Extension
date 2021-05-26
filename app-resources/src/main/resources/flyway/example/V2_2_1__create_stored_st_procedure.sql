@@ -393,7 +393,7 @@ BEGIN
                                     mmu_public_layers.user_layer_id,
                                     max(mmu_public_layers.value) AS max,
                                     min(mmu_public_layers.value) AS min,
-                                    stddev_pop(mmu_public_layers.value) AS dev,z
+                                    stddev_pop(mmu_public_layers.value) AS dev,
                                     avg(mmu_public_layers.value) AS mean
                             FROM
                                     mmu_public_layers

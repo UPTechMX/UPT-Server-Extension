@@ -277,7 +277,7 @@ BEGIN
     ON mmu_index_adjusted USING btree
     (mmu_code);
 	--
-    DROP TABLE IF EXISTS mmu_index_results;
+    DROP TABLE IF EXISTS "mmu_index_results";
     create temp table mmu_index_results as
     SELECT
             mmu_code,

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.suitability_public_index_values(
+CREATE OR REPLACE FUNCTION public.suitability_index_values(
 	layers_list integer[],
         public_layers_list integer[],
 	filters_list integer[],
@@ -81,9 +81,9 @@ BEGIN
     SELECT
         st_astext (geometry) INTO study_area_wkt
     FROM
-        public_layer_data
+        user_layer_data
     WHERE
-        public_layer_id = study_area;
+        user_layer_id = study_area;
     
     -- Normal code
     insert into mmu_layers(user_layer_id, mmu_code, value, geometry)
@@ -417,7 +417,7 @@ BEGIN
     CREATE INDEX vals_settings_public_layer_id_idx
     ON vals_public_settings USING btree
     (user_layer_id);
-
+    
     DROP TABLE IF EXISTS unique_public_mmu;
     create temp table unique_public_mmu as
     select distinct mmu_code,geometry from mmu_public_layers;

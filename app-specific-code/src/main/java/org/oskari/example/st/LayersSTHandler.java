@@ -1965,7 +1965,6 @@ public class LayersSTHandler extends RestActionHandler {
       }
       data.close();
       statement.close();
-      connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();
@@ -2091,7 +2090,6 @@ public class LayersSTHandler extends RestActionHandler {
       }
       data.close();
       statement.close();
-      connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();

@@ -1983,8 +1983,8 @@ public class LayersSTHandler extends RestActionHandler {
         geoJson.put(json);
       }
       System.out.println(geoJson.toString());
-      resultSet.close();
-      stament.close();
+      data.close();
+      statement.close();
       connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {

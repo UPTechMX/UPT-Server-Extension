@@ -11,6 +11,7 @@ import fi.nls.oskari.control.ActionParamsException;
 import fi.nls.oskari.control.RestActionHandler;
 import fi.nls.oskari.control.feature.GetWFSFeaturesHandler;
 import fi.nls.oskari.control.layer.GetWFSDescribeFeatureHandler;
+import fi.nls.oskari.db.DatasourceHelper;
 import fi.nls.oskari.domain.User;
 import fi.nls.oskari.domain.map.OskariLayer;
 import fi.nls.oskari.log.LogFactory;
@@ -633,11 +634,10 @@ public class LayersSTHandler extends RestActionHandler {
         errorMsg = "list_st_norm_method";
         ArrayList<SettingsMethod> setting = new ArrayList<>();
         try (
-          Connection connection = DriverManager.getConnection(
-            stURL,
-            stUser,
-            stPassword
-          );
+          Connection connection = DatasourceHelper
+            .getInstance()
+            .getDataSource()
+            .getConnection();
           PreparedStatement statement = connection.prepareStatement(
             "SELECT method, value, label\n" +
             "	FROM public.st_normalization_method_options\n" +
@@ -716,11 +716,10 @@ public class LayersSTHandler extends RestActionHandler {
         errorMsg = "list_st_norm_method";
         ArrayList<SettingsType> setting = new ArrayList<>();
         try (
-          Connection connection = DriverManager.getConnection(
-            stURL,
-            stUser,
-            stPassword
-          );
+          Connection connection = DatasourceHelper
+            .getInstance()
+            .getDataSource()
+            .getConnection();
           PreparedStatement statement = connection.prepareStatement(
             "SELECT type, value, label\n" +
             "	FROM public.st_normalization_type_options\n" +
@@ -781,11 +780,10 @@ public class LayersSTHandler extends RestActionHandler {
         errorMsg = "list_st_norm_method";
         ArrayList<SettingsType> setting = new ArrayList<>();
         try (
-          Connection connection = DriverManager.getConnection(
-            stURL,
-            stUser,
-            stPassword
-          );
+          Connection connection = DatasourceHelper
+            .getInstance()
+            .getDataSource()
+            .getConnection();
           PreparedStatement statement = connection.prepareStatement(
             "SELECT join_option as type, value, label\n" +
             "	FROM public.st_join_options\n" +
@@ -918,8 +916,9 @@ public class LayersSTHandler extends RestActionHandler {
       PostStatus status = null;
       if ("index_values".equals(params.getRequiredParam("action"))) {
         indexSuitability(params);
-      }
-      if ("public_index_values".equals(params.getRequiredParam("action"))) {
+      } else if (
+        "public_index_values".equals(params.getRequiredParam("action"))
+      ) {
         publicIndexSuitability(params);
       } else if ("copy_data".equals(params.getRequiredParam("action"))) {
         if (
@@ -1066,11 +1065,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getLayers";
     ArrayList<Directories> children = new ArrayList<Directories>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "with user_layers as(\n" +
         "    select user_layer.id,\n" +
@@ -1121,11 +1119,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getPublicLayers";
     ArrayList<Directories> children = new ArrayList<Directories>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "with public_layers as(\n" +
         "   SELECT distinct oskari_maplayer.id, name as layer_name FROM oskari_maplayer\n" +
@@ -1171,11 +1168,10 @@ public class LayersSTHandler extends RestActionHandler {
   private PostStatus saveSettings() throws Exception {
     PostStatus status = new PostStatus();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "INSERT INTO public.st_settings(normalization_method, range_min, range_max, smaller_better, weight)	VALUES (?, ?, ?, ?, ?);",
         Statement.RETURN_GENERATED_KEYS
@@ -1217,11 +1213,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTLayers";
     ArrayList<STLayers> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
@@ -1279,11 +1274,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTPublicLayers";
     ArrayList<STPublicLayers> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
@@ -1340,11 +1334,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTLayers";
     ArrayList<STLayers> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
@@ -1402,11 +1395,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTPublicLayers";
     ArrayList<STPublicLayers> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
@@ -1460,11 +1452,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTSettings";
     ArrayList<STSettings> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "SELECT \n" +
@@ -1536,11 +1527,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTSettings";
     ArrayList<STPublicSettings> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "SELECT \n" +
@@ -1609,11 +1599,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getSTLayers";
     ArrayList<STLayers> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       PreparedStatement statement = connection.prepareStatement(
         "select st_filters.id as id, st_filter_label as label\n" +
@@ -1657,11 +1646,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getLayers";
     ArrayList<String> layers = new ArrayList<String>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       Statement statement = connection.createStatement();
       //            statement.setInt(0, Integer.parseInt(id));
@@ -1713,11 +1701,10 @@ public class LayersSTHandler extends RestActionHandler {
     ArrayList<String> layers = new ArrayList<String>();
     STFieldsList columns = new STFieldsList();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       Statement statement = connection.createStatement();
 
@@ -1789,11 +1776,10 @@ public class LayersSTHandler extends RestActionHandler {
     throws Exception {
     PostStatus status = new PostStatus();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "INSERT INTO public.st_layers(user_layer_id, layer_field, st_layer_label)VALUES ( ?, ?, ?);"
       );
@@ -1831,11 +1817,10 @@ public class LayersSTHandler extends RestActionHandler {
     PostStatus status = new PostStatus();
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "INSERT INTO public.st_filters( user_layer_id, st_filter_label)VALUES ( ?, ?);"
       );
@@ -1872,11 +1857,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getStudyAreas";
     ArrayList<StudyAreaUP> layers = new ArrayList<StudyAreaUP>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       Statement statement = connection.createStatement();
       ResultSet data = statement.executeQuery(
@@ -1916,11 +1900,10 @@ public class LayersSTHandler extends RestActionHandler {
     throws ActionParamsException {
     String errorMsg = "getStudyAreas";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "select * from public.suitability_index_values(?,?,?,?,?,?,?,?,?)"
         //PreparedStatement statement = connection.prepareStatement(query
@@ -1972,16 +1955,17 @@ public class LayersSTHandler extends RestActionHandler {
           Obj.writeValueAsString(new PostStatus("OK", statement.toString()))
         )
       );
-      //ResultSet data = statement.executeQuery();
       ResultSet data = statement.executeQuery();
       JSONArray geoJson = new JSONArray();
-      while (data.next()) {
+      if (data.next()) {
         final JSONObject json = JSONHelper.createJSONObject(
           data.getString("json")
         );
         geoJson.put(json);
-        break;
       }
+      data.close();
+      statement.close();
+      connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();
@@ -2040,11 +2024,10 @@ public class LayersSTHandler extends RestActionHandler {
     throws ActionParamsException {
     String errorMsg = "getStudyAreas";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
       PreparedStatement statement = connection.prepareStatement(
         "select * from public.suitability_public_index_values(?,?,?,?,?,?,?,?,?)"
         //PreparedStatement statement = connection.prepareStatement(query
@@ -2106,6 +2089,9 @@ public class LayersSTHandler extends RestActionHandler {
         geoJson.put(json);
         break;
       }
+      data.close();
+      statement.close();
+      connection.close();
       ResponseHelper.writeResponse(params, geoJson);
     } catch (SQLException e) {
       errorMsg = errorMsg + e.toString();
@@ -2201,11 +2187,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      )
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       Statement statement = connection.createStatement();
       query =
@@ -2315,11 +2300,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      )
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       Statement statement = connection.createStatement();
       query =
@@ -2388,11 +2372,10 @@ public class LayersSTHandler extends RestActionHandler {
     String errorMsg = "getUPLayers";
     ArrayList<Directories> children = new ArrayList<Directories>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       ResponseEntity<List<String>> returns = null;
       RestTemplate restTemplate = new RestTemplate();
@@ -2463,11 +2446,10 @@ public class LayersSTHandler extends RestActionHandler {
     UPFieldsList columns_labeled = new UPFieldsList();
     columns_labeled.upFields = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
+      Connection connection = DatasourceHelper
+        .getInstance()
+        .getDataSource()
+        .getConnection();
     ) {
       ResponseEntity<ArrayList<String>> returns = null;
       RestTemplate restTemplate = new RestTemplate();

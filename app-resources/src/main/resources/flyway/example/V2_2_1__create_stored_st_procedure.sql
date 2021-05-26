@@ -77,25 +77,6 @@ BEGIN
     ON mmu_public_layers USING btree
     (mmu_code ASC NULLS LAST);
 
-    /* DROP TABLE IF EXISTS public_filters;
-    CREATE TEMPORARY TABLE public_filters (
-        "geometry" geometry
-    );
-    CREATE INDEX public_filters_geometry_idx
-    ON filters USING gist
-    (geometry);
-
-    DROP TABLE IF EXISTS public_study_filtered;
-    CREATE TEMPORARY TABLE public_study_filtered (
-        "geometry" geometry,
-        study_area geometry
-    );
-    CREATE INDEX public_study_filtered_geometry_idx
-    ON study_filtered USING gist
-    (geometry);
-    CREATE INDEX public_study_filtered_study_area_idx
-    ON study_filtered USING gist
-    (study_area); */
     -- Load study area
     SELECT
         st_astext (geometry) INTO study_area_wkt
@@ -229,6 +210,7 @@ BEGIN
     ON vals_settings USING btree
     (user_layer_id);
 
+    DROP TABLE IF EXISTS unique_mmu;
     create temp table unique_mmu as
     select distinct mmu_code,geometry from mmu_layers;
 
@@ -243,7 +225,7 @@ BEGIN
     from study_filtered,(select st_boundary(geometry) as geometry from study_filtered) c1
     where st_intersects(c1.geometry,unique_mmu.geometry);
     
-
+    DROP TABLE IF EXISTS total;
     create temp table total as
     SELECT
             sum(vals_settings.weight) AS weight,
@@ -253,6 +235,7 @@ BEGIN
     WHERE
             st_layers_id = ANY (layers_list);
 	-- evaluate index values for all mmu
+    DROP TABLE IF EXISTS mmu_index_adjusted;
     create temp table mmu_index_adjusted AS (
             SELECT
                     mmu_settings.user_layer_id,
@@ -294,7 +277,8 @@ BEGIN
     ON mmu_index_adjusted USING btree
     (mmu_code);
 	--
-    create temp table mmu_index_resutls as
+    DROP TABLE IF EXISTS mmu_index_resutls;
+    create temp table mmu_index_results as
     SELECT
             mmu_code,
             round(CAST(sum(value) / total.num_layers AS numeric), 0) AS value
@@ -336,6 +320,7 @@ BEGIN
     ON mmu_index_resutls USING btree
     (value);
 	--
+    DROP TABLE IF EXISTS test_geoms;
     create temp table test_geoms AS (
             SELECT
                     replace(st_geometrytype (geometry), 'ST_', '') AS point_type,
@@ -366,57 +351,6 @@ BEGIN
     where 
             st_public_layers.id =any(public_layers_list)
             and st_intersects(st_geomfromtext(study_area_wkt), public_layer_data.geometry);
-
-   --RAISE NOTICE '%', tmp_pub_mmu_array;   -- get feedback
-    
-    /*FOR public_filter_pol IN (
-        SELECT
-            geometry
-        FROM
-            public_layer_data
-            INNER JOIN st_public_filters ON public_layer_data.public_layer_id = st_public_filters.public_layer_id
-        WHERE
-            st_public_filters.id = ANY (public_filters_list)
-        UNION SELECT
-            geometry
-        FROM
-            user_layer_data
-            INNER JOIN st_filters ON user_layer_data.user_layer_id = st_filters.user_layer_id
-        WHERE
-            st_filters.id = ANY (filters_list))    
-    LOOP
-        IF public_first_time THEN
-            public_intersected = public_filter_pol;
-			public_first_time=false;
-        ELSE
-            IF (operation = 2) THEN
-                public_intersected = ST_CollectionExtract(st_intersection (public_intersected, public_filter_pol), 3 );
-            ELSIF (operation = 3) then
-                public_intersected = ST_CollectionExtract(st_difference (public_intersected, public_filter_pol), 3 );
-            ELSE
-                public_intersected = ST_CollectionExtract(st_union (public_intersected, public_filter_pol), 3 );
-            END IF;
-        END IF;
-    END LOOP;
-    
-    IF ARRAY_LENGTH(public_filters_list, 1) IS NULL THEN
-        INSERT INTO public_filters ("geometry")
-        SELECT
-            st_geomfromtext (study_area_wkt);
-        INSERT INTO public_study_filtered ("geometry", study_area)
-        SELECT st_geomfromtext (study_area_wkt),st_geomfromtext (study_area_wkt);
-    ELSE
-        INSERT INTO public_filters ("geometry")
-        SELECT
-            public_intersected;
-        INSERT INTO public_study_filtered ("geometry", study_area)
-        SELECT
-            st_intersection (st_geomfromtext (study_area_wkt),public_intersected) AS geometry,
-            st_geomfromtext (study_area_wkt)
-        FROM
-            public_filters;
-    END IF;*/
-
 
     DROP TABLE IF EXISTS vals_public_settings;
     create temp table vals_public_settings as
@@ -459,7 +393,7 @@ BEGIN
                                     mmu_public_layers.user_layer_id,
                                     max(mmu_public_layers.value) AS max,
                                     min(mmu_public_layers.value) AS min,
-                                    stddev_pop(mmu_public_layers.value) AS dev,
+                                    stddev_pop(mmu_public_layers.value) AS dev,z
                                     avg(mmu_public_layers.value) AS mean
                             FROM
                                     mmu_public_layers
@@ -498,7 +432,7 @@ BEGIN
     from study_filtered,(select st_boundary(geometry) as geometry from study_filtered) c1
     where st_intersects(c1.geometry,unique_public_mmu.geometry);
     
-
+    DROP TABLE IF EXISTS public_total;
     create temp table public_total as
     SELECT
             sum(vals_public_settings.weight) AS weight,
@@ -508,6 +442,7 @@ BEGIN
     WHERE
             st_layers_id = ANY (public_layers_list);
 	-- evaluate index values for all mmu
+    DROP TABLE IF EXISTS public_mmu_index_adjusted;
     create temp table public_mmu_index_adjusted AS (
             SELECT
                     mmu_public_settings.user_layer_id,
@@ -549,7 +484,8 @@ BEGIN
     ON public_mmu_index_adjusted USING btree
     (mmu_code);
 	--
-    create temp table public_mmu_index_resutls as
+    DROP TABLE IF EXISTS public_mmu_index_results
+    create temp table public_mmu_index_results as
     SELECT
             mmu_code,
             round(CAST(sum(value) / public_total.num_layers AS numeric), 0) AS value
@@ -591,6 +527,7 @@ BEGIN
     ON public_mmu_index_resutls USING btree
     (value);
 	--
+    DROP TABLE IF EXISTS test_public_geoms;
     create temp table test_public_geoms AS (
             SELECT
                     replace(st_geometrytype (geometry), 'ST_', '') AS point_type,

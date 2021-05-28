@@ -62,7 +62,7 @@ public class STPublicFiltersHandlerPubLyr extends RestActionHandler {
       );
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
-        "	select geometry FROM public_layer_data where public_layer_id = ?\n" +
+        "	select geometry from public_layer_data where public_layer_id=?\n" +
         "), user_layers as(\n" +
         "	select distinct st_public_filters.id,st_public_filters.public_layer_id,st_filter_label,st_filter_label as label\n" +
         "	from st_public_filters\n" +

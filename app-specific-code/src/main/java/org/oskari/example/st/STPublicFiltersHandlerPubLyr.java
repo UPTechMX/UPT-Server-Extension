@@ -69,7 +69,7 @@ public class STPublicFiltersHandlerPubLyr extends RestActionHandler {
         "		inner join public_layer_data on public_layer_data.public_layer_id = st_public_filters.public_layer_id\n" +
         "		, study_area\n" +
         "		where st_intersects(study_area.geometry,public_layer_data.geometry)\n" +
-        "		--and user_layer_data.user_layer_id=?\n" +
+        "		--and public_layer_data.public_layer_id=?\n" +
         "), public_layers as(\n" +
         "	select distinct st_public_filters.id,st_public_filters.public_layer_id,st_filter_label,st_filter_label as label\n" +
         "	from st_public_filters\n" +

@@ -64,7 +64,7 @@ public class STPublicLayersHandler extends RestActionHandler {
       );
       PreparedStatement statement = connection.prepareStatement(
         "with study_area as(\n" +
-        "    select geometry FROM public_layer_id where public_layer_id = ?\n" +
+        "    select geometry FROM public_layer_data where public_layer_id = ?\n" +
         "), user_layers as(\n" +
         "    select distinct st_layers.id as id, st_layers.st_layer_label, st_layer_label as label ,st_layers.user_layer_id,layer_field,layer_mmu_code,is_public\n" +
         "    from st_layers\n" +

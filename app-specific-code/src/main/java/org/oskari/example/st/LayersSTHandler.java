@@ -1098,7 +1098,7 @@ public class LayersSTHandler extends RestActionHandler {
               +
               "    , study_area\n" +
               "    where\n" +
-              "    st_intersects(ST_Transform(ST_SetSRID(study_area.geometry,3857),4326),public_layer_data.geometry)\n"
+              "    st_intersects(st_geomfromtext(user_layer.wkt,4326),public_layer_data.geometry)\n"
               +
               ")\n" +
               "select st_public_layers.id, st_public_layers.st_layer_label as label from st_public_layers\n"

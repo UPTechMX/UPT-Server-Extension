@@ -620,10 +620,6 @@
                             border: 1px solid #196480 !important;
                             background-color: #196480 !important;
                         }
-
-                        .download-basket-tile {
-                            display: none !important;
-                        }
                     }
                 </style>
                 <!-- ############# /css ################# -->

@@ -614,6 +614,9 @@
                             border: 1px solid #47A599 !important;
                             background-color: #47A599 !important;
                         }
+                        #logobar, #language-selector-root {
+                            display: none !important;
+                        }
                     }
                 </style>
                 <!-- ############# /css ################# -->

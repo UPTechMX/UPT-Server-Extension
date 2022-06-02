@@ -1101,11 +1101,10 @@ public class LayersSTHandler extends RestActionHandler {
               "    st_intersects(study_area.geometry,public_layer_data.geometry)\n"
               +
               ")\n" +
-              "select st_public_layers.id, st_public_layers.st_layer_label as label from st_public_layers\n"
+              "select id, st_layer_label as label from public_layers\n"
       // "where st_public_layers.public_layer_id in(public_layers.id)\n"
       );
-      statement.setInt(1, Integer.parseInt(stProjection));
-      statement.setLong(2, study_area);
+      statement.setLong(1, study_area);
 
       ResultSet data = statement.executeQuery();
 

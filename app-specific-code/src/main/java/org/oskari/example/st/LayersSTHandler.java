@@ -1088,7 +1088,7 @@ public class LayersSTHandler extends RestActionHandler {
             .getConnection();) {
       PreparedStatement statement = connection.prepareStatement(
           "with study_area as(\n" +
-              "	select st_transform(st_setsrid(geometry,?),4326) as geometry from user_layer_data where user_layer_id=?\n"
+              "	select geometry from public_layer_data where public_layer_id=?\n"
               +
               "), public_layers as(\n" +
               "    select distinct st_public_layers.id as id, st_public_layers.st_layer_label, st_layer_label as label ,st_public_layers.public_layer_id,layer_field,layer_mmu_code, ST_AsText(study_area.geometry) as geometry\n"
@@ -1098,15 +1098,13 @@ public class LayersSTHandler extends RestActionHandler {
               +
               "    , study_area\n" +
               "    where\n" +
-              "    st_intersects(st_geomfromtext(user_layer.wkt,4326),public_layer_data.geometry)\n"
+              "    st_intersects(study_area.geometry,public_layer_data.geometry)\n"
               +
               ")\n" +
-              "select st_public_layers.id, st_public_layers.st_layer_label as label from st_public_layers\n"
+              "select id, st_layer_label as label from public_layers\n"
       // "where st_public_layers.public_layer_id in(public_layers.id)\n"
       );
-      statement.setInt(1, Integer.parseInt(stProjection));
-      statement.setLong(2, study_area);
-
+      statement.setLong(1, study_area);
       ResultSet data = statement.executeQuery();
 
       while (data.next()) {

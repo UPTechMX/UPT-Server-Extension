@@ -63,7 +63,7 @@ public class STPublicLayersHandler extends RestActionHandler {
             stPassword);
         PreparedStatement statement = connection.prepareStatement(
             "with study_area as(\n" +
-                "    select st_transform(st_setsrid(geometry,3857),4326) FROM public_layer_data where public_layer_id = ?\n"
+                "    select st_transform(st_setsrid(geometry,3857),4326) as geometry FROM public_layer_data where public_layer_id = ?\n"
                 +
                 "), user_layers as(\n" +
                 "    select distinct st_layers.id as id, st_layers.st_layer_label, st_layer_label as label ,st_layers.user_layer_id,layer_field,layer_mmu_code,is_public\n"

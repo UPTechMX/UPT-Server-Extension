@@ -2,5 +2,5 @@
 # in order to detect all of the places that the @OskariActionRoute annotation
 # is used.
 
-org.oskari.annotation.OskariViewModifierAnnotationProcessor
-org.oskari.annotation.OskariActionRouteAnnotationProcessor
+fi.nls.oskari.annotation.OskariViewModifierAnnotationProcessor
+fi.nls.oskari.annotation.OskariActionRouteAnnotationProcessor

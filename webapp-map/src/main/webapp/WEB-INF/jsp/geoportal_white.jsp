@@ -635,7 +635,7 @@
                                             <spring:message code="logout" text="Logout" />
                                         </a>
                                     </form>
-                                    <%-- oskari-profile-link id is used by the personaldata bundle - do not modify --%>
+                                    <%-- oskari-profile-link id is used by the mydata bundle - do not modify --%>
                                         <a href="${pageContext.request.contextPath}${_registration_uri}" style="color: #000000;" id="oskari-profile-link">
                                             <spring:message code="account" text="Account" />
                                         </a>

@@ -53,38 +53,39 @@ public class STOskariLayers extends RestActionHandler {
 
         stwsHost = PropertyUtil.get("stws.db.host");
         stwsPort = PropertyUtil.get("stws.db.port");
-        stProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+        stProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
         user_id = params.getUser().getId();
         user_uuid = params.getUser().getUuid();
     }
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         ArrayList<Directories> directories = new ArrayList<Directories>();
         Data tree = new Data();
         String errorMsg = "Oskari Layers get ";
         Long studyArea = params.getRequiredParamLong("studyArea");
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            //Get directories
+            // Get directories
             Directories dir = new Directories();
             dir.setData("my_data");
             dir.setLabel("My Data");
             dir.setIcon(null);
             directories.add(dir);
 
-            //Get layers
+            // Get layers
             ArrayList<Directories> layers = getLayers(studyArea);
             dir.setChildren(layers);
 
             JSONArray out = new JSONArray();
             for (Directories index : directories) {
-                //Convert to Json Object
+                // Convert to Json Object
                 ObjectMapper Obj = new ObjectMapper();
                 final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                 out.put(json);
@@ -109,25 +110,25 @@ public class STOskariLayers extends RestActionHandler {
                         stUser,
                         stPassword);
                 PreparedStatement statement = connection.prepareStatement("with study_area as(\n" +
-                    "	select geometry from user_layer_data where user_layer_id=?\n" +
-                    "), user_layers as(\n" +
-                    "    select user_layer.id,\n" +
-                    "    layer_name ,\n" +
-                    "    case when is_public is null then 0 else is_public end as is_public\n" +
-                    "    from user_layer\n" +
-                    "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
-                    "    where user_layer.uuid=? or upt_user_layer_scope.is_public=1\n" +
-                    "), public_layers as(\n" +
-                    "   select name as id, layer_name, capabilities::json->>'geom' as wkt from oskari_maplayer" +
-                    ")\n" +
-                    "select id,layer_name\n" +
-                    "from user_layers\n" +
-                    ",study_area\n" +
-                    ",public_layers\n" +
-                    "where st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
-                    "st_transform(st_setsrid(study_area.geometry,?),4326)) \n" +
-                    "or st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
-                    "st_transform(st_setsrid(study_area.geometry,?),4326)) \n");) {
+                        "	select geometry from user_layer_data where user_layer_id=?\n" +
+                        "), user_layers as(\n" +
+                        "    select user_layer.id,\n" +
+                        "    layer_name ,\n" +
+                        "    case when is_public is null then 0 else is_public end as is_public\n" +
+                        "    from user_layer\n" +
+                        "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
+                        "    where user_layer.uuid=? or upt_user_layer_scope.is_public=1\n" +
+                        "), public_layers as(\n" +
+                        "   select name as id, layer_name, capabilities::json->>'geom' as wkt from oskari_maplayer" +
+                        ")\n" +
+                        "select id,layer_name\n" +
+                        "from user_layers\n" +
+                        ",study_area\n" +
+                        ",public_layers\n" +
+                        "where st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
+                        "st_transform(st_setsrid(study_area.geometry,?),4326)) \n" +
+                        "or st_intersects(st_geomfromtext(user_layers.wkt,4326),\n" +
+                        "st_transform(st_setsrid(study_area.geometry,?),4326)) \n");) {
             statement.setLong(1, studyArea);
             statement.setString(2, user_uuid);
             statement.setInt(3, Integer.parseInt(stProjection));
@@ -153,10 +154,19 @@ public class STOskariLayers extends RestActionHandler {
         }
         return children;
     }
+
     @Override
-    public void handlePost(ActionParameters params) throws ActionException {params.requireLoggedInUser();}
+    public void handlePost(ActionParameters params) throws ActionException {
+        params.requireLoggedInUser();
+    }
+
     @Override
-    public void handleDelete(ActionParameters params) throws ActionException {params.requireLoggedInUser();}
+    public void handleDelete(ActionParameters params) throws ActionException {
+        params.requireLoggedInUser();
+    }
+
     @Override
-    public void handlePut(ActionParameters params) throws ActionException {params.requireLoggedInUser();}
+    public void handlePut(ActionParameters params) throws ActionException {
+        params.requireLoggedInUser();
+    }
 }

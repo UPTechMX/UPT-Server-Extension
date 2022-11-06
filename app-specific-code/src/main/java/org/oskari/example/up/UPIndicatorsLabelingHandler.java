@@ -33,7 +33,7 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
     private static String upUser;
     private static String upPassword;
     private static final Logger log = LogFactory.getLogger(UPIndicatorsLabelingHandler.class);
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
 
@@ -45,14 +45,14 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
         upURL = PropertyUtil.get("up.db.URL");
         upUser = PropertyUtil.get("up.db.user");
         upPassword = PropertyUtil.get("up.db.password");
-        
+
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         JSONArray indicators = new JSONArray();
         ObjectMapper Obj = new ObjectMapper();
         try (
@@ -61,15 +61,14 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT id, language, label, units, up_indicators_id\n"
-                    + "	FROM public.up_indicators_translation;"
-            );
+                            + "	FROM public.up_indicators_translation;");
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UPIndicatorsLabeling data = new UPIndicatorsLabeling();
@@ -86,32 +85,33 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
     }
 
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
-        
+
         try (
                 Connection connection = DriverManager.getConnection(
                         upURL,
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO public.up_indicators_translation(\n"
-                    + "	language, label, units, up_indicators_id)\n"
-                    + "	VALUES (?, ?, ?, ?) on conflict(up_indicators_id,language) do nothing ;"
-            );
+                            + "	language, label, units, up_indicators_id)\n"
+                            + "	VALUES (?, ?, ?, ?) on conflict(up_indicators_id,language) do nothing ;");
             statement.setString(1, params.getRequiredParam("language"));
             statement.setString(2, params.getRequiredParam("label"));
             statement.setString(3, params.getRequiredParam("units"));
@@ -122,9 +122,11 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
     }
@@ -137,16 +139,15 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
 
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE public.up_indicators_translation\n"
-                    + "	SET language=?, label=?, units=?\n"
-                    + "	WHERE id=?;"
-            );
+                            + "	SET language=?, label=?, units=?\n"
+                            + "	WHERE id=?;");
             statement.setString(1, params.getRequiredParam("language"));
             statement.setString(2, params.getRequiredParam("label"));
             statement.setString(3, params.getRequiredParam("units"));
@@ -157,31 +158,32 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
     }
 
     @Override
     public void handleDelete(ActionParameters params) throws ActionException {
-        
+
         try (
                 Connection connection = DriverManager.getConnection(
                         upURL,
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "DELETE FROM public.up_indicators_translation\n"
-                    + "	WHERE id=?;"
-            );
+                            + "	WHERE id=?;");
             statement.setInt(1, Integer.parseInt(params.getRequiredParam("id")));
             statement.execute();
         } catch (Exception e) {
@@ -189,9 +191,11 @@ public class UPIndicatorsLabelingHandler extends RestActionHandler {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(UPIndicatorsLabelingHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
     }

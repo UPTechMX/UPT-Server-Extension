@@ -37,7 +37,7 @@ public class DeleteDataHandler extends RestActionHandler {
     private static String upwsHost;
     private static String upwsPort;
     private static String upProjection;
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
 
@@ -54,8 +54,9 @@ public class DeleteDataHandler extends RestActionHandler {
 
         upwsHost = PropertyUtil.get("upws.db.host");
         upwsPort = PropertyUtil.get("upws.db.port");
-        upProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
-        
+        upProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
@@ -70,8 +71,8 @@ public class DeleteDataHandler extends RestActionHandler {
         params.requireLoggedInUser();
         String errorMsg = "Layers UP get ";
         try {
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
 
@@ -81,8 +82,7 @@ public class DeleteDataHandler extends RestActionHandler {
                 switch (params.getRequiredParam("layerUPName")) {
                     case "mmu":
                         this.deleteMmu(
-                                params.getRequiredParam("scenarioId")
-                        );
+                                params.getRequiredParam("scenarioId"));
                         break;
                     case "transit":
                         this.deleteTransit(
@@ -131,14 +131,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteAmenities(String scenarioId) throws Exception{
+    private void deleteAmenities(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/amenities/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -152,14 +152,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteMmu(String scenarioId) throws Exception{
+    private void deleteMmu(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/mmu/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -173,14 +173,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteTransit(String scenarioId) throws Exception{
+    private void deleteTransit(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/transit/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -194,14 +194,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteRoads(String scenarioId) throws Exception{
+    private void deleteRoads(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/roads/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -215,14 +215,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteJobs(String scenarioId) throws Exception{
+    private void deleteJobs(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/jobs/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -236,14 +236,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteFootprint(String scenarioId) throws Exception{
+    private void deleteFootprint(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/footprint/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -257,14 +257,14 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteRisk(String scenarioId) throws Exception{
+    private void deleteRisk(String scenarioId) throws Exception {
         try {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/risk/{id}", params);
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -278,22 +278,22 @@ public class DeleteDataHandler extends RestActionHandler {
         }
     }
 
-    private void deleteAssumptions(String scenarioId) throws Exception{
+    private void deleteAssumptions(String scenarioId) throws Exception {
         try (Connection connection = DriverManager.getConnection(
                 upURL,
                 upUser,
-                upPassword)){
+                upPassword)) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("id", scenarioId);
 
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.delete("http://" + upwsHost + ":" + upwsPort + "/assumptions/{id}", params);
-            
+
             PreparedStatement statement = connection.prepareStatement("DELETE FROM public.up_assumptions\n" +
                     "	WHERE scenario=?;");
             statement.setInt(1, Integer.parseInt(scenarioId));
             statement.execute();
-            
+
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));

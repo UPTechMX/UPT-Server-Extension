@@ -50,7 +50,7 @@ public class StudyAreaHandler extends RestActionHandler {
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "getStudyAreas";
         ArrayList<StudyAreaUP> layers = new ArrayList<StudyAreaUP>();
         try (
@@ -59,21 +59,23 @@ public class StudyAreaHandler extends RestActionHandler {
                         upUser,
                         upPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "with user_layers as(\n" +
-                    "    select user_layer.id,\n" +
-                    "    layer_name \n" +
-                    "    from user_layer\n" +
-                    "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
-                    "    where (user_layer.uuid=? or upt_user_layer_scope.is_public=1) and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'\n" +
-                    ")\n" +
-                    "select id,layer_name from user_layers"
-                    //"select id,layer_name from user_layer where uuid=? and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'"
+                            "    select user_layer.id,\n" +
+                            "    layer_name \n" +
+                            "    from user_layer\n" +
+                            "    left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id\n" +
+                            "    where (user_layer.uuid=? or upt_user_layer_scope.is_public=1) and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'\n"
+                            +
+                            ")\n" +
+                            "select id,layer_name from user_layers"
+            // "select id,layer_name from user_layer where uuid=? and lower(layer_name) not
+            // like '%buffer%' and lower(layer_name) not like '%distance%'"
             );
             statement.setString(1, user_uuid);
             statement.execute();
@@ -87,7 +89,7 @@ public class StudyAreaHandler extends RestActionHandler {
 
             JSONArray out = new JSONArray();
             for (StudyAreaUP index : layers) {
-                //Convert to Json Object
+                // Convert to Json Object
                 ObjectMapper Obj = new ObjectMapper();
                 final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                 out.put(json);
@@ -96,7 +98,7 @@ public class StudyAreaHandler extends RestActionHandler {
         } catch (Exception e) {
             errorMsg = errorMsg + e.toString();
             log.error(e, errorMsg);
-        } 
+        }
     }
 
     @Override

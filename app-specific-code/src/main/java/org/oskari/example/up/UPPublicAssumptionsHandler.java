@@ -35,8 +35,7 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
   private static String upwsHost;
   private static String upwsPort;
   private static final Logger log = LogFactory.getLogger(
-    UPAssumptionsHandler.class
-  );
+      UPAssumptionsHandler.class);
 
   private JSONArray errors;
   private ObjectMapper Obj;
@@ -62,29 +61,25 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
     String errorMsg = "UPAssumptions get";
     Long user_id = params.getUser().getId();
     Integer scenario_id = Integer.parseInt(
-      params.getRequiredParam("scenario_id")
-    );
+        params.getRequiredParam("scenario_id"));
 
     ArrayList<UPAssumptions> modules = new ArrayList<>();
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
 
       PreparedStatement statement = connection.prepareStatement(
-        "select id,study_area,scenario,category,name,value,units,description,source \n" +
-        "from up_public_assumptions \n" +
-        "where scenario=?"
-      );
+          "select id,study_area,scenario,category,name,value,units,description,source \n" +
+              "from up_public_assumptions \n" +
+              "where scenario=?");
       statement.setInt(1, scenario_id);
       boolean status = statement.execute();
       if (status) {
@@ -111,7 +106,7 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
 
       JSONArray out = new JSONArray();
       for (UPAssumptions index : modules) {
-        //Convert to Json Object
+        // Convert to Json Object
 
         JSONObject json = null;
         try {
@@ -119,33 +114,27 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
           System.out.println(json.toString());
           out.put(json);
         } catch (JsonProcessingException ex) {
-          java
-            .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-            .log(Level.SEVERE, null, ex);
+          java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+              .log(Level.SEVERE, null, ex);
         }
       }
       ResponseHelper.writeResponse(params, out);
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       errorMsg = errorMsg + e.toString();
       log.error(e, errorMsg);
@@ -154,7 +143,7 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
 
   @Override
   public void handlePost(ActionParameters params) throws ActionException {
-    //Just UPTAdmin can use this method
+    // Just UPTAdmin can use this method
     String errorMsg = "UPAssumptions post";
     Long user_id = params.getUser().getId();
 
@@ -171,23 +160,20 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
     status.status = "Error";
     JSONObject json = null;
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
 
       PreparedStatement statement = connection.prepareStatement(
-        "insert into up_public_assumptions(study_area,scenario,category,name,value,units,description,source) \n" +
-        "values(?,?,?,?,?,?,?,?)\n"
-      );
+          "insert into up_public_assumptions(study_area,scenario,category,name,value,units,description,source) \n" +
+              "values(?,?,?,?,?,?,?,?)\n");
       statement.setLong(1, study_area);
       statement.setInt(2, scenario);
       statement.setString(3, category);
@@ -205,43 +191,36 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
 
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
 
   @Override
   public void handlePut(ActionParameters params) throws ActionException {
-    //Just UPTAdmin can use this method
+    // Just UPTAdmin can use this method
     String errorMsg = "UPAssumptions post";
     JSONObject json = null;
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
@@ -258,14 +237,13 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
       String source = params.getRequiredParam("source");
 
       PreparedStatement statement = connection.prepareStatement(
-        "update up_public_assumptions \n" +
-        "set (study_area, \n" +
-        "scenario,category, \n" +
-        "name,value,units, \n" +
-        "description,source)=\n" +
-        "(?, ?,?,?,?,?,?,?) \n" +
-        " where id=? \n"
-      );
+          "update up_public_assumptions \n" +
+              "set (study_area, \n" +
+              "scenario,category, \n" +
+              "name,value,units, \n" +
+              "description,source)=\n" +
+              "(?, ?,?,?,?,?,?,?) \n" +
+              " where id=? \n");
       statement.setLong(1, study_area);
       statement.setLong(2, scenario);
       statement.setString(3, category);
@@ -283,29 +261,24 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
       errorMsg = errorMsg + e.toString();
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          params,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            params,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException | JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
 
   protected void setCreateAssumptions(
-    Integer scenario_id,
-    ActionParameters params
-  )
-    throws Exception {
+      Integer scenario_id,
+      ActionParameters params)
+      throws Exception {
     try {
       Assumptions val = new Assumptions();
       val.scenario = Integer.parseInt(params.getRequiredParam("scenario"));
@@ -317,16 +290,13 @@ public class UPPublicAssumptionsHandler extends RestActionHandler {
       Map<String, String> param = new HashMap<String, String>();
       param.put("assumptions_id", params.getRequiredParam("id"));
       restTemplate.put(
-        "http://" + upwsHost + ":" + upwsPort + "/assumptions/",
-        val,
-        param
-      );
+          "http://" + upwsHost + ":" + upwsPort + "/assumptions/",
+          val,
+          param);
     } catch (Exception e) {
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
       throw new Exception();
     }
   }

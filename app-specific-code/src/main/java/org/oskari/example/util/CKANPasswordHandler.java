@@ -29,8 +29,7 @@ import org.apache.commons.codec.binary.Base64;
  */
 public class CKANPasswordHandler {
   private static final Logger LOG = LogFactory.getLogger(
-    CKANPasswordHandler.class
-  );
+      CKANPasswordHandler.class);
 
   public static final String PBKDF2_ALGORITHM = "PBKDF2WithHmacSHA512";
 
@@ -44,24 +43,26 @@ public class CKANPasswordHandler {
   public static final int PBKDF2_INDEX = 4;
 
   /**
-   * Returns a salted PBKDF2 hash of the password in the same format that CKAN uses.
+   * Returns a salted PBKDF2 hash of the password in the same format that CKAN
+   * uses.
    *
-   * @param   password    the password to hash
-   * @return              a salted PBKDF2 hash of the password
+   * @param password the password to hash
+   * @return a salted PBKDF2 hash of the password
    */
   public static String createHash(String password)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     return createHash(password.toCharArray());
   }
 
   /**
-   * Returns a salted PBKDF2 hash of the password in the same format that CKAN uses.
+   * Returns a salted PBKDF2 hash of the password in the same format that CKAN
+   * uses.
    *
-   * @param   password    the password to hash
-   * @return              a salted PBKDF2 hash of the password in CKAN format
+   * @param password the password to hash
+   * @return a salted PBKDF2 hash of the password in CKAN format
    */
   public static String createHash(char[] password)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     // Generate a random salt
     SecureRandom random = new SecureRandom();
     byte[] salt = new byte[SALT_BYTES];
@@ -70,37 +71,35 @@ public class CKANPasswordHandler {
     // Hash the password
     byte[] hash = pbkdf2(password, salt, PBKDF2_ITERATIONS, HASH_BYTES);
     // format iterations:salt:hash
-    return (
-      "$pbkdf2-sha512$" +
-      PBKDF2_ITERATIONS +
-      "$" +
-      toBase64(salt) +
-      "$" +
-      toBase64(hash)
-    );
+    return ("$pbkdf2-sha512$" +
+        PBKDF2_ITERATIONS +
+        "$" +
+        toBase64(salt) +
+        "$" +
+        toBase64(hash));
   }
 
   /**
    * Validates a password using a hash from CKAN.
    *
-   * @param   password    the password to check
-   * @param   CKANHash    the hash of the valid password from CKAN
-   * @return              true if the password is correct, false if not
+   * @param password the password to check
+   * @param CKANHash the hash of the valid password from CKAN
+   * @return true if the password is correct, false if not
    */
   public static boolean validatePassword(String password, String CKANHash)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     return validatePassword(password.toCharArray(), CKANHash);
   }
 
   /**
    * Validates a password using a hash from CKAN.
    *
-   * @param   password    the password to check
-   * @param   CKANHash    the hash of the valid password from CKAN
-   * @return              true if the password is correct, false if not
+   * @param password the password to check
+   * @param CKANHash the hash of the valid password from CKAN
+   * @return true if the password is correct, false if not
    */
   public static boolean validatePassword(char[] password, String CKANHash)
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     // Decode the hash into its parameters
     String[] params = CKANHash.split("\\$");
     int iterations = Integer.parseInt(params[ITERATION_INDEX]);
@@ -112,14 +111,13 @@ public class CKANPasswordHandler {
     byte[] testHash = pbkdf2(password, salt, iterations, hash.length);
 
     LOG.debug(
-      "RESULT: " +
-      "$pbkdf2-sha512$" +
-      PBKDF2_ITERATIONS +
-      "$" +
-      toBase64(salt) +
-      "$" +
-      toBase64(testHash)
-    );
+        "RESULT: " +
+            "$pbkdf2-sha512$" +
+            PBKDF2_ITERATIONS +
+            "$" +
+            toBase64(salt) +
+            "$" +
+            toBase64(testHash));
 
     // Compare the hashes in constant time. The password is correct if
     // both hashes match.
@@ -131,32 +129,32 @@ public class CKANPasswordHandler {
    * is used so that password hashes cannot be extracted from an on-line
    * system using a timing attack and then attacked off-line.
    *
-   * @param   a       the first byte array
-   * @param   b       the second byte array
-   * @return          true if both byte arrays are the same, false if not
+   * @param a the first byte array
+   * @param b the second byte array
+   * @return true if both byte arrays are the same, false if not
    */
   private static boolean slowEquals(byte[] a, byte[] b) {
     int diff = a.length ^ b.length;
-    for (int i = 0; i < a.length && i < b.length; i++) diff |= a[i] ^ b[i];
+    for (int i = 0; i < a.length && i < b.length; i++)
+      diff |= a[i] ^ b[i];
     return diff == 0;
   }
 
   /**
-   *  Computes the PBKDF2 hash of a password.
+   * Computes the PBKDF2 hash of a password.
    *
-   * @param   password    the password to hash.
-   * @param   salt        the salt
-   * @param   iterations  the iteration count (slowness factor)
-   * @param   bytes       the length of the hash to compute in bytes
-   * @return              the PBDKF2 hash of the password
+   * @param password   the password to hash.
+   * @param salt       the salt
+   * @param iterations the iteration count (slowness factor)
+   * @param bytes      the length of the hash to compute in bytes
+   * @return the PBDKF2 hash of the password
    */
   private static byte[] pbkdf2(
-    char[] password,
-    byte[] salt,
-    int iterations,
-    int bytes
-  )
-    throws NoSuchAlgorithmException, InvalidKeySpecException {
+      char[] password,
+      byte[] salt,
+      int iterations,
+      int bytes)
+      throws NoSuchAlgorithmException, InvalidKeySpecException {
     PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, bytes * 8);
     SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
     return skf.generateSecret(spec).getEncoded();
@@ -165,12 +163,13 @@ public class CKANPasswordHandler {
   /**
    * Converts a string of Base64 characters into a byte array.
    * Decodes from shortened base64 format which omits padding & whitespace.
-   * Uses custom ``./`` altchars, but supports decoding normal ``+/`` altchars as well.
+   * Uses custom ``./`` altchars, but supports decoding normal ``+/`` altchars as
+   * well.
    *
    * It is primarily used by Passlib's custom pbkdf2 hashes (used by CKAN).
    *
-   * @param   base64      the base64 string
-   * @return              the base64 shortened string with altchars decoded into a byte array
+   * @param base64 the base64 string
+   * @return the base64 shortened string with altchars decoded into a byte array
    */
   private static byte[] fromBase64(String base64) {
     byte[] decodedStringBytes = null;
@@ -185,13 +184,12 @@ public class CKANPasswordHandler {
    *
    * It is primarily used by Passlib's custom pbkdf2 hashes (used by CKAN).
    *
-   * @param   array       the byte array to convert
-   * @return              a shortened string with altchars encoding the byte array
+   * @param array the byte array to convert
+   * @return a shortened string with altchars encoding the byte array
    */
   private static String toBase64(byte[] array) {
     String encodedString = Base64.encodeBase64String(array);
-    encodedString =
-      encodedString.replace("=", "").replace("+", ".").replaceAll("\\s", "");
+    encodedString = encodedString.replace("=", "").replace("+", ".").replaceAll("\\s", "");
     return encodedString;
   }
 }

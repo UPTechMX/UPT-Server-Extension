@@ -24,6 +24,7 @@ public class ScenarioUP {
     public void setScenarioId(Integer scenario_id) {
         this.scenario_id = scenario_id;
     }
+
     public String getName() {
         return name;
     }
@@ -31,6 +32,7 @@ public class ScenarioUP {
     public void setName(String name) {
         this.name = name;
     }
+
     public String getDescription() {
         return description;
     }
@@ -38,6 +40,7 @@ public class ScenarioUP {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public Integer getOwneId() {
         return owner_id;
     }
@@ -45,6 +48,7 @@ public class ScenarioUP {
     public void setOwnerId(Integer owner_id) {
         this.owner_id = owner_id;
     }
+
     public Integer getIsBase() {
         return is_base;
     }
@@ -56,6 +60,7 @@ public class ScenarioUP {
     public void setStudyArea(Integer study_area) {
         this.study_area = study_area;
     }
+
     public Integer getStudyArea() {
         return study_area;
     }

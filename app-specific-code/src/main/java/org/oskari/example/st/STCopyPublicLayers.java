@@ -31,8 +31,7 @@ public class STCopyPublicLayers extends RestActionHandler {
   private static String stUser;
   private static String stPassword;
   private static final Logger log = LogFactory.getLogger(
-    STSettingsHandler.class
-  );
+      STSettingsHandler.class);
 
   private static String stwsHost;
   private static String stwsPort;
@@ -52,8 +51,7 @@ public class STCopyPublicLayers extends RestActionHandler {
 
     stwsHost = PropertyUtil.get("stws.db.host");
     stwsPort = PropertyUtil.get("stws.db.port");
-    stProjection =
-      PropertyUtil
+    stProjection = PropertyUtil
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
@@ -66,20 +64,15 @@ public class STCopyPublicLayers extends RestActionHandler {
     try {
       params.requireLoggedInUser();
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(
-            new PostStatus("OK", "This method have not been implemented")
-          )
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(
+                  new PostStatus("OK", "This method have not been implemented"))));
       ResponseHelper.writeResponse(
-        params,
-        new JSONObject().put("Errors", errors)
-      );
+          params,
+          new JSONObject().put("Errors", errors));
     } catch (JsonProcessingException | JSONException ex) {
-      java
-        .util.logging.Logger.getLogger(STCopyLayers.class.getName())
-        .log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(STCopyLayers.class.getName())
+          .log(Level.SEVERE, null, ex);
     }
   }
 
@@ -89,13 +82,11 @@ public class STCopyPublicLayers extends RestActionHandler {
     Long user_id = params.getUser().getId();
     try {
       params.requireLoggedInUser();
-      if (
-        params.getRequiredParam("layerSTName") != null &&
-        params.getRequiredParam("layerName") != null &&
-        params.getRequiredParam("tableST") != null &&
-        params.getRequiredParam("table") != null &&
-        params.getRequiredParam("studyAreaId") != null
-      ) {
+      if (params.getRequiredParam("layerSTName") != null &&
+          params.getRequiredParam("layerName") != null &&
+          params.getRequiredParam("tableST") != null &&
+          params.getRequiredParam("table") != null &&
+          params.getRequiredParam("studyAreaId") != null) {
         switch (params.getRequiredParam("layerSTName")) {
           case "mmu":
             this.setMmu(
@@ -104,8 +95,7 @@ public class STCopyPublicLayers extends RestActionHandler {
                 params.getRequest().getParameterValues("tableST"),
                 params.getRequest().getParameterValues("table"),
                 params.getRequiredParam("studyAreaId"),
-                user_id
-              );
+                user_id);
             break;
           case "amenities":
             this.setAmenities(
@@ -114,8 +104,7 @@ public class STCopyPublicLayers extends RestActionHandler {
                 params.getRequest().getParameterValues("tableST"),
                 params.getRequest().getParameterValues("table"),
                 params.getRequiredParam("studyAreaId"),
-                user_id
-              );
+                user_id);
             break;
         }
       }
@@ -123,24 +112,19 @@ public class STCopyPublicLayers extends RestActionHandler {
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          params,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            params,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(LayersSTHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(LayersSTHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(LayersSTHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(LayersSTHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
@@ -156,14 +140,13 @@ public class STCopyPublicLayers extends RestActionHandler {
   }
 
   private void setAmenities(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String studyArea,
-    Long user_id
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String studyArea,
+      Long user_id)
+      throws Exception {
     String tableUP[] = new String[tableup.length + 4];
     System.arraycopy(tableup, 0, tableUP, 0, tableup.length);
     tableUP[tableup.length] = "study_area";
@@ -176,13 +159,12 @@ public class STCopyPublicLayers extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            " st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            stProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += " st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              stProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "study_area":
           values += studyArea + " as " + tableUP[i];
@@ -197,11 +179,10 @@ public class STCopyPublicLayers extends RestActionHandler {
           values += "public_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -213,28 +194,22 @@ public class STCopyPublicLayers extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      )
-    ) {
+        Connection connection = DriverManager.getConnection(
+            stURL,
+            stUser,
+            stPassword)) {
       Statement statement = connection.createStatement();
-      query =
-        "select distinct " +
-        values +
-        " from oskari_maplayer\n" +
-        " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
-        " where oskari_maplayer.id=" +
-        layer;
+      query = "select distinct " +
+          values +
+          " from oskari_maplayer\n" +
+          " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+          " where oskari_maplayer.id=" +
+          layer;
 
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(
-            new PostStatus("OK", "Executing query: " + query)
-          )
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(
+                  new PostStatus("OK", "Executing query: " + query))));
 
       ResultSet data = statement.executeQuery(query);
       ArrayList<STAmenities> data_in = new ArrayList<>();
@@ -246,30 +221,26 @@ public class STCopyPublicLayers extends RestActionHandler {
           Field f = c.getDeclaredField(tableUP1);
           f.setAccessible(true);
           switch (tableUP1) {
-            case "study_area":
-              {
-                Long val = (Long) data.getLong(tableUP1);
-                f.set(o, val);
-                break;
-              }
-            case "layer_id":
-              {
-                Long val = (Long) data.getLong(tableUP1);
-                f.set(o, val);
-                break;
-              }
-            case "user_id":
-              {
-                Long val = (Long) data.getLong(tableUP1);
-                f.set(o, val);
-                break;
-              }
-            case "oskari_code":
-              {
-                Long val = (Long) data.getLong(tableUP1);
-                f.set(o, val);
-                break;
-              }
+            case "study_area": {
+              Long val = (Long) data.getLong(tableUP1);
+              f.set(o, val);
+              break;
+            }
+            case "layer_id": {
+              Long val = (Long) data.getLong(tableUP1);
+              f.set(o, val);
+              break;
+            }
+            case "user_id": {
+              Long val = (Long) data.getLong(tableUP1);
+              f.set(o, val);
+              break;
+            }
+            case "oskari_code": {
+              Long val = (Long) data.getLong(tableUP1);
+              f.set(o, val);
+              break;
+            }
             case "location":
               f.set(o, data.getString(tableUP1));
               break;
@@ -288,46 +259,37 @@ public class STCopyPublicLayers extends RestActionHandler {
 
       RestTemplate restTemplate = new RestTemplate();
       restTemplate.postForObject(
-        "http://" + stwsHost + ":" + stwsPort + "/amenities/",
-        final_data,
-        PostStatus.class
-      );
+          "http://" + stwsHost + ":" + stwsPort + "/amenities/",
+          final_data,
+          PostStatus.class);
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(new PostStatus("OK", "Amenities data copied"))
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(new PostStatus("OK", "Amenities data copied"))));
     } catch (Exception e) {
       log.error(e);
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Detail", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Detail", e.getMessage()))));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       throw new Exception();
     }
   }
 
   private void setMmu(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String studyArea,
-    Long user_id
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String studyArea,
+      Long user_id)
+      throws Exception {
     PostStatus postStatus = new PostStatus();
     String values = "";
     String tableUP[] = new String[tableup.length + 4];
@@ -340,13 +302,12 @@ public class STCopyPublicLayers extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            " st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            stProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += " st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              stProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "study_area":
           values += studyArea + " as " + tableUP[i];
@@ -361,11 +322,10 @@ public class STCopyPublicLayers extends RestActionHandler {
           values += " public_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -377,28 +337,22 @@ public class STCopyPublicLayers extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      )
-    ) {
+        Connection connection = DriverManager.getConnection(
+            stURL,
+            stUser,
+            stPassword)) {
       Statement statement = connection.createStatement();
-      query =
-        "select distinct " +
-        values +
-        " from oskari_maplayer\n" +
-        " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
-        " where oskari_maplayer.id=" +
-        layer;
+      query = "select distinct " +
+          values +
+          " from oskari_maplayer\n" +
+          " inner join public_layer_data on oskari_maplayer.id = public_layer_data.public_layer_id\n" +
+          " where oskari_maplayer.id=" +
+          layer;
 
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(
-            new PostStatus("OK", "Executing query: " + query)
-          )
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(
+                  new PostStatus("OK", "Executing query: " + query))));
 
       ResultSet data = statement.executeQuery(query);
 
@@ -424,43 +378,35 @@ public class STCopyPublicLayers extends RestActionHandler {
             f.set(o, val);
           } else if (tableUP[i].equals("location")) {
             f.set(o, data.getString(tableUP[i]));
-          } else if (tableUP[i].equals("mmu_id")) {}
+          } else if (tableUP[i].equals("mmu_id")) {
+          }
         }
         data_in.add((STMmu) o);
-        //return postStatus;
+        // return postStatus;
       }
       Tables<STMmu> final_data = new Tables<>(data_in);
 
       RestTemplate restTemplate = new RestTemplate();
-      postStatus =
-        restTemplate.postForObject(
+      postStatus = restTemplate.postForObject(
           "http://" + stwsHost + ":" + stwsPort + "/mmu/",
           final_data,
-          PostStatus.class
-        );
+          PostStatus.class);
 
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(new PostStatus("OK", "MMU data copied"))
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(new PostStatus("OK", "MMU data copied"))));
     } catch (Exception e) {
       log.error(e);
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Detail", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Detail", e.getMessage()))));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       throw new Exception();
     }

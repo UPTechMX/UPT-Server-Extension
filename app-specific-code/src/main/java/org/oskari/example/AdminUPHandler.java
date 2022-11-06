@@ -29,7 +29,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.ResponseEntity;
 
-
 @OskariActionRoute("AdminUPHandler")
 public class AdminUPHandler extends RestActionHandler {
     private static final Logger log = LogFactory.getLogger(AdminUPHandler.class);
@@ -42,90 +41,87 @@ public class AdminUPHandler extends RestActionHandler {
     private static final int MAX_RETRY_RANDOM_UUID = 100;
     private final DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory(MAX_SIZE_MEMORY, null);
     private final int userlayerMaxFileSize = PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
-    
-    private static  String upURL;
-    private static  String upUser;
-    private static  String upPassword;
 
-    private static  String upwsHost;
-    private static  String upwsPort;
+    private static String upURL;
+    private static String upUser;
+    private static String upPassword;
+
+    private static String upwsHost;
+    private static String upwsPort;
 
     public void preProcess(ActionParameters params) throws ActionException {
         // common method called for all request methods
         log.info(params.getUser(), "accessing route", getName());
         PropertyUtil.loadProperties("/oskari-ext.properties");
-        upURL=PropertyUtil.get("up.db.URL");
-        upUser=PropertyUtil.get("up.db.user");
-        upPassword=PropertyUtil.get("up.db.password");
+        upURL = PropertyUtil.get("up.db.URL");
+        upUser = PropertyUtil.get("up.db.user");
+        upPassword = PropertyUtil.get("up.db.password");
 
-        upwsHost=PropertyUtil.get("upws.db.host");
-        upwsPort=PropertyUtil.get("upws.db.port");
+        upwsHost = PropertyUtil.get("upws.db.host");
+        upwsPort = PropertyUtil.get("upws.db.port");
     }
+
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
     }
 
-    
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
-      
-        String errorMsg="Results UP post ";
+
+        String errorMsg = "Results UP post ";
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            //Upload file
-            HttpServletRequest request=params.getRequest();
+            // Upload file
+            HttpServletRequest request = params.getRequest();
             request.setCharacterEncoding("UTF-8");
-            
-            
+
             FileItem zipFile = null;
-            FileSystemResource indicator=null;
-            File file=null;
+            FileSystemResource indicator = null;
+            File file = null;
             if (ServletFileUpload.isMultipartContent(request)) {
 
                 ServletFileUpload upload = new ServletFileUpload(diskFileItemFactory);
                 upload.setSizeMax(userlayerMaxFileSize);
-                List<FileItem> fileItems=upload.parseRequest(request);
+                List<FileItem> fileItems = upload.parseRequest(request);
                 if (fileItems != null && fileItems.size() > 0) {
                     for (FileItem item : fileItems) {
                         if (!item.isFormField()) {
                             String fileName = new File(item.getName()).getName();
-                            String filePath = File.separator+"tmp" + File.separator + fileName;
-                                file = new File(filePath);
-                                item.write(file);
+                            String filePath = File.separator + "tmp" + File.separator + fileName;
+                            file = new File(filePath);
+                            item.write(file);
                         }
                     }
                 }
-                
-                
+
                 zipFile = fileItems.stream()
-                    .filter(f -> !f.isFormField())
-                    .findAny() // If there are more files we'll get the zip or fail miserably
-                    .orElseThrow(() -> new ActionParamsException("No file entries in FormData"));
-                
-                indicator= new FileSystemResource( fileItems.toString());
-                
+                        .filter(f -> !f.isFormField())
+                        .findAny() // If there are more files we'll get the zip or fail miserably
+                        .orElseThrow(() -> new ActionParamsException("No file entries in FormData"));
+
+                indicator = new FileSystemResource(fileItems.toString());
+
             }
-            //Send file
-            
+            // Send file
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            MultiValueMap<String, Object> body= new LinkedMultiValueMap<>();
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("file", indicator);
-            
-            HttpEntity<MultiValueMap<String, Object>> requestEntity= new HttpEntity<>(body, headers);
-            
-            String serverUrl = "http://"+upwsHost+":"+upwsPort+"/indicator/";
-            
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            String serverUrl = "http://" + upwsHost + ":" + upwsPort + "/indicator/";
+
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> response = restTemplate.postForEntity(serverUrl, requestEntity, String.class);
-            ResponseHelper.writeResponse(params,response);
-            
-            
+            ResponseHelper.writeResponse(params, response);
+
         } catch (Exception e) {
             errorMsg = errorMsg + e.getMessage();
             log.error(e, errorMsg);
@@ -144,12 +140,8 @@ public class AdminUPHandler extends RestActionHandler {
         params.requireLoggedInUser();
         throw new ActionDeniedException("Not deleting anything");
     }
-    
+
     private void getUserParams(User user, ActionParameters params) throws ActionParamsException {
     }
 
-
 }
-
-
-    

@@ -13,5 +13,5 @@ public class Assumptions {
     public String description;
     public String source;
     public Long owner_id;
-    
+
 }

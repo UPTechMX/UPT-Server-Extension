@@ -27,7 +27,6 @@ import fi.nls.oskari.util.JSONHelper;
 import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
 
-
 @OskariActionRoute("list_suitability_layers")
 
 public class STDistanceLayers extends RestActionHandler {
@@ -44,6 +43,7 @@ public class STDistanceLayers extends RestActionHandler {
     Map<Integer, STSettings> stLayers;
 
     private static final Logger log = LogFactory.getLogger(LayersSTHandler.class);
+
     @Override
     public void preProcess(ActionParameters params) throws ActionException {
         // common method called for all request methods
@@ -55,33 +55,34 @@ public class STDistanceLayers extends RestActionHandler {
 
         stwsHost = PropertyUtil.get("stws.db.host");
         stwsPort = PropertyUtil.get("stws.db.port");
-        stProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+        stProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
         user_id = params.getUser().getId();
     }
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         ArrayList<Directories> directories = new ArrayList<Directories>();
         Data tree = new Data();
         String errorMsg = "Oskari Layers get ";
         String table = "";
-        table += params.getHttpParam("table")==null ? "":params.getHttpParam("table");
+        table += params.getHttpParam("table") == null ? "" : params.getHttpParam("table");
         try {
             params.requireLoggedInUser();
-            //Get directories
+            // Get directories
             Directories dir = new Directories();
             dir.setData("scenario");
             dir.setLabel("scenario");
             dir.setIcon(null);
             directories.add(dir);
-            
+
             JSONArray out = new JSONArray();
             if ("".equals(table)) {
                 ArrayList<Directories> layers = getRemoteSTTables();
                 dir.setChildren(layers);
                 for (Directories index : layers) {
-                    //Convert to Json Object
+                    // Convert to Json Object
                     ObjectMapper Obj = new ObjectMapper();
                     JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                     out.put(json);
@@ -94,9 +95,9 @@ public class STDistanceLayers extends RestActionHandler {
                 JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(layers));
                 ResponseHelper.writeResponse(params, json);
             }
-            
+
         } catch (Exception e) {
-            errorMsg = errorMsg + e.getMessage() + "table:" +table;
+            errorMsg = errorMsg + e.getMessage() + "table:" + table;
             log.error(e, errorMsg);
         }
     }
@@ -123,15 +124,15 @@ public class STDistanceLayers extends RestActionHandler {
         ResponseEntity<List<String>> returns = null;
         RestTemplate restTemplate = new RestTemplate();
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/tables/");
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/tables/");
 
         returns = restTemplate.exchange(
                 uriBuilder.toUriString(),
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<String>>() {
-        }
-        );
+                });
 
         List<String> res = returns.getBody();
 
@@ -146,12 +147,14 @@ public class STDistanceLayers extends RestActionHandler {
         }
         return children;
     }
+
     private ArrayList<String> getRemoteSTColumns(String table) {
-        String errorMsg = "getUPLayers";        
+        String errorMsg = "getUPLayers";
         ResponseEntity<ArrayList<String>> returns = null;
         RestTemplate restTemplate = new RestTemplate();
 
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/tables-columns/")
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                .fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/tables-columns/")
                 .queryParam("table", table);
 
         returns = restTemplate.exchange(
@@ -159,8 +162,7 @@ public class STDistanceLayers extends RestActionHandler {
                 HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<ArrayList<String>>() {
-        }
-        );
+                });
         ArrayList<String> res = returns.getBody();
         return res;
     }

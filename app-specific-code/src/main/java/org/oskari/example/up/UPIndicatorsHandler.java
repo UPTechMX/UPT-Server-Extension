@@ -36,7 +36,7 @@ public class UPIndicatorsHandler extends RestActionHandler {
     private static String upwsHost;
     private static String upwsPort;
     private static final Logger log = LogFactory.getLogger(UPIndicatorsHandler.class);
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
 
@@ -51,14 +51,14 @@ public class UPIndicatorsHandler extends RestActionHandler {
 
         upwsHost = PropertyUtil.get("upws.db.host");
         upwsPort = PropertyUtil.get("upws.db.port");
-        
+
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         JSONArray indicators = new JSONArray();
         ObjectMapper Obj = new ObjectMapper();
         try (
@@ -67,15 +67,14 @@ public class UPIndicatorsHandler extends RestActionHandler {
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "SELECT id, indicator\n"
-                    + "	FROM public.up_indicators;"
-            );
+                            + "	FROM public.up_indicators;");
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UPIndicators data = new UPIndicators();
@@ -96,23 +95,22 @@ public class UPIndicatorsHandler extends RestActionHandler {
 
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
-        
+
         try (
                 Connection connection = DriverManager.getConnection(
                         upURL,
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO public.up_indicators(\n"
-                    + "	indicator)\n"
-                    + "	VALUES (?) on conflict(indicator) do nothing;"
-            );
+                            + "	indicator)\n"
+                            + "	VALUES (?) on conflict(indicator) do nothing;");
             statement.setString(1, params.getRequiredParam("indicator"));
             statement.execute();
         } catch (Exception e) {
@@ -129,23 +127,22 @@ public class UPIndicatorsHandler extends RestActionHandler {
 
     @Override
     public void handlePut(ActionParameters params) throws ActionException {
-        
+
         try (
                 Connection connection = DriverManager.getConnection(
                         upURL,
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "UPDATE public.up_indicators\n"
-                    + "	SET indicator=?\n"
-                    + "	WHERE id=?;"
-            );
+                            + "	SET indicator=?\n"
+                            + "	WHERE id=?;");
             statement.setString(1, params.getRequiredParam("indicator"));
             statement.setInt(2, Integer.parseInt(params.getRequiredParam("id")));
             statement.execute();
@@ -170,15 +167,14 @@ public class UPIndicatorsHandler extends RestActionHandler {
                         upUser,
                         upPassword)) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "DELETE FROM public.up_indicators\n"
-                    + "	WHERE id=?;"
-            );
+                            + "	WHERE id=?;");
             statement.setInt(1, Integer.parseInt(params.getRequiredParam("id")));
             statement.execute();
         } catch (Exception e) {

@@ -50,26 +50,25 @@ public class WfsNamesHandler extends RestActionHandler {
     String errorMsg = "getStudyAreas";
     ArrayList<StudyAreaUP> layers = new ArrayList<StudyAreaUP>();
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
 
       PreparedStatement statement = connection.prepareStatement(
-        "with public_layers as(\n" +
-        "   SELECT distinct oskari_maplayer.id, name as layer_name FROM oskari_maplayer\n" +
-        "   WHERE type = 'wfslayer'\n" +
-        "   )\n" +
-        "select id, layer_name from public_layers"
-        //"select id,layer_name from user_layer where uuid=? and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'"
+          "with public_layers as(\n" +
+              "   SELECT distinct oskari_maplayer.id, name as layer_name FROM oskari_maplayer\n" +
+              "   WHERE type = 'wfslayer'\n" +
+              "   )\n" +
+              "select id, layer_name from public_layers"
+      // "select id,layer_name from user_layer where uuid=? and lower(layer_name) not
+      // like '%buffer%' and lower(layer_name) not like '%distance%'"
       );
       statement.execute();
       ResultSet data = statement.getResultSet();
@@ -82,11 +81,10 @@ public class WfsNamesHandler extends RestActionHandler {
 
       JSONArray out = new JSONArray();
       for (StudyAreaUP index : layers) {
-        //Convert to Json Object
+        // Convert to Json Object
         ObjectMapper Obj = new ObjectMapper();
         final JSONObject json = JSONHelper.createJSONObject(
-          Obj.writeValueAsString(index)
-        );
+            Obj.writeValueAsString(index));
         out.put(json);
       }
       ResponseHelper.writeResponse(params, out);

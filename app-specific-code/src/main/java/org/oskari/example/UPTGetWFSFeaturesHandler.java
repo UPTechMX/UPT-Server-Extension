@@ -1,6 +1,5 @@
 package org.oskari.example;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -42,10 +41,11 @@ public class UPTGetWFSFeaturesHandler extends UPTAbstractWFSFeaturesHandler {
     private static final String PARAM_BBOX = "bbox";
 
     private static final String GEOJSON_CONTENT_TYPE = "application/vnd.geo+json; charset=utf-8";
-    private static final byte[] EMPTY_GEOJSON_FEATURE_COLLECTION =
-            "{\"type\": \"FeatureCollection\", \"features\": []}".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] EMPTY_GEOJSON_FEATURE_COLLECTION = "{\"type\": \"FeatureCollection\", \"features\": []}"
+            .getBytes(StandardCharsets.UTF_8);
 
-    // For WGS84: 11.132mm precision at equator, more precise elsewhere, max error 5.5mm
+    // For WGS84: 11.132mm precision at equator, more precise elsewhere, max error
+    // 5.5mm
     private static final int NUM_DECIMAL_PLACES_DEGREE = 7;
     // For metric projections: 10mm precision, max error 5mm
     private static final int NUM_DECIMAL_PLACES_OTHER = 2;
@@ -135,15 +135,19 @@ public class UPTGetWFSFeaturesHandler extends UPTAbstractWFSFeaturesHandler {
     }
 
     /**
-     * Get number of decimal places to use (maximum) when writing out the GeoJSON response.
-     * The goal is to reduce the size of the actual response thereby reducing the amount
-     * of memory and network used to serve the response while maintaining a precision that
+     * Get number of decimal places to use (maximum) when writing out the GeoJSON
+     * response.
+     * The goal is to reduce the size of the actual response thereby reducing the
+     * amount
+     * of memory and network used to serve the response while maintaining a
+     * precision that
      * still far exceedes the needs for our purposes
      *
-     * @returns number of decimal places to use, the number depends on the unit of measure
-     * of the axes of the coordinate system:
-     * - NUM_DECIMAL_PLACES_DEGREE for degrees
-     * - NUM_DECIMAL_PLACES_OTHER for others (metres, feet, what have you)
+     * @returns number of decimal places to use, the number depends on the unit of
+     *          measure
+     *          of the axes of the coordinate system:
+     *          - NUM_DECIMAL_PLACES_DEGREE for degrees
+     *          - NUM_DECIMAL_PLACES_OTHER for others (metres, feet, what have you)
      */
     private int getNumDecimals(CoordinateReferenceSystem crs) {
         boolean degrees = "°".equals(crs.getCoordinateSystem().getAxis(0).getUnit().toString());

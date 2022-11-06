@@ -47,5 +47,4 @@ public class MyActionHandler extends RestActionHandler {
         throw new ActionDeniedException("Not deleting anything");
     }
 
-
 }

@@ -16,8 +16,7 @@ import org.oskari.example.db.SynchronizeDatabase;
 @OskariActionRoute("CKANAction")
 public class CKANIntegrationActionHandler extends RestActionHandler {
   private static final Logger LOG = LogFactory.getLogger(
-    CKANIntegrationActionHandler.class
-  );
+      CKANIntegrationActionHandler.class);
 
   public void preProcess(ActionParameters params) throws ActionException {
     // common method called for all request methods
@@ -37,23 +36,20 @@ public class CKANIntegrationActionHandler extends RestActionHandler {
       syncDb.synchronizeLayersFromCKAN();
     } else {
       ResponseHelper.writeResponse(
-        params,
-        params.getUser() + " cannot access CKAN synchronizer."
-      );
+          params,
+          params.getUser() + " cannot access CKAN synchronizer.");
     }
   }
 
   @Override
   public void handlePut(ActionParameters params) throws ActionException {
     throw new ActionParamsException(
-      String.format("PUT-method for route %s not implemented.", getName())
-    );
+        String.format("PUT-method for route %s not implemented.", getName()));
   }
 
   @Override
   public void handleDelete(ActionParameters params) throws ActionException {
     throw new ActionParamsException(
-      String.format("DELETE-method for route %s not implemented.", getName())
-    );
+        String.format("DELETE-method for route %s not implemented.", getName()));
   }
 }

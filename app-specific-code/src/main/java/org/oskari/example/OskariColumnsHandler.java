@@ -23,14 +23,13 @@ import fi.nls.oskari.util.JSONHelper;
 import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
 
-
 @OskariActionRoute("list_oskari_columns")
 public class OskariColumnsHandler extends RestActionHandler {
 
     private static String upURL;
     private static String upUser;
     private static String upPassword;
-    
+
     private static final Logger log = LogFactory.getLogger(OskariColumnsHandler.class);
 
     @Override
@@ -50,11 +49,11 @@ public class OskariColumnsHandler extends RestActionHandler {
         Long user_id = params.getUser().getId();
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             Layers layers = new Layers();
             layers.setColumns(getColumns(params.getRequiredParam("layer_id")));
             ObjectMapper Obj = new ObjectMapper();
@@ -95,15 +94,15 @@ public class OskariColumnsHandler extends RestActionHandler {
 
             ResultSet data = statement.executeQuery(
                     "with cols as("
-                    + " select id,fields "
-                    + " from user_layer "
-                    + " where id=" + id
-                    + " ) "
-                    + " select name "
-                    + " from cols,json_populate_recordset(null::record,cols.fields) as(name text) "
-                    + " where name !='the_geom' "
-                    + " union all "
-                    + " select 'geometry';");
+                            + " select id,fields "
+                            + " from user_layer "
+                            + " where id=" + id
+                            + " ) "
+                            + " select name "
+                            + " from cols,json_populate_recordset(null::record,cols.fields) as(name text) "
+                            + " where name !='the_geom' "
+                            + " union all "
+                            + " select 'geometry';");
             while (data.next()) {
                 layers.add(data.getString("name"));
             }

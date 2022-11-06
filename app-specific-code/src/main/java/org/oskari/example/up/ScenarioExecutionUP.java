@@ -17,11 +17,11 @@ public class ScenarioExecutionUP {
 
     @Override
     public String toString() {
-        return "{" 
-                +"scenario_id='" + scenario_id.toString() + "'"
-                +",id=" + id  
-                +", event='" + event + "'"
-                +", value='" + value + "'"
-                +", created_on='" + created_on +"'}";
+        return "{"
+                + "scenario_id='" + scenario_id.toString() + "'"
+                + ",id=" + id
+                + ", event='" + event + "'"
+                + ", value='" + value + "'"
+                + ", created_on='" + created_on + "'}";
     }
 }

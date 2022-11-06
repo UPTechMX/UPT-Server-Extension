@@ -1,6 +1,6 @@
 package org.oskari.example.helpers;
 
-import fi.mml.map.mapwindow.service.db.OskariMapLayerGroupService;
+import org.oskari.service.maplayer.OskariMapLayerGroupService;
 import fi.nls.oskari.control.ActionException;
 import fi.nls.oskari.control.ActionParamsException;
 import fi.nls.oskari.domain.Role;
@@ -51,7 +51,7 @@ import org.oskari.service.util.ServiceFactory;
 
 /***
  * @author Marko Kuosmanen
- * This class helps for anything of layers
+ *         This class helps for anything of layers
  */
 public class LayerHelper {
   public static final String ROLE_ADMIN = "Admin";
@@ -68,21 +68,20 @@ public class LayerHelper {
   private static final Logger LOG = LogFactory.getLogger(LayerHelper.class);
 
   private static final ViewService VIEW_SERVICE = ServiceFactory.getViewService();
-  private static final OskariMapLayerGroupService MAP_LAYER_GROUP_SERVICE = ServiceFactory.getOskariMapLayerGroupService();
+  private static final OskariMapLayerGroupService MAP_LAYER_GROUP_SERVICE = ServiceFactory
+      .getOskariMapLayerGroupService();
   private static final PermissionService PERMISSIONS_SERVICE = ServiceFactory.getPermissionsService();
   private static final MybatisRoleService ROLE_SERVICE = new MybatisRoleService();
   private static final DataProviderService DATA_PROVIDER_SERVICE = ServiceFactory.getDataProviderService();
   private static final OskariLayerGroupLinkService LINK_SERVICE = ServiceFactory.getOskariLayerGroupLinkService();
   private static final String BUNDLE_MAPFULL = "mapfull";
-  private static final String BACKGROUND_LAYER_SELECTION_PLUGIN =
-    "Oskari.mapframework.bundle.mapmodule.plugin.BackgroundLayerSelectionPlugin";
+  private static final String BACKGROUND_LAYER_SELECTION_PLUGIN = "Oskari.mapframework.bundle.mapmodule.plugin.BackgroundLayerSelectionPlugin";
 
   private static OskariLayerService LAYER_SERVICE = ServiceFactory.getMapLayerService();
   private static CapabilitiesCacheService CAPABILITIES_CACHE_SERVICE = ServiceFactory.getCapabilitiesCacheService();
   private static CapabilitiesUpdateService CAPABILITIES_SERVICE = new CapabilitiesUpdateService(
-    LAYER_SERVICE,
-    CAPABILITIES_CACHE_SERVICE
-  );
+      LAYER_SERVICE,
+      CAPABILITIES_CACHE_SERVICE);
 
   /**
    * Sets background layer selection plugin layers
@@ -91,10 +90,9 @@ public class LayerHelper {
    * @param layerIds   layerids
    */
   public static void setBackgroundSelectionPluginLayers(
-    final Connection connection,
-    final String[] layerIds
-  )
-    throws ViewException, JSONException {
+      final Connection connection,
+      final String[] layerIds)
+      throws ViewException, JSONException {
     if (layerIds == null || layerIds.length == 0) {
       return;
     }
@@ -109,9 +107,7 @@ public class LayerHelper {
 
         for (int i = 0; i < plugins.length(); ++i) {
           JSONObject plugin = plugins.getJSONObject(i);
-          if (
-            BACKGROUND_LAYER_SELECTION_PLUGIN.equals(plugin.optString("id"))
-          ) {
+          if (BACKGROUND_LAYER_SELECTION_PLUGIN.equals(plugin.optString("id"))) {
             final JSONObject pluginConfig = plugin.optJSONObject("config");
             if (pluginConfig != null) {
               JSONArray baseLayers = new JSONArray();
@@ -132,17 +128,17 @@ public class LayerHelper {
 
   /**
    * Adds layers
-   * @param layerArray layers array
-   * @param maplayerGroups layer groups
+   * 
+   * @param layerArray          layers array
+   * @param maplayerGroups      layer groups
    * @param checkExistingLayers checks existing layers
    * @return added layers length
    */
   public static int addLayers(
-    final JSONArray layerArray,
-    final List<MaplayerGroup> maplayerGroups,
-    final boolean checkExistingLayers,
-    final Connection conn
-  ) {
+      final JSONArray layerArray,
+      final List<MaplayerGroup> maplayerGroups,
+      final boolean checkExistingLayers,
+      final Connection conn) {
     List<Integer> addedLayers = new ArrayList<>();
     OskariLayerService service = new OskariLayerServiceMybatisImpl();
     try {
@@ -151,19 +147,17 @@ public class LayerHelper {
 
         OskariLayer layer = parseLayer(layerJSON);
         List<OskariLayer> dbLayers = service.findByUrlAndName(
-          layer.getUrl(),
-          layer.getName()
-        );
+            layer.getUrl(),
+            layer.getName());
         if (!dbLayers.isEmpty() && checkExistingLayers) {
           if (dbLayers.size() > 1) {
             LOG.warn(
-              new Object[] {
-                "Found multiple layers with same url and name. Using first one. Url:",
-                layer.getUrl(),
-                "- name:",
-                layer.getName(),
-              }
-            );
+                new Object[] {
+                    "Found multiple layers with same url and name. Using first one. Url:",
+                    layer.getUrl(),
+                    "- name:",
+                    layer.getName(),
+                });
           }
           continue;
         } else {
@@ -171,23 +165,20 @@ public class LayerHelper {
           layer.setId(id);
 
           setupLayerPermissions(
-            layerJSON.getJSONObject("role_permissions"),
-            layer
-          );
+              layerJSON.getJSONObject("role_permissions"),
+              layer);
 
           // Handle layer groups
           for (int j = 0; j < maplayerGroups.size(); j++) {
             MaplayerGroup group = maplayerGroups.get(j);
             MaplayerGroup foundedGroup = MAP_LAYER_GROUP_SERVICE.findByName(
-              group.getName("fi")
-            );
+                group.getName("fi"));
             if (foundedGroup == null) {
               int groupId = MAP_LAYER_GROUP_SERVICE.insert(group);
               LINK_SERVICE.insert(new OskariLayerGroupLink(id, groupId));
             } else {
               LINK_SERVICE.insert(
-                new OskariLayerGroupLink(id, foundedGroup.getId())
-              );
+                  new OskariLayerGroupLink(id, foundedGroup.getId()));
             }
           }
 
@@ -199,9 +190,8 @@ public class LayerHelper {
             updateLayerStyle(conn, id);
           } catch (Exception ex) {
             LOG.error(
-              ex,
-              "Cannot update layer (id=" + layer.getId() + ") capabilities."
-            );
+                ex,
+                "Cannot update layer (id=" + layer.getId() + ") capabilities.");
           }
         }
       }
@@ -214,62 +204,62 @@ public class LayerHelper {
 
   /**
    * Generate layer JSON
-   * @param type use OskariLayer.TYPE_
+   * 
+   * @param type         use OskariLayer.TYPE_
    * @param url
    * @param name
    * @param dataprovider
    * @param locale
    * @param baseMap
-   * @param opacity optional
-   * @param style optional
-   * @param minscale optional
-   * @param maxscale optional
-   * @param legendImage optional
-   * @param metadataId optional
-   * @param gfiType optional
-   * @param gfiXslt optional
-   * @param gfiContent optional
-   * @param geometry optional
+   * @param opacity      optional
+   * @param style        optional
+   * @param minscale     optional
+   * @param maxscale     optional
+   * @param legendImage  optional
+   * @param metadataId   optional
+   * @param gfiType      optional
+   * @param gfiXslt      optional
+   * @param gfiContent   optional
+   * @param geometry     optional
    * @param realtime
-   * @param refreshRate optional
-   * @param srsName optional
-   * @param version optional, use VERSION_
-   * @param username optional
-   * @param password optional
-   * @param params optional
-   * @param options optional
+   * @param refreshRate  optional
+   * @param srsName      optional
+   * @param version      optional, use VERSION_
+   * @param username     optional
+   * @param password     optional
+   * @param params       optional
+   * @param options      optional
    * @return layer json
    * @throws JSONException
    */
   public static JSONObject generateLayerJSON(
-    final String type,
-    final String url,
-    final String name,
-    final String dataprovider,
-    final JSONObject locale,
-    final Boolean baseMap,
-    final Integer opacity,
-    final String style,
-    final Double minscale,
-    final Double maxscale,
-    final String legendImage,
-    final String metadataId,
-    final String gfiType,
-    final String gfiXslt,
-    final String gfiContent,
-    final String geometry,
-    final Boolean realtime,
-    final Integer refreshRate,
-    final String srsName,
-    final String version,
-    final String username,
-    final String password,
-    final JSONObject params,
-    final JSONObject options,
-    final JSONObject rolePermissions,
-    final JSONObject attributes
-  )
-    throws JSONException {
+      final String type,
+      final String url,
+      final String name,
+      final String dataprovider,
+      final JSONObject locale,
+      final Boolean baseMap,
+      final Integer opacity,
+      final String style,
+      final Double minscale,
+      final Double maxscale,
+      final String legendImage,
+      final String metadataId,
+      final String gfiType,
+      final String gfiXslt,
+      final String gfiContent,
+      final String geometry,
+      final Boolean realtime,
+      final Integer refreshRate,
+      final String srsName,
+      final String version,
+      final String username,
+      final String password,
+      final JSONObject params,
+      final JSONObject options,
+      final JSONObject rolePermissions,
+      final JSONObject attributes)
+      throws JSONException {
     JSONObject json = new JSONObject();
     json.put("type", type);
     json.put("url", url);
@@ -344,12 +334,13 @@ public class LayerHelper {
 
   /**
    * Parse JSON layer object to OskariMaplLayer class
+   * 
    * @param json layer json
    * @return OskariLayer object
    * @throws JSONException
    */
   private static OskariLayer parseLayer(final JSONObject json)
-    throws JSONException {
+      throws JSONException {
     OskariLayer layer = new OskariLayer();
     layer.setType(json.getString("type"));
     layer.setUrl(json.getString("url"));
@@ -362,8 +353,7 @@ public class LayerHelper {
     layer.setMinScale(json.optDouble("minscale", layer.getMinScale()));
     layer.setMaxScale(json.optDouble("maxscale", layer.getMaxScale()));
     layer.setLegendImage(
-      json.optString("legend_image", layer.getLegendImage())
-    );
+        json.optString("legend_image", layer.getLegendImage()));
     layer.setMetadataId(json.optString("metadataid", layer.getMetadataId()));
     layer.setGfiType(json.optString("gfi_type", layer.getGfiType()));
     layer.setGfiXslt(json.optString("gfi_xslt", layer.getGfiXslt()));
@@ -391,12 +381,10 @@ public class LayerHelper {
     }
 
     DataProvider dataProvider = DATA_PROVIDER_SERVICE.findByName(
-      dataproviderName
-    );
+        dataproviderName);
     if (dataProvider == null) {
       LOG.warn(
-        new Object[] { "Didn't find match for dataprovider:", dataproviderName }
-      );
+          new Object[] { "Didn't find match for dataprovider:", dataproviderName });
     } else {
       layer.addDataprovider(dataProvider);
     }
@@ -406,13 +394,13 @@ public class LayerHelper {
 
   /**
    * Setup layer permissions. This overrides all permission s for selected layer.
+   * 
    * @param permissions permission
-   * @param layer layer
+   * @param layer       layer
    */
   public static void setupLayerPermissions(
-    final JSONObject permissions,
-    final OskariLayer layer
-  ) {
+      final JSONObject permissions,
+      final OskariLayer layer) {
     if (permissions != null) {
       Resource res = new OskariLayerResource(layer);
       Iterator roleNames = permissions.keys();
@@ -423,12 +411,11 @@ public class LayerHelper {
           Role role = ROLE_SERVICE.findRoleByName(roleName);
           if (role == null) {
             LOG.warn(
-              new Object[] {
-                "Couldn't find matching role in DB:",
-                roleName,
-                "- Skipping!",
-              }
-            );
+                new Object[] {
+                    "Couldn't find matching role in DB:",
+                    roleName,
+                    "- Skipping!",
+                });
           } else {
             JSONArray permissionTypes = permissions.optJSONArray(roleName);
             if (permissionTypes != null) {
@@ -452,15 +439,15 @@ public class LayerHelper {
 
   /**
    * Insert layer permissions. This sets new permissions to available layers.
+   * 
    * @param permissions
    * @param layers
    */
   public static void insertLayerPermissions(
-    final JSONObject permissions,
-    final List<OskariLayer> layers,
-    final Connection conn
-  )
-    throws SQLException, JSONException {
+      final JSONObject permissions,
+      final List<OskariLayer> layers,
+      final Connection conn)
+      throws SQLException, JSONException {
     Iterator roleNames = permissions.keys();
 
     while (roleNames.hasNext()) {
@@ -487,6 +474,7 @@ public class LayerHelper {
 
   /**
    * Exists maplayer group, checks if maplayer groupt already exists.
+   * 
    * @param name group name
    * @return maplayer group
    */
@@ -496,16 +484,16 @@ public class LayerHelper {
 
   /**
    * Get maplayers
+   * 
    * @param conn
    * @param sql
    * @return list of maplayers
    * @throws SQLException
    */
   public static List<OskariLayer> getMapLayers(
-    Connection conn,
-    final String sql
-  )
-    throws SQLException {
+      Connection conn,
+      final String sql)
+      throws SQLException {
     List<OskariLayer> list = new ArrayList<>();
 
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -524,25 +512,23 @@ public class LayerHelper {
 
   /**
    * Gets resource id
-   * @param conn sql connection
+   * 
+   * @param conn  sql connection
    * @param layer layer
    * @return resource id, if resource not found -1
    * @throws SQLException
    */
   private static long getResourceId(
-    final Connection conn,
-    final OskariLayer layer
-  )
-    throws SQLException {
+      final Connection conn,
+      final OskariLayer layer)
+      throws SQLException {
     long id = -1;
-    final String sql =
-      "SELECT id FROM oskari_resource WHERE resource_type='maplayer' " +
-      " AND resource_mapping=?;";
+    final String sql = "SELECT id FROM oskari_resource WHERE resource_type='maplayer' " +
+        " AND resource_mapping=?;";
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
       statement.setString(
-        1,
-        layer.getType() + "+" + layer.getUrl() + "+" + layer.getName()
-      );
+          1,
+          layer.getType() + "+" + layer.getUrl() + "+" + layer.getName());
       try (ResultSet rs = statement.executeQuery()) {
         while (rs.next()) {
           id = rs.getLong("id");
@@ -554,26 +540,24 @@ public class LayerHelper {
 
   /**
    * Adds resource
-   * @param conn sql connection
+   * 
+   * @param conn  sql connection
    * @param layer layer
    * @return resource id, if cannot add resource -1
    * @throws SQLException
    */
   private static long addResource(
-    final Connection conn,
-    final OskariLayer layer
-  )
-    throws SQLException {
+      final Connection conn,
+      final OskariLayer layer)
+      throws SQLException {
     long id = -1;
-    final String sql =
-      "INSERT INTO oskari_resource (resource_type, resource_mapping) VALUES (?,?)";
+    final String sql = "INSERT INTO oskari_resource (resource_type, resource_mapping) VALUES (?,?)";
     final String[] returnId = { "id" };
     final PreparedStatement statement = conn.prepareStatement(sql, returnId);
     statement.setString(1, "maplayer");
     statement.setString(
-      2,
-      layer.getType() + "+" + layer.getUrl() + "+" + layer.getName()
-    );
+        2,
+        layer.getType() + "+" + layer.getUrl() + "+" + layer.getName());
     ResultSet rs = statement.getGeneratedKeys();
     if (rs.next()) {
       id = rs.getInt(1);
@@ -584,24 +568,23 @@ public class LayerHelper {
 
   /**
    * Has permission already saved
-   * @param conn sql connection
+   * 
+   * @param conn       sql connection
    * @param resourceId resource id
-   * @param roleId role id
+   * @param roleId     role id
    * @param permission permission type
    * @return exists or not
    * @throws SQLException
    */
   private static boolean hasPermission(
-    final Connection conn,
-    final long resourceId,
-    final long roleId,
-    final String permission
-  )
-    throws SQLException {
+      final Connection conn,
+      final long resourceId,
+      final long roleId,
+      final String permission)
+      throws SQLException {
     boolean hasPermission = false;
-    final String sql =
-      "SELECT * FROM oskari_permission WHERE external_type='ROLE' " +
-      " AND permission=? AND oskari_resource_id=? AND external_id=?;";
+    final String sql = "SELECT * FROM oskari_permission WHERE external_type='ROLE' " +
+        " AND permission=? AND oskari_resource_id=? AND external_id=?;";
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
       statement.setString(1, permission);
       statement.setLong(2, resourceId);
@@ -617,21 +600,20 @@ public class LayerHelper {
 
   /**
    * Adds permission
-   * @param conn sql connection
+   * 
+   * @param conn       sql connection
    * @param resourceId resource id
-   * @param roleId role id
+   * @param roleId     role id
    * @param permission permission type
    * @throws SQLException
    */
   private static void addPermission(
-    final Connection conn,
-    final long resourceId,
-    final long roleId,
-    final String permission
-  )
-    throws SQLException {
-    final String sql =
-      "INSERT INTO oskari_permission (external_type, permission, oskari_resource_id, external_id) VALUES (?,?,?,?)";
+      final Connection conn,
+      final long resourceId,
+      final long roleId,
+      final String permission)
+      throws SQLException {
+    final String sql = "INSERT INTO oskari_permission (external_type, permission, oskari_resource_id, external_id) VALUES (?,?,?,?)";
 
     final PreparedStatement statement = conn.prepareStatement(sql);
     statement.setString(1, "ROLE");
@@ -648,35 +630,33 @@ public class LayerHelper {
 
   /**
    * Update layer capabilities
+   * 
    * @param layerId layer id, if not defined then updating all
    * @return success update result
    * @throws ActionParamsException
    * @throws ActionException
    */
   public static boolean updateCapabilities(String layerId)
-    throws ActionParamsException, ActionException {
+      throws ActionParamsException, ActionException {
     List<OskariLayer> layers = getLayersToUpdate(layerId);
 
     Set<String> systemCRSs = getSystemCRSs();
 
     List<CapabilitiesUpdateResult> result = CAPABILITIES_SERVICE.updateCapabilities(
-      layers,
-      systemCRSs
-    );
+        layers,
+        systemCRSs);
     return layers.size() == result.size();
   }
 
   private static void updateLayerStyle(
-    final Connection conn,
-    final int layerId
-  ) {
+      final Connection conn,
+      final int layerId) {
     String style = null;
     try {
       style = getLayerStyleFromCapabilities(conn, layerId);
       if (style != null) {
         final PreparedStatement statement = conn.prepareStatement(
-          "UPDATE oskari_maplayer SET style = ? " + "WHERE id = ?;"
-        );
+            "UPDATE oskari_maplayer SET style = ? " + "WHERE id = ?;");
 
         statement.setString(1, style);
         statement.setLong(2, layerId);
@@ -693,10 +673,9 @@ public class LayerHelper {
   }
 
   private static String getLayerStyleFromCapabilities(
-    final Connection conn,
-    final int layerId
-  )
-    throws SQLException, JSONException {
+      final Connection conn,
+      final int layerId)
+      throws SQLException, JSONException {
     final String sql = "SELECT capabilities FROM oskari_maplayer WHERE id=?;";
     String capabilities = "";
     try (PreparedStatement statement = conn.prepareStatement(sql)) {
@@ -724,7 +703,7 @@ public class LayerHelper {
   }
 
   private static List<OskariLayer> getLayersToUpdate(String layerId)
-    throws ActionParamsException {
+      throws ActionParamsException {
     if (layerId == null) {
       return LAYER_SERVICE.findAll();
     }
@@ -762,25 +741,22 @@ public class LayerHelper {
   }
 
   public static int addMainGroup(String fiName, String enName, String svName)
-    throws JSONException {
+      throws JSONException {
     MaplayerGroup mainGroup = new MaplayerGroup();
     boolean useDefaultLocales = PropertyUtil.getOptional(
-      "ckan.integration.ckanapi.layer.defaultlocales",
-      false
-    );
+        "ckan.integration.ckanapi.layer.defaultlocales",
+        false);
     mainGroup.setLocale(LayerJSONHelper.getIDPLocale(enName, enName));
     if (useDefaultLocales) {
       mainGroup.setLocale(
-        LayerJSONHelper.getDefaultLocale(fiName, enName, svName)
-      );
+          LayerJSONHelper.getDefaultLocale(fiName, enName, svName));
     }
 
     mainGroup.setSelectable(true);
     mainGroup.setParentId(-1);
     try {
       MaplayerGroup group = MAP_LAYER_GROUP_SERVICE.findByName(
-        mainGroup.getLocale().getString("en")
-      );
+          mainGroup.getLocale().getString("en"));
       if (group != null) {
         return group.getId();
       }
@@ -791,10 +767,9 @@ public class LayerHelper {
   }
 
   public static int addSubGroup(
-    final int parentId,
-    final org.json.JSONObject locale,
-    final int order
-  ) {
+      final int parentId,
+      final org.json.JSONObject locale,
+      final int order) {
     MaplayerGroup subGroup = new MaplayerGroup();
     subGroup.setLocale(locale);
     subGroup.setSelectable(true);
@@ -803,8 +778,7 @@ public class LayerHelper {
 
     try {
       MaplayerGroup group = MAP_LAYER_GROUP_SERVICE.findByName(
-        locale.getString("en")
-      );
+          locale.getString("en"));
       if (group != null) {
         return group.getId();
       }
@@ -826,8 +800,7 @@ public class LayerHelper {
     String auth = gsUser + ":" + gsPsw;
 
     byte[] encodedAuth = Base64.encodeBase64(
-      auth.getBytes(StandardCharsets.UTF_8)
-    );
+        auth.getBytes(StandardCharsets.UTF_8));
     String authHeaderValue = "Basic " + new String(encodedAuth);
 
     return authHeaderValue;
@@ -852,8 +825,7 @@ public class LayerHelper {
         }
       } else {
         throw new ClientProtocolException(
-          "Unexpected response status: " + status
-        );
+            "Unexpected response status: " + status);
       }
     };
 

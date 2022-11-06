@@ -53,11 +53,11 @@ public class CKANDataParser {
     String CKANUserPasswordHash = (String) CKANUserJSON.get("password_hash");
     String CKANUserFullname = (String) CKANUserJSON.get("fullname");
     boolean CKANSysAdmin = (CKANUserJSON.get("sysadmin") != null)
-      ? (boolean) CKANUserJSON.get("sysadmin")
-      : false;
+        ? (boolean) CKANUserJSON.get("sysadmin")
+        : false;
     user.setCKANSysAdmin(CKANSysAdmin);
     user.setScreenname(CKANUserName);
-    //user.setUuid(CKANUserUuid);
+    // user.setUuid(CKANUserUuid);
     if ((CKANUserEmail != null) && !(CKANUserEmail.isEmpty())) {
       user.setEmail(CKANUserEmail);
     }
@@ -102,9 +102,8 @@ public class CKANDataParser {
     if (CKANOrgJSON.get("users") != null) {
       JSONArray CKANOrgUsersJSON = (JSONArray) CKANOrgJSON.get("users");
       LOG.debug(
-        "Parsing users for organization from json: " +
-        CKANOrgUsersJSON.toJSONString()
-      );
+          "Parsing users for organization from json: " +
+              CKANOrgUsersJSON.toJSONString());
       Iterator it = CKANOrgUsersJSON.iterator();
       while (it.hasNext()) {
         JSONObject CKANUserJSON = (JSONObject) it.next();
@@ -112,11 +111,10 @@ public class CKANDataParser {
         boolean added = org.addUser(user);
         if (added) {
           LOG.debug(
-            "Added user to organization: " +
-            user.getScreenname() +
-            " " +
-            org.getUsers().size()
-          );
+              "Added user to organization: " +
+                  user.getScreenname() +
+                  " " +
+                  org.getUsers().size());
         }
       }
     }
@@ -167,8 +165,7 @@ public class CKANDataParser {
    * @return an ArrayList of CKANOrganization objects.
    */
   public static ArrayList<CKANOrganization> parseJSONtoRoles(
-    String JSONFromCKAN
-  ) {
+      String JSONFromCKAN) {
     ArrayList<CKANOrganization> roles = new ArrayList<>();
     String CKANOrgJSONStr;
     JSONObject CKANOrgJSON = new JSONObject();
@@ -206,9 +203,8 @@ public class CKANDataParser {
    * @return an ArrayList of OskariLayer objects.
    */
   public static void parseJSONAndAddLayers(
-    String JSONFromCKAN,
-    Connection connection
-  ) {
+      String JSONFromCKAN,
+      Connection connection) {
     String CKANLayerJSONStr;
     JSONObject CKANLayerJSON = new JSONObject();
     JSONParser parser = new JSONParser();
@@ -224,18 +220,16 @@ public class CKANDataParser {
             JSONArray resources = (JSONArray) CKANLayerJSON.get("resources");
             boolean isPrivateResource = (boolean) CKANLayerJSON.get("private");
             CKANOrganization organization = getRoleFromJSON(
-              (JSONObject) CKANLayerJSON.get("organization")
-            );
+                (JSONObject) CKANLayerJSON.get("organization"));
 
             Iterator it = resources.iterator();
             while (it.hasNext()) {
               JSONObject resource = (JSONObject) it.next();
               CKANLayerDataHandler.addLayersFromCKANJSONResource(
-                resource,
-                isPrivateResource,
-                connection,
-                organization
-              );
+                  resource,
+                  isPrivateResource,
+                  connection,
+                  organization);
             }
           } catch (Exception e) {
             LOG.error("Unable to parse CKAN Layer API JSON! " + e);

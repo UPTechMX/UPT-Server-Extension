@@ -26,16 +26,16 @@ import org.oskari.example.st.STSettings;
 import org.oskari.example.st.STSettingsHandler;
 
 @OskariActionRoute("share_layers")
-public class UPTShareLayerHandler  extends RestActionHandler {
+public class UPTShareLayerHandler extends RestActionHandler {
     private static String stURL;
     private static String stUser;
     private static String stPassword;
     private static final Logger log = LogFactory.getLogger(STSettingsHandler.class);
     private static String stProjection;
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
-    
+
     @Override
     public void preProcess(ActionParameters params) throws ActionException {
         // common method called for all request methods
@@ -44,8 +44,9 @@ public class UPTShareLayerHandler  extends RestActionHandler {
         stURL = PropertyUtil.get("db.url");
         stUser = PropertyUtil.get("db.username");
         stPassword = PropertyUtil.get("db.password");
-        stProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
-        
+        stProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
@@ -59,36 +60,41 @@ public class UPTShareLayerHandler  extends RestActionHandler {
                         stUser,
                         stPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
-            PreparedStatement statement = connection.prepareStatement("select user_layer.id ,layer_name,case when is_public is null then 0 else is_public end as is_public \n" +
-                " from user_layer \n" +
-                " left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id " +
-                "where uuid=?");
+
+            PreparedStatement statement = connection.prepareStatement(
+                    "select user_layer.id ,layer_name,case when is_public is null then 0 else is_public end as is_public \n"
+                            +
+                            " from user_layer \n" +
+                            " left join upt_user_layer_scope on upt_user_layer_scope.user_layer_id=user_layer.id " +
+                            "where uuid=?");
             statement.setString(1, params.getUser().getUuid());
-            
-            errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
-            
+
+            errors.put(JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
+
             ResultSet data = statement.executeQuery();
-            ArrayList<UPTShareLayer> allLayers=new ArrayList<>();
+            ArrayList<UPTShareLayer> allLayers = new ArrayList<>();
             while (data.next()) {
                 UPTShareLayer layer = new UPTShareLayer();
                 layer.id = data.getLong("id");
-                layer.name = data.getString("layer_name");;
+                layer.name = data.getString("layer_name");
+                ;
                 layer.is_public = data.getInt("is_public");
                 allLayers.add(layer);
-            };
-            
+            }
+            ;
+
             JSONArray out = new JSONArray();
             for (UPTShareLayer index : allLayers) {
-                //Convert to Json Object
+                // Convert to Json Object
                 ObjectMapper Obj = new ObjectMapper();
                 final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                 out.put(json);
-            }            
+            }
             ResponseHelper.writeResponse(params, out);
         } catch (Exception e) {
             try {
@@ -97,7 +103,7 @@ public class UPTShareLayerHandler  extends RestActionHandler {
             } catch (JsonProcessingException | JSONException ex) {
                 java.util.logging.Logger.getLogger(STSettingsHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             errorMsg = errorMsg + e.toString();
             log.error(e, errorMsg);
         }
@@ -112,20 +118,23 @@ public class UPTShareLayerHandler  extends RestActionHandler {
                         stUser,
                         stPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
-            PreparedStatement statement = connection.prepareStatement("insert into upt_user_layer_scope(user_layer_id,is_public) values (?,?) on conflict(user_layer_id) do update set is_public=?;");
+
+            PreparedStatement statement = connection.prepareStatement(
+                    "insert into upt_user_layer_scope(user_layer_id,is_public) values (?,?) on conflict(user_layer_id) do update set is_public=?;");
             statement.setLong(1, Long.parseLong(params.getRequiredParam("id")));
             statement.setInt(2, Integer.parseInt(params.getRequiredParam("is_public")));
             statement.setInt(3, Integer.parseInt(params.getRequiredParam("is_public")));
-            
-            errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
+
+            errors.put(JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
             statement.execute();
-            
-            ResponseHelper.writeResponse(params, JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Success", "Layer shared"))));
+
+            ResponseHelper.writeResponse(params,
+                    JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Success", "Layer shared"))));
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -133,7 +142,7 @@ public class UPTShareLayerHandler  extends RestActionHandler {
             } catch (JsonProcessingException | JSONException ex) {
                 java.util.logging.Logger.getLogger(STSettingsHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             errorMsg = errorMsg + e.toString();
             log.error(e, errorMsg);
         }
@@ -148,19 +157,22 @@ public class UPTShareLayerHandler  extends RestActionHandler {
                         stUser,
                         stPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
-            PreparedStatement statement = connection.prepareStatement("update upt_user_layer_scope set is_public = ? where user_layer_id=?");
+
+            PreparedStatement statement = connection
+                    .prepareStatement("update upt_user_layer_scope set is_public = ? where user_layer_id=?");
             statement.setInt(1, Integer.parseInt(params.getRequiredParam("is_public")));
             statement.setLong(2, Long.parseLong(params.getRequiredParam("id")));
-            
-            errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
+
+            errors.put(JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("OK", "Executing query: " + statement.toString()))));
             statement.execute();
-            
-            ResponseHelper.writeResponse(params, JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Success", "Layer share updated"))));
+
+            ResponseHelper.writeResponse(params, JSONHelper
+                    .createJSONObject(Obj.writeValueAsString(new PostStatus("Success", "Layer share updated"))));
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -168,7 +180,7 @@ public class UPTShareLayerHandler  extends RestActionHandler {
             } catch (JsonProcessingException | JSONException ex) {
                 java.util.logging.Logger.getLogger(STSettingsHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             errorMsg = errorMsg + e.toString();
             log.error(e, errorMsg);
         }
@@ -176,7 +188,7 @@ public class UPTShareLayerHandler  extends RestActionHandler {
 
     @Override
     public void handleDelete(ActionParameters params) throws ActionException {
-        
+
     }
-    
+
 }

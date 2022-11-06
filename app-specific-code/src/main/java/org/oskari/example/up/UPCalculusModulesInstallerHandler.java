@@ -60,14 +60,13 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
   private JSONArray errors;
   private ObjectMapper Obj;
 
-  private static final String PROPERTY_USERLAYER_MAX_FILE_SIZE_MB =
-    "userlayer.max.filesize.mb";
+  private static final String PROPERTY_USERLAYER_MAX_FILE_SIZE_MB = "userlayer.max.filesize.mb";
 
   private static final Charset[] POSSIBLE_CHARSETS_USED_IN_ZIP_FILE_NAMES = {
-    StandardCharsets.UTF_8,
-    StandardCharsets.ISO_8859_1,
-    Charset.forName("CP437"),
-    Charset.forName("CP866"),
+      StandardCharsets.UTF_8,
+      StandardCharsets.ISO_8859_1,
+      Charset.forName("CP437"),
+      Charset.forName("CP866"),
   };
 
   private static final int KB = 1024 * 1024;
@@ -77,15 +76,12 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
   private static final int MAX_SIZE_MEMORY = 128 * KB;
 
   private final DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory(
-    MAX_SIZE_MEMORY,
-    null
-  );
-  private final int userlayerMaxFileSize =
-    PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
+      MAX_SIZE_MEMORY,
+      null);
+  private final int userlayerMaxFileSize = PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
 
   private static final Logger log = LogFactory.getLogger(
-    UPCalculusModulesInstallerHandler.class
-  );
+      UPCalculusModulesInstallerHandler.class);
 
   @Override
   public void preProcess(ActionParameters params) throws ActionException {
@@ -105,37 +101,33 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
   @Override
   public void handleGet(ActionParameters params) throws ActionException {
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
 
       ResponseEntity<List<IndicatorUP>> returns = null;
       RestTemplate restTemplate = new RestTemplate();
-      returns =
-        restTemplate.exchange(
+      returns = restTemplate.exchange(
           "http://" + upwsHost + ":" + upwsPort + "/indicator/",
           HttpMethod.GET,
           null,
-          new ParameterizedTypeReference<List<IndicatorUP>>() {}
-        );
+          new ParameterizedTypeReference<List<IndicatorUP>>() {
+          });
 
       Long user_id = params.getUser().getId();
       List<IndicatorUP> responseFromUP = returns.getBody();
 
       PreparedStatement statement = connection.prepareStatement(
-        "SELECT id, name, label, tooltip\n" +
-        "	FROM public.up_modules_translation where language=?\n" +
-        "order by label asc;"
-      );
+          "SELECT id, name, label, tooltip\n" +
+              "	FROM public.up_modules_translation where language=?\n" +
+              "order by label asc;");
       statement.setString(1, "english");
       ResultSet indicators = statement.executeQuery();
       JSONArray response = new JSONArray();
@@ -146,25 +138,20 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
         indicator.label = indicators.getString("label");
         indicator.description = indicators.getString("tooltip");
         indicator.id = indicators.getInt("id");
-        //Update dependencies field
+        // Update dependencies field
         for (IndicatorUP index : responseFromUP) {
-          if (
-            index != null &&
-            indicator.name != null &&
-            index.module.equals(indicator.name)
-          ) {
-            //Update dependencies field
+          if (index != null &&
+              indicator.name != null &&
+              index.module.equals(indicator.name)) {
+            // Update dependencies field
             String[] deps;
-            deps =
-              index
-                .dependencies.replace("[", "")
+            deps = index.dependencies.replace("[", "")
                 .replace("]", "")
                 .replaceAll("\"", "")
                 .split(",");
             for (String dependency : deps) {
               if (dependency.equals(indicator.name)) {
-                index.dependencies =
-                  index.dependencies.replaceAll(dependency, indicator.label);
+                index.dependencies = index.dependencies.replaceAll(dependency, indicator.label);
               }
             }
             indicator.dependencies = index.dependencies;
@@ -172,47 +159,35 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
           }
         }
         response.put(
-          JSONHelper.createJSONObject(Obj.writeValueAsString(indicator))
-        );
+            JSONHelper.createJSONObject(Obj.writeValueAsString(indicator)));
       }
       ResponseHelper.writeResponse(params, response);
     } catch (JsonProcessingException ex) {
-      java
-        .util.logging.Logger.getLogger(
-          UPCalculusModulesInstallerHandler.class.getName()
-        )
-        .log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(
+          UPCalculusModulesInstallerHandler.class.getName())
+          .log(Level.SEVERE, null, ex);
       ResponseHelper.writeError(params, ex.toString());
     } catch (Exception e) {
-      java
-        .util.logging.Logger.getLogger(
-          UPCalculusModulesInstallerHandler.class.getName()
-        )
-        .log(Level.SEVERE, null, e);
+      java.util.logging.Logger.getLogger(
+          UPCalculusModulesInstallerHandler.class.getName())
+          .log(Level.SEVERE, null, e);
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          params,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            params,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
@@ -235,92 +210,73 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
 
         MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
         ContentDisposition contentDisposition = ContentDisposition
-          .builder("form-data")
-          .name("file")
-          .filename(FilenameUtils.getName(indicator.getName()))
-          .build();
+            .builder("form-data")
+            .name("file")
+            .filename(FilenameUtils.getName(indicator.getName()))
+            .build();
 
         fileMap.add(
-          HttpHeaders.CONTENT_DISPOSITION,
-          contentDisposition.toString()
-        );
+            HttpHeaders.CONTENT_DISPOSITION,
+            contentDisposition.toString());
         HttpEntity<byte[]> fileEntity = new HttpEntity<>(
-          indicator.get(),
-          fileMap
-        );
+            indicator.get(),
+            fileMap);
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", fileEntity);
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(
-          body,
-          headers
-        );
+            body,
+            headers);
         try {
           ResponseEntity<String> response = restTemplate.exchange(
-            "http://" + upwsHost + ":" + upwsPort + "/indicator/",
-            HttpMethod.POST,
-            requestEntity,
-            String.class
-          );
+              "http://" + upwsHost + ":" + upwsPort + "/indicator/",
+              HttpMethod.POST,
+              requestEntity,
+              String.class);
         } catch (Exception e) {
           try {
             errors.put(
-              JSONHelper.createJSONObject(
-                Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-              )
-            );
+                JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
             ResponseHelper.writeError(
-              null,
-              "",
-              500,
-              new JSONObject().put("Errors", errors)
-            );
+                null,
+                "",
+                500,
+                new JSONObject().put("Errors", errors));
           } catch (JsonProcessingException ex) {
-            java
-              .util.logging.Logger.getLogger(
-                UPCalculusModulesInstallerHandler.class.getName()
-              )
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(
+                UPCalculusModulesInstallerHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           } catch (JSONException ex) {
-            java
-              .util.logging.Logger.getLogger(
-                UPCalculusModulesInstallerHandler.class.getName()
-              )
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(
+                UPCalculusModulesInstallerHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           }
         }
       }
       getIndicatorsInstalled();
       getIndicatorsTables();
     } catch (Exception e) {
-      java
-        .util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
-        .log(Level.SEVERE, null, e);
+      java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName())
+          .log(Level.SEVERE, null, e);
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
@@ -328,17 +284,14 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
   @Override
   public void handlePut(ActionParameters params) throws ActionException {
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-      PreparedStatement statement = connection.prepareStatement(
-        "UPDATE public.up_modules_translation\n" +
-        "SET language=?, name=?, label=?, tooltip=?\n" +
-        "WHERE id=?;"
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);
+        PreparedStatement statement = connection.prepareStatement(
+            "UPDATE public.up_modules_translation\n" +
+                "SET language=?, name=?, label=?, tooltip=?\n" +
+                "WHERE id=?;");) {
       params.requireLoggedInUser();
       statement.setString(1, "english");
       statement.setString(2, params.getRequiredParam("name"));
@@ -347,11 +300,9 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
       statement.setInt(5, Integer.parseInt(params.getRequiredParam("id")));
       statement.execute();
     } catch (SQLException ex) {
-      java
-        .util.logging.Logger.getLogger(
-          UPCalculusModulesInstallerHandler.class.getName()
-        )
-        .log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(
+          UPCalculusModulesInstallerHandler.class.getName())
+          .log(Level.SEVERE, null, ex);
       ResponseHelper.writeError(params, ex.toString());
     }
   }
@@ -359,31 +310,26 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
   @Override
   public void handleDelete(ActionParameters params) throws ActionException {
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-      PreparedStatement statement = connection.prepareStatement(
-        "DELETE FROM public.up_modules_translation\n" + "	WHERE id=?;"
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);
+        PreparedStatement statement = connection.prepareStatement(
+            "DELETE FROM public.up_modules_translation\n" + "	WHERE id=?;");) {
       params.requireLoggedInUser();
       statement.setInt(1, Integer.parseInt(params.getRequiredParam("id")));
       deleteInstalledIndicator(params.getRequiredParam("name"));
       statement.execute();
     } catch (SQLException ex) {
-      java
-        .util.logging.Logger.getLogger(
-          UPCalculusModulesInstallerHandler.class.getName()
-        )
-        .log(Level.SEVERE, null, ex);
+      java.util.logging.Logger.getLogger(
+          UPCalculusModulesInstallerHandler.class.getName())
+          .log(Level.SEVERE, null, ex);
       ResponseHelper.writeError(params, ex.toString());
     }
   }
 
   private List<FileItem> getFileItems(HttpServletRequest request)
-    throws ActionException {
+      throws ActionException {
     try {
       request.setCharacterEncoding("UTF-8");
       ServletFileUpload upload = new ServletFileUpload(diskFileItemFactory);
@@ -396,34 +342,30 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
 
   private void getIndicatorsInstalled() {
     String errorMsg = "Scenario UP get ";
-    //IndicatorsUP returns=new IndicatorsUP();
+    // IndicatorsUP returns=new IndicatorsUP();
     ResponseEntity<List<IndicatorUP>> returns = null;
     try {
       RestTemplate restTemplate = new RestTemplate();
-      returns =
-        restTemplate.exchange(
+      returns = restTemplate.exchange(
           "http://" + upwsHost + ":" + upwsPort + "/indicator/",
           HttpMethod.GET,
           null,
-          new ParameterizedTypeReference<List<IndicatorUP>>() {}
-        );
+          new ParameterizedTypeReference<List<IndicatorUP>>() {
+          });
       List<IndicatorUP> response = returns.getBody();
 
       try (
-        Connection connection = DriverManager.getConnection(
-          upURL,
-          upUser,
-          upPassword
-        );
-      ) {
+          Connection connection = DriverManager.getConnection(
+              upURL,
+              upUser,
+              upPassword);) {
         for (IndicatorUP index : response) {
           PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO public.up_modules_translation(\n" +
-            "	language, name, label, tooltip)\n" +
-            "	VALUES (?, ?, ?, ?)\n" +
-            "on conflict (language, name)\n" +
-            "do nothing;"
-          );
+              "INSERT INTO public.up_modules_translation(\n" +
+                  "	language, name, label, tooltip)\n" +
+                  "	VALUES (?, ?, ?, ?)\n" +
+                  "on conflict (language, name)\n" +
+                  "do nothing;");
           statement.setString(1, "english");
           statement.setString(2, index.getName());
           statement.setString(3, index.getModule());
@@ -435,28 +377,21 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       log.error(e, errorMsg);
     }
@@ -469,32 +404,27 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
       RestTemplate restTemplate = new RestTemplate();
 
       UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(
-        "http://" + upwsHost + ":" + upwsPort + "/all_layers"
-      );
+          "http://" + upwsHost + ":" + upwsPort + "/all_layers");
 
-      returns =
-        restTemplate.exchange(
+      returns = restTemplate.exchange(
           uriBuilder.toUriString(),
           HttpMethod.GET,
           null,
-          new ParameterizedTypeReference<List<String>>() {}
-        );
+          new ParameterizedTypeReference<List<String>>() {
+          });
 
       List<String> res = returns.getBody();
 
       try (
-        Connection connection = DriverManager.getConnection(
-          upURL,
-          upUser,
-          upPassword
-        );
-      ) {
+          Connection connection = DriverManager.getConnection(
+              upURL,
+              upUser,
+              upPassword);) {
         PreparedStatement statement = connection.prepareStatement(
-          "INSERT INTO public.up_layers(\n" +
-          "	language, name,label)\n" +
-          "	VALUES (?, ?,?)" +
-          "on conflict(language,name) do nothing;"
-        );
+            "INSERT INTO public.up_layers(\n" +
+                "	language, name,label)\n" +
+                "	VALUES (?, ?,?)" +
+                "on conflict(language,name) do nothing;");
         for (String table : res) {
           statement.setString(1, "english");
           statement.setString(2, table);
@@ -505,28 +435,21 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       errorMsg = errorMsg + e.getMessage();
       log.error(e, errorMsg);
@@ -540,34 +463,26 @@ public class UPCalculusModulesInstallerHandler extends RestActionHandler {
 
       RestTemplate restTemplate = new RestTemplate();
       restTemplate.delete(
-        "http://" + upwsHost + ":" + upwsPort + "/indicator/{module}",
-        params
-      );
+          "http://" + upwsHost + ":" + upwsPort + "/indicator/{module}",
+          params);
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            UPCalculusModulesInstallerHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            UPCalculusModulesInstallerHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }

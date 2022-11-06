@@ -30,8 +30,7 @@ public class UPTDataCleanHandler extends RestActionHandler {
   private static String upwsPort;
   private static String upProjection;
   private static final Logger log = LogFactory.getLogger(
-    UPTDataCleanHandler.class
-  );
+      UPTDataCleanHandler.class);
 
   private JSONArray errors;
   private ObjectMapper Obj;
@@ -46,8 +45,7 @@ public class UPTDataCleanHandler extends RestActionHandler {
 
     upwsHost = PropertyUtil.get("upws.db.host");
     upwsPort = PropertyUtil.get("upws.db.port");
-    upProjection =
-      PropertyUtil
+    upProjection = PropertyUtil
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
@@ -64,67 +62,61 @@ public class UPTDataCleanHandler extends RestActionHandler {
   @Override
   public void handleGet(ActionParameters params) throws ActionException {
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      );
-      PreparedStatement statment = connection.prepareStatement(
-        "with datafix as(\n" +
-        "	select user_layer_data.id\n" +
-        "	from user_layer_data \n" +
-        "	where user_layer_data.user_layer_id in(\n" +
-        "		select id from user_layer \n" +
-        "	) and ST_NDims(geometry)>2\n" +
-        ") update user_layer_data \n" +
-        "set geometry = st_force2d(geometry) \n" +
-        "from datafix\n" +
-        "where user_layer_data.id = datafix.id"
-      );
-      PreparedStatement statment2 = connection.prepareStatement(
-        "with datafix as(\n" +
-        "	select layer_name,user_layer_data.id,st_transform(st_setsrid(geometry,?),4326) \n" +
-        "	from user_layer_data\n" +
-        "	inner join user_layer on user_layer_data.user_layer_id = user_layer.id\n" +
-        "	where user_layer_data.user_layer_id in(\n" +
-        "		select id from user_layer\n" +
-        "	) and st_srid(geometry)>0\n" +
-        ")\n" +
-        "update user_layer_data\n" +
-        "set geometry=st_setsrid(user_layer_data.geometry,0)\n" +
-        "from datafix\n" +
-        "where user_layer_data.id=datafix.id"
-      );
-      PreparedStatement statment3 = connection.prepareStatement(
-        "with datafix as(\n" +
-        "	select public_layer_data.id\n" +
-        "	from public_layer_data \n" +
-        "	where public_layer_data.public_layer_id in(\n" +
-        "		select id from oskari_maplayer \n" +
-        "	) and ST_NDims(geometry)>2\n" +
-        ") update public_layer_data \n" +
-        "set geometry = st_force2d(geometry) \n" +
-        "from datafix\n" +
-        "where public_layer_data.id = datafix.id"
-      );
-      PreparedStatement statment4 = connection.prepareStatement(
-        "with datafix as(\n" +
-        "	select layer_name,public_layer_data.id,st_transform(st_setsrid(geometry,?),4326) \n" +
-        "	from public_layer_data\n" +
-        "	inner join oskari_maplayer on public_layer_data.public_layer_id = oskari_maplayer.id\n" +
-        "	where public_layer_data.public_layer_id in(\n" +
-        "		select id from osakri_maplayer\n" +
-        "	) and st_srid(geometry)>0\n" +
-        ")\n" +
-        "update public_layer_data\n" +
-        "set geometry=st_setsrid(user_layer_data.geometry,0)\n" +
-        "from datafix\n" +
-        "where public_layer_data.id=datafix.id"
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword);
+        PreparedStatement statment = connection.prepareStatement(
+            "with datafix as(\n" +
+                "	select user_layer_data.id\n" +
+                "	from user_layer_data \n" +
+                "	where user_layer_data.user_layer_id in(\n" +
+                "		select id from user_layer \n" +
+                "	) and ST_NDims(geometry)>2\n" +
+                ") update user_layer_data \n" +
+                "set geometry = st_force2d(geometry) \n" +
+                "from datafix\n" +
+                "where user_layer_data.id = datafix.id");
+        PreparedStatement statment2 = connection.prepareStatement(
+            "with datafix as(\n" +
+                "	select layer_name,user_layer_data.id,st_transform(st_setsrid(geometry,?),4326) \n" +
+                "	from user_layer_data\n" +
+                "	inner join user_layer on user_layer_data.user_layer_id = user_layer.id\n" +
+                "	where user_layer_data.user_layer_id in(\n" +
+                "		select id from user_layer\n" +
+                "	) and st_srid(geometry)>0\n" +
+                ")\n" +
+                "update user_layer_data\n" +
+                "set geometry=st_setsrid(user_layer_data.geometry,0)\n" +
+                "from datafix\n" +
+                "where user_layer_data.id=datafix.id");
+        PreparedStatement statment3 = connection.prepareStatement(
+            "with datafix as(\n" +
+                "	select public_layer_data.id\n" +
+                "	from public_layer_data \n" +
+                "	where public_layer_data.public_layer_id in(\n" +
+                "		select id from oskari_maplayer \n" +
+                "	) and ST_NDims(geometry)>2\n" +
+                ") update public_layer_data \n" +
+                "set geometry = st_force2d(geometry) \n" +
+                "from datafix\n" +
+                "where public_layer_data.id = datafix.id");
+        PreparedStatement statment4 = connection.prepareStatement(
+            "with datafix as(\n" +
+                "	select layer_name,public_layer_data.id,st_transform(st_setsrid(geometry,?),4326) \n" +
+                "	from public_layer_data\n" +
+                "	inner join oskari_maplayer on public_layer_data.public_layer_id = oskari_maplayer.id\n" +
+                "	where public_layer_data.public_layer_id in(\n" +
+                "		select id from osakri_maplayer\n" +
+                "	) and st_srid(geometry)>0\n" +
+                ")\n" +
+                "update public_layer_data\n" +
+                "set geometry=st_setsrid(user_layer_data.geometry,0)\n" +
+                "from datafix\n" +
+                "where public_layer_data.id=datafix.id");) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
@@ -138,19 +130,14 @@ public class UPTDataCleanHandler extends RestActionHandler {
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       log.error(e);
     }
@@ -160,8 +147,7 @@ public class UPTDataCleanHandler extends RestActionHandler {
   public void handlePut(ActionParameters params) throws ActionException {
     params.requireLoggedInUser();
     throw new ActionParamsException(
-      "Notify there was something wrong with the params"
-    );
+        "Notify there was something wrong with the params");
   }
 
   @Override

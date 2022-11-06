@@ -63,11 +63,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 @OskariActionRoute("evaluate_public_distances_new_layers")
 public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
   private static final Logger LOG = LogFactory.getLogger(
-    STDistancesGeoJsonHandler.class
-  );
+      STDistancesGeoJsonHandler.class);
 
-  private static final String PROPERTY_USERLAYER_MAX_FILE_SIZE_MB =
-    "userlayer.max.filesize.mb";
+  private static final String PROPERTY_USERLAYER_MAX_FILE_SIZE_MB = "userlayer.max.filesize.mb";
   private static final String PROPERTY_TARGET_EPSG = "oskari.native.srs";
 
   private static final String KEY_NAME = "name";
@@ -82,16 +80,13 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
   private static final int MAX_SIZE_MEMORY = 128 * KB;
   private static final String PARAM_SOURCE_EPSG_KEY = "crs";
   private final String targetEPSG = PropertyUtil.get(
-    PROPERTY_TARGET_EPSG,
-    "EPSG:4326"
-  );
+      PROPERTY_TARGET_EPSG,
+      "EPSG:4326");
 
   private final DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory(
-    MAX_SIZE_MEMORY,
-    null
-  );
-  private final int userlayerMaxFileSize =
-    PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
+      MAX_SIZE_MEMORY,
+      null);
+  private final int userlayerMaxFileSize = PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
 
   private UserLayerDbService userLayerService;
 
@@ -106,7 +101,7 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
   private static String stUser;
   private static String stPassword;
 
-  //attributes for layer creation
+  // attributes for layer creation
   private String mapSrs;
   private String name;
   private String desc;
@@ -129,12 +124,11 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
     stwsHost = PropertyUtil.get("stws.db.host");
     stwsPort = PropertyUtil.get("stws.db.port");
-    stProjection =
-      PropertyUtil
+    stProjection = PropertyUtil
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
-    //PropertyUtil.loadProperties("/oskari-ext.properties");
+    // PropertyUtil.loadProperties("/oskari-ext.properties");
     stURL = PropertyUtil.get("db.url");
     stUser = PropertyUtil.get("db.username");
     stPassword = PropertyUtil.get("db.password");
@@ -151,15 +145,13 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
   public void handleGet(ActionParameters params) throws ActionException {
     ResponseEntity<List<STDistanceGeoJSON>> returns = null;
     try (
-      Connection connection = DriverManager.getConnection(
-        stURL,
-        stUser,
-        stPassword
-      );
-    ) {
+        Connection connection = DriverManager.getConnection(
+            stURL,
+            stUser,
+            stPassword);) {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
@@ -167,28 +159,25 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
       String studyArea = params.getRequiredParam("study_area");
       Long user_id = params.getUser().getId();
       UriComponentsBuilder uriBuilder = UriComponentsBuilder
-        .fromHttpUrl(
-          "http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/"
-        )
-        .queryParam("study_area", studyArea)
-        .queryParam("user_id", user_id)
-        .queryParam("projection", stProjection);
+          .fromHttpUrl(
+              "http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/")
+          .queryParam("study_area", studyArea)
+          .queryParam("user_id", user_id)
+          .queryParam("projection", stProjection);
       RestTemplate restTemplate = new RestTemplate();
-      returns =
-        restTemplate.exchange(
+      returns = restTemplate.exchange(
           uriBuilder.toUriString(),
           HttpMethod.GET,
           null,
-          new ParameterizedTypeReference<List<STDistanceGeoJSON>>() {}
-        );
+          new ParameterizedTypeReference<List<STDistanceGeoJSON>>() {
+          });
       List<STDistanceGeoJSON> response = returns.getBody();
 
       for (STDistanceGeoJSON index : response) {
         String Layer_name = "";
         String Study_area_name = "";
         PreparedStatement statement1 = connection.prepareStatement(
-          "select name from oskari_maplayer where id=? limit 1"
-        );
+            "select name from oskari_maplayer where id=? limit 1");
         statement1.setLong(1, index.layer_id);
         ResultSet layers_name = statement1.executeQuery();
 
@@ -197,8 +186,7 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         }
 
         PreparedStatement statement2 = connection.prepareStatement(
-          "select name from oskari_maplayer where id=? limit 1"
-        );
+            "select name from oskari_maplayer where id=? limit 1");
         statement2.setLong(1, index.study_area);
         ResultSet study_areas_name = statement2.executeQuery();
 
@@ -208,11 +196,10 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
         mapSrs = "EPSG:" + stProjection;
         name = Study_area_name + " " + Layer_name + " " + index.name;
-        desc =
-          "This layer was created by Distances Module using layer " +
-          Layer_name +
-          " within study area " +
-          Study_area_name;
+        desc = "This layer was created by Distances Module using layer " +
+            Layer_name +
+            " within study area " +
+            Study_area_name;
         source = "Distance Module";
         uuid = params.getUser().getUuid();
         sourceEPSG = "EPSG:" + stProjection;
@@ -227,27 +214,20 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
       LOG.error(e, e.getMessage());
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
         ResponseHelper.writeError(
-          params,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            params,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException | JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            STDistanceEvaluationHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            STDistanceEvaluationHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
@@ -261,10 +241,11 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
       CoordinateReferenceSystem targetCRS = decodeCRS(targetEPSG);
 
       ObjectMapper om = new ObjectMapper();
-      TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String, Object>>() {};
+      TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String, Object>>() {
+      };
       Map<String, Object> geojson = null;
 
-      //read geoJson string from parameter instead of a file
+      // read geoJson string from parameter instead of a file
       InputStream targetStream = null;
       targetStream = IOUtils.toInputStream(geojson_in);
       try (InputStream in = targetStream) {
@@ -284,10 +265,8 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         }
       } catch (Exception e) {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         LOG.error("Failed reading the input stream " + e.toString());
         throw new ActionException("Found an error");
       }
@@ -295,14 +274,12 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
       try {
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
         SimpleFeatureType schema = GeoJSONSchemaDetector.getSchema(
-          geojson,
-          crs
-        );
+            geojson,
+            crs);
 
         SimpleFeatureCollection original = GeoJSONReader2.toFeatureCollection(
-          geojson,
-          schema
-        );
+            geojson,
+            schema);
 
         try (SimpleFeatureIterator it = original.features()) {
           while (it.hasNext()) {
@@ -313,10 +290,10 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         UserLayer userLayer = store(original);
 
         AuditLog
-          .user(ip, user)
-          .withParam("filename", name)
-          .withParam("id", userLayer.getId())
-          .added(AuditLog.ResourceType.USERLAYER);
+            .user(ip, user)
+            .withParam("filename", name)
+            .withParam("id", userLayer.getId())
+            .added(AuditLog.ResourceType.USERLAYER);
 
         layers_store.add(userLayer);
       } catch (Exception ex) {
@@ -332,109 +309,97 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         e.addContent(UserLayerException.InfoType.FILES, validFiles);
       }
       LOG.error(
-        "User uuid:",
-        uuid,
-        "zip:",
-        jsonfile == null ? "no file" : name,
-        "info:",
-        e.getOptions().toString()
-      );
+          "User uuid:",
+          uuid,
+          "zip:",
+          jsonfile == null ? "no file" : name,
+          "info:",
+          e.getOptions().toString());
 
       AuditLog
-        .user(ip, user)
-        .withParam("filename", name)
-        .withMsg(e.getMessage())
-        .errored(AuditLog.ResourceType.USERLAYER);
+          .user(ip, user)
+          .withParam("filename", name)
+          .withMsg(e.getMessage())
+          .errored(AuditLog.ResourceType.USERLAYER);
 
       throw new ActionParamsException(e.getMessage(), e.getOptions());
     } catch (ActionException e) {
       LOG.error(
-        "User uuid:",
-        uuid,
-        "zip:",
-        jsonfile == null ? "no file" : name,
-        "files found (" + validFiles.size() + ") including:",
-        validFiles.stream().collect(Collectors.joining(","))
-      );
+          "User uuid:",
+          uuid,
+          "zip:",
+          jsonfile == null ? "no file" : name,
+          "files found (" + validFiles.size() + ") including:",
+          validFiles.stream().collect(Collectors.joining(",")));
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            STDistancesGeoJsonHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            STDistancesGeoJsonHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       throw e;
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
-    } finally {}
+    } finally {
+    }
   }
 
   private CoordinateReferenceSystem decodeCRS(String epsg)
-    throws UserLayerException {
+      throws UserLayerException {
     try {
       return epsg == null ? null : CRS.decode(epsg);
     } catch (Exception e) {
       throw new UserLayerException(
-        "Failed to decode CoordinateReferenceSystem from " + epsg,
-        UserLayerException.ErrorType.INVALID_EPSG
-      );
+          "Failed to decode CoordinateReferenceSystem from " + epsg,
+          UserLayerException.ErrorType.INVALID_EPSG);
     }
   }
 
   private Map<String, String> getFormParams(List<FileItem> fileItems) {
     return fileItems
-      .stream()
-      .filter(f -> f.isFormField())
-      .collect(
-        Collectors.toMap(
-          f -> f.getFieldName(),
-          f -> new String(f.get(), StandardCharsets.UTF_8)
-        )
-      );
+        .stream()
+        .filter(f -> f.isFormField())
+        .collect(
+            Collectors.toMap(
+                f -> f.getFieldName(),
+                f -> new String(f.get(), StandardCharsets.UTF_8)));
   }
 
   private UserLayer store(SimpleFeatureCollection fc)
-    throws UserLayerException, ActionException {
-    UserLayer userLayer = createUserLayer(fc);
-    userLayer.setStyle(createUserLayerStyle());
+      throws UserLayerException, ActionException {// userLayer.setStyle(createUserLayerStyle());
+    JSONObject jsonStyle = createUserLayerStyle().parseUserLayerStyleToOskariJSON();
+    String style = jsonStyle.toString();
+
+    UserLayer userLayer = createUserLayer(fc, style);
     List<UserLayerData> userLayerDataList = UserLayerDataService.createUserLayerData(
-      fc,
-      uuid
-    );
+        fc,
+        uuid);
     userLayer.setFeatures_count(userLayerDataList.size());
     userLayer.setFeatures_skipped(fc.size() - userLayerDataList.size());
-    userLayerService.insertUserLayer(userLayer, userLayerDataList);
+    userLayerService.insertUserLayerAndData(userLayer, userLayerDataList);
     return userLayer;
   }
 
-  private UserLayer createUserLayer(SimpleFeatureCollection fc)
-    throws ActionException {
-    return UserLayerDataService.createUserLayer(fc, uuid, name, desc, source);
+  private UserLayer createUserLayer(SimpleFeatureCollection fc, String style)
+      throws ActionException {
+    return UserLayerDataService.createUserLayer(fc, uuid, name, desc, source, style);
   }
 
   private UserDataStyle createUserLayerStyle()
-    throws UserLayerException, ActionParamsException {
+      throws UserLayerException, ActionParamsException {
     final UserDataStyle style = new UserDataStyle();
     style.initDefaultStyle();
     return style;
@@ -444,25 +409,22 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
     layers_saved = new JSONArray();
     for (UserLayer ulayer : layers_store) {
       JSONObject userLayer = UserLayerDataService.parseUserLayer2JSON(
-        ulayer,
-        mapSrs
-      );
+          ulayer,
+          mapSrs);
 
       JSONHelper.putValue(
-        userLayer,
-        "featuresCount",
-        ulayer.getFeatures_count()
-      );
+          userLayer,
+          "featuresCount",
+          ulayer.getFeatures_count());
       JSONObject permissions = UserLayerHandlerHelper.getPermissions();
       JSONHelper.putValue(userLayer, "permissions", permissions);
-      //add warning if features were skipped
+      // add warning if features were skipped
       if (ulayer.getFeatures_skipped() > 0) {
         JSONObject featuresSkipped = new JSONObject();
         JSONHelper.putValue(
-          featuresSkipped,
-          "featuresSkipped",
-          ulayer.getFeatures_skipped()
-        );
+            featuresSkipped,
+            "featuresSkipped",
+            ulayer.getFeatures_skipped());
         JSONHelper.putValue(userLayer, "warning", featuresSkipped);
       }
       layers_saved.put(userLayer);
@@ -478,38 +440,30 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
       RestTemplate restTemplate = new RestTemplate();
       restTemplate.delete(
-        "http://" +
-        stwsHost +
-        ":" +
-        stwsPort +
-        "/distances_evaluation/{study_area}/{user_id}",
-        params
-      );
+          "http://" +
+              stwsHost +
+              ":" +
+              stwsPort +
+              "/distances_evaluation/{study_area}/{user_id}",
+          params);
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            STDistancesGeoJsonHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            STDistancesGeoJsonHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(
-            STDistancesGeoJsonHandler.class.getName()
-          )
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(
+            STDistancesGeoJsonHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       throw e;
     }

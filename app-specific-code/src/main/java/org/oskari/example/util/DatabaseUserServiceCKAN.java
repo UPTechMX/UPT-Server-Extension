@@ -26,15 +26,14 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
   private MybatisUserService userService = new MybatisUserService();
 
   private static final Logger log = LogFactory.getLogger(
-    DatabaseUserService.class
-  );
+      DatabaseUserService.class);
 
   private static final int BCRYPT_PASSWORD_LENGTH = 60;
   private static final String ERR_USER_MISSING = "User was null";
 
   @Override
   public User login(final String user, final String pass)
-    throws ServiceException {
+      throws ServiceException {
     try {
       final String expectedHashedPassword = userService.getPassword(user);
       if (expectedHashedPassword == null) {
@@ -46,41 +45,36 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
         final String hashedPass = "MD5:" + DigestUtils.md5Hex(pass);
         username = userService.login(user, hashedPass);
         log.debug(
-          "Tried to login user with:",
-          user,
-          "/",
-          pass,
-          "-> ",
-          hashedPass,
-          "- Got username:",
-          username
-        );
+            "Tried to login user with:",
+            user,
+            "/",
+            pass,
+            "-> ",
+            hashedPass,
+            "- Got username:",
+            username);
         if (username == null) {
           return null;
         }
       } else if (expectedHashedPassword.length() == BCRYPT_PASSWORD_LENGTH) {
         log.debug(
-          "Tried to login user:",
-          user,
-          "/",
-          pass,
-          " with BCrypt password"
-        );
+            "Tried to login user:",
+            user,
+            "/",
+            pass,
+            " with BCrypt password");
         if (!BCrypt.checkpw(pass, expectedHashedPassword)) {
           return null;
         }
         username = user;
       } else if (expectedHashedPassword.startsWith("$pbkdf2-sha512")) {
         log.debug(
-          "Tried to login user:",
-          user,
-          "/",
-          pass,
-          " with CKAN password"
-        );
-        if (
-          !CKANPasswordHandler.validatePassword(pass, expectedHashedPassword)
-        ) {
+            "Tried to login user:",
+            user,
+            "/",
+            pass,
+            " with CKAN password");
+        if (!CKANPasswordHandler.validatePassword(pass, expectedHashedPassword)) {
           return null;
         }
         username = user;
@@ -96,7 +90,7 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
   }
 
   public User createCKANUser(CKANUser user, String[] roleIds)
-    throws ServiceException {
+      throws ServiceException {
     log.info("createCKANUser #######################");
     if (user == null) {
       throw new ServiceException(ERR_USER_MISSING);
@@ -118,7 +112,7 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
 
   @Override
   public void setUserPassword(String username, String password)
-    throws ServiceException {
+      throws ServiceException {
     if (password.startsWith("$pbkdf2-sha512")) {
       userService.setPassword(username, password);
     } else {
@@ -129,7 +123,7 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
 
   @Override
   public void updateUserPassword(String username, String password)
-    throws ServiceException {
+      throws ServiceException {
     if (password.startsWith("$pbkdf2-sha512")) {
       userService.updatePassword(username, password);
     } else {
@@ -139,8 +133,7 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
   }
 
   public Set<CKANOrganization> storeCKANOrganizationsAsRoles(
-    final Set<CKANOrganization> userRoles
-  ) {
+      final Set<CKANOrganization> userRoles) {
     Set<CKANOrganization> updatedRoles = new HashSet<>();
     try {
       updatedRoles = ensureRolesInDB(userRoles);
@@ -151,9 +144,8 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
   }
 
   private Set<CKANOrganization> ensureRolesInDB(
-    final Set<CKANOrganization> userRoles
-  )
-    throws ServiceException {
+      final Set<CKANOrganization> userRoles)
+      throws ServiceException {
     // Remove roles that do not exist as organizations in CKAN anymore
     removeDeletedCKANRoles(userRoles);
     final Role[] systemRoles = getRoles();
@@ -176,15 +168,13 @@ public class DatabaseUserServiceCKAN extends DatabaseUserService {
   }
 
   private void removeDeletedCKANRoles(Set<CKANOrganization> userRoles)
-    throws ServiceException {
+      throws ServiceException {
     Role[] systemRoles = getRoles();
     for (Role role : systemRoles) {
       boolean removeRole = true;
-      if (
-        !role.getName().equals("Admin") &&
-        !role.getName().equals("User") &&
-        !role.getName().equals("Guest")
-      ) {
+      if (!role.getName().equals("Admin") &&
+          !role.getName().equals("User") &&
+          !role.getName().equals("Guest")) {
         for (Role userRole : userRoles) {
           if (userRole.getName().equals(role.getName())) {
             removeRole = false;

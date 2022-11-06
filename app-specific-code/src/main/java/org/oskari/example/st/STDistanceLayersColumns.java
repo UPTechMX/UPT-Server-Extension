@@ -41,6 +41,7 @@ public class STDistanceLayersColumns extends RestActionHandler {
     Map<Integer, STSettings> stLayers;
 
     private static final Logger log = LogFactory.getLogger(LayersSTHandler.class);
+
     @Override
     public void preProcess(ActionParameters params) throws ActionException {
         // common method called for all request methods
@@ -52,7 +53,8 @@ public class STDistanceLayersColumns extends RestActionHandler {
 
         stwsHost = PropertyUtil.get("stws.db.host");
         stwsPort = PropertyUtil.get("stws.db.port");
-        stProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+        stProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
         user_id = params.getUser().getId();
     }
 
@@ -97,15 +99,15 @@ public class STDistanceLayersColumns extends RestActionHandler {
 
             ResultSet data = statement.executeQuery(
                     "with cols as("
-                    + " select id,fields "
-                    + " from user_layer "
-                    + " where id=" + id
-                    + " ) "
-                    + " select name "
-                    + " from cols,json_populate_recordset(null::record,cols.fields) as(name text) "
-                    + " where name !='the_geom' "
-                    + " union all "
-                    + " select 'geometry';");
+                            + " select id,fields "
+                            + " from user_layer "
+                            + " where id=" + id
+                            + " ) "
+                            + " select name "
+                            + " from cols,json_populate_recordset(null::record,cols.fields) as(name text) "
+                            + " where name !='the_geom' "
+                            + " union all "
+                            + " select 'geometry';");
             while (data.next()) {
                 layers.add(data.getString("name"));
             }

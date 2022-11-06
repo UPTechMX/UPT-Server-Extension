@@ -8,7 +8,8 @@ import fi.nls.oskari.service.OskariComponentManager;
 import fi.nls.oskari.service.ServiceException;
 import fi.nls.oskari.service.ServiceRuntimeException;
 import fi.nls.oskari.service.UserService;
-import org.flywaydb.core.api.migration.jdbc.JdbcMigration;
+import org.flywaydb.core.api.migration.BaseJavaMigration;
+import org.flywaydb.core.api.migration.Context;
 import org.oskari.permissions.PermissionService;
 import org.oskari.permissions.PermissionServiceMybatisImpl;
 import org.oskari.permissions.model.*;
@@ -22,18 +23,19 @@ import java.util.Optional;
 /**
  * Add permissions for regionset: countries
  */
-public class V1_1_2__add_permission_for_regionset implements JdbcMigration {
+public class V1_1_2__add_permission_for_regionset extends BaseJavaMigration {
 
-    public void migrate(Connection connection)
+    public void migrate(Context context)
             throws SQLException {
+        Connection connection = context.getConnection();
         PermissionService service = new PermissionServiceMybatisImpl();
-        for(Resource resToUpdate : getResources()) {
+        for (Resource resToUpdate : getResources()) {
             Optional<Resource> dbRes = service.findResource(ResourceType.maplayer, resToUpdate.getMapping());
-            if(dbRes.isPresent()) {
+            if (dbRes.isPresent()) {
                 resToUpdate = dbRes.get();
             }
-            for(Role role : getRoles()) {
-                if(resToUpdate.hasPermission(role, PermissionType.VIEW_LAYER)) {
+            for (Role role : getRoles()) {
+                if (resToUpdate.hasPermission(role, PermissionType.VIEW_LAYER)) {
                     // already had the permission
                     continue;
                 }

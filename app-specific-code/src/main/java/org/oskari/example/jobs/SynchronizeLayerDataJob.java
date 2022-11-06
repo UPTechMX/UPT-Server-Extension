@@ -10,8 +10,7 @@ import org.oskari.example.db.SynchronizeDatabase;
 @Oskari("SynchronizeLayerDataJob")
 public class SynchronizeLayerDataJob extends fi.nls.oskari.worker.ScheduledJob {
   private static final Logger LOG = LogFactory.getLogger(
-    SynchronizeLayerDataJob.class
-  );
+      SynchronizeLayerDataJob.class);
 
   @Override
   public void execute(Map<String, Object> params) {

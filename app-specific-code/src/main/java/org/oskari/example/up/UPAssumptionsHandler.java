@@ -61,7 +61,7 @@ public class UPAssumptionsHandler extends RestActionHandler {
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "UPAssumptions get";
         Long user_id = params.getUser().getId();
         Integer scenario_id = Integer.parseInt(params.getRequiredParam("scenario_id"));
@@ -73,15 +73,15 @@ public class UPAssumptionsHandler extends RestActionHandler {
                         upUser,
                         upPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "select id,study_area,scenario,category,name,value,units,description,source \n"
-                    + "from up_assumptions \n"
-                    + "where scenario=?");
+                            + "from up_assumptions \n"
+                            + "where scenario=?");
             statement.setInt(1, scenario_id);
             boolean status = statement.execute();
             if (status) {
@@ -99,7 +99,8 @@ public class UPAssumptionsHandler extends RestActionHandler {
                     layer.description = data.getString("description");
                     layer.source = data.getString("source");
                     modules.add(layer);
-                };
+                }
+                ;
             }
             if (modules.isEmpty()) {
                 UPAssumptions layer = new UPAssumptions(scenario_id);
@@ -108,14 +109,15 @@ public class UPAssumptionsHandler extends RestActionHandler {
 
             JSONArray out = new JSONArray();
             for (UPAssumptions index : modules) {
-                //Convert to Json Object
+                // Convert to Json Object
 
                 JSONObject json = null;
                 try {
                     json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                     out.put(json);
                 } catch (JsonProcessingException ex) {
-                    java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName()).log(Level.SEVERE, null, ex);
+                    java.util.logging.Logger.getLogger(UPAssumptionsHandler.class.getName()).log(Level.SEVERE, null,
+                            ex);
                 }
             }
             ResponseHelper.writeResponse(params, out);
@@ -136,10 +138,10 @@ public class UPAssumptionsHandler extends RestActionHandler {
 
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
-        //Just UPTAdmin can use this method
+        // Just UPTAdmin can use this method
         String errorMsg = "UPAssumptions post";
         Long user_id = params.getUser().getId();
-        
+
         Long study_area = Long.parseLong(params.getRequiredParam("study_area"));
         Integer scenario = Integer.parseInt(params.getRequiredParam("scenario"));
         String category = params.getRequiredParam("category");
@@ -158,14 +160,14 @@ public class UPAssumptionsHandler extends RestActionHandler {
                         upUser,
                         upPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             PreparedStatement statement = connection.prepareStatement(
                     "insert into up_assumptions(study_area,scenario,category,name,value,units,description,source) \n"
-                    + "values(?,?,?,?,?,?,?,?)\n");
+                            + "values(?,?,?,?,?,?,?,?)\n");
             statement.setLong(1, study_area);
             statement.setInt(2, scenario);
             statement.setString(3, category);
@@ -195,7 +197,7 @@ public class UPAssumptionsHandler extends RestActionHandler {
 
     @Override
     public void handlePut(ActionParameters params) throws ActionException {
-        //Just UPTAdmin can use this method
+        // Just UPTAdmin can use this method
         String errorMsg = "UPAssumptions post";
         JSONObject json = null;
         try (
@@ -204,11 +206,11 @@ public class UPAssumptionsHandler extends RestActionHandler {
                         upUser,
                         upPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             Long user_id = params.getUser().getId();
             Long id = Long.parseLong(params.getRequiredParam("id"));
             Long study_area = Long.parseLong(params.getRequiredParam("study_area"));
@@ -222,12 +224,12 @@ public class UPAssumptionsHandler extends RestActionHandler {
 
             PreparedStatement statement = connection.prepareStatement(
                     "update up_assumptions \n"
-                    + "set (study_area, \n"
-                    + "scenario,category, \n"
-                    + "name,value,units, \n"
-                    + "description,source)=\n"
-                    + "(?, ?,?,?,?,?,?,?) \n"
-                    + " where id=? \n");
+                            + "set (study_area, \n"
+                            + "scenario,category, \n"
+                            + "name,value,units, \n"
+                            + "description,source)=\n"
+                            + "(?, ?,?,?,?,?,?,?) \n"
+                            + " where id=? \n");
             statement.setLong(1, study_area);
             statement.setLong(2, scenario);
             statement.setString(3, category);
@@ -258,11 +260,11 @@ public class UPAssumptionsHandler extends RestActionHandler {
             val.scenario = Integer.parseInt(params.getRequiredParam("scenario"));
             val.category = params.getRequiredParam("category");
             val.name = params.getRequiredParam("name");
-            val.value = Double.parseDouble(params.getRequiredParam("value"));            
-            
+            val.value = Double.parseDouble(params.getRequiredParam("value"));
+
             RestTemplate restTemplate = new RestTemplate();
             Map<String, String> param = new HashMap<String, String>();
-            param.put("assumptions_id",  params.getRequiredParam("id"));
+            param.put("assumptions_id", params.getRequiredParam("id"));
             restTemplate.put("http://" + upwsHost + ":" + upwsPort + "/assumptions/", val, param);
         } catch (Exception e) {
             errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));

@@ -52,30 +52,31 @@ public class UPTRoles extends RestActionHandler {
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
+
     @Override
-    public void handleGet(ActionParameters params)throws ActionException {
+    public void handleGet(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
         Long user_id = params.getUser().getId();
-        try(
-            Connection connection = DriverManager.getConnection(
+        try (
+                Connection connection = DriverManager.getConnection(
                         upURL,
                         upUser,
                         upPassword)) {
             PreparedStatement statement = connection.prepareStatement(
                     "select oskari_roles.name from oskari_users\n" +
-                    "inner join oskari_role_oskari_user\n" +
-                    "on oskari_role_oskari_user.user_id=oskari_users.id\n" +
-                    "inner join oskari_roles on oskari_roles.id=oskari_role_oskari_user.role_id\n" +
-                    "where oskari_users.id=?");
+                            "inner join oskari_role_oskari_user\n" +
+                            "on oskari_role_oskari_user.user_id=oskari_users.id\n" +
+                            "inner join oskari_roles on oskari_roles.id=oskari_role_oskari_user.role_id\n" +
+                            "where oskari_users.id=?");
             statement.setLong(1, user_id);
-            ResultSet data=statement.executeQuery();
-            ArrayList<String> roles=new ArrayList<>();
-            while(data.next()){
+            ResultSet data = statement.executeQuery();
+            ArrayList<String> roles = new ArrayList<>();
+            while (data.next()) {
                 roles.add(data.getString("name"));
             }
-            UPTUserRoles result= new UPTUserRoles(roles.toArray(new String[0]));
-            ResponseHelper.writeResponse(params,JSONHelper.createJSONObject(Obj.writeValueAsString(result)));
-        }catch(Exception e){
+            UPTUserRoles result = new UPTUserRoles(roles.toArray(new String[0]));
+            ResponseHelper.writeResponse(params, JSONHelper.createJSONObject(Obj.writeValueAsString(result)));
+        } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
@@ -84,40 +85,44 @@ public class UPTRoles extends RestActionHandler {
             }
         }
     }
-    public ArrayList handleGet(ActionParameters params,User user)throws Exception {
+
+    public ArrayList handleGet(ActionParameters params, User user) throws Exception {
         this.preProcess(params);
         Long user_id = user.getId();
-        
+
         Connection connection = DriverManager.getConnection(
-                    upURL,
-                    upUser,
-                    upPassword);
+                upURL,
+                upUser,
+                upPassword);
         PreparedStatement statement = connection.prepareStatement(
                 "select oskari_roles.name from oskari_users\n" +
-                "inner join oskari_role_oskari_user\n" +
-                "on oskari_role_oskari_user.user_id=oskari_users.id\n" +
-                "inner join oskari_roles on oskari_roles.id=oskari_role_oskari_user.role_id\n" +
-                "where oskari_users.id=?");
+                        "inner join oskari_role_oskari_user\n" +
+                        "on oskari_role_oskari_user.user_id=oskari_users.id\n" +
+                        "inner join oskari_roles on oskari_roles.id=oskari_role_oskari_user.role_id\n" +
+                        "where oskari_users.id=?");
         statement.setLong(1, user_id);
-        ResultSet data=statement.executeQuery();
-        ArrayList<String> roles=new ArrayList<>();
-        while(data.next()){
+        ResultSet data = statement.executeQuery();
+        ArrayList<String> roles = new ArrayList<>();
+        while (data.next()) {
             roles.add(data.getString("name"));
         }
         return roles;
     }
+
     @Override
-    public void handlePost(ActionParameters params)throws ActionException {
+    public void handlePost(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
         throw new ActionParamsException("Not implemented");
     }
+
     @Override
-    public void handlePut(ActionParameters params)throws ActionException {
+    public void handlePut(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
         throw new ActionParamsException("Not implemented");
     }
+
     @Override
-    public void handleDelete(ActionParameters params)throws ActionException {
+    public void handleDelete(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
         throw new ActionParamsException("Not implemented");
     }

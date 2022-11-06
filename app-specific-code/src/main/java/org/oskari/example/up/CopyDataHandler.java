@@ -52,8 +52,7 @@ public class CopyDataHandler extends RestActionHandler {
 
     upwsHost = PropertyUtil.get("upws.db.host");
     upwsPort = PropertyUtil.get("upws.db.port");
-    upProjection =
-      PropertyUtil
+    upProjection = PropertyUtil
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
@@ -72,7 +71,7 @@ public class CopyDataHandler extends RestActionHandler {
     try {
       params.requireLoggedInUser();
       ArrayList<String> roles = new UPTRoles()
-      .handleGet(params, params.getUser());
+          .handleGet(params, params.getUser());
       if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
         throw new Exception("User privilege is not enough for this action");
       }
@@ -86,8 +85,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
           break;
         case "mmu_info":
           this.setMmuInfo(
@@ -95,8 +93,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
           break;
         case "transit":
           this.setTransit(
@@ -104,8 +101,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
           break;
         case "transit_info":
           this.setTransitInfo(
@@ -113,8 +109,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "roads":
@@ -123,8 +118,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "roads_info":
@@ -133,8 +127,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "jobs":
@@ -143,8 +136,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "jobs_info":
@@ -153,8 +145,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "footprint":
@@ -163,8 +154,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "risk":
@@ -173,8 +163,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "risk_info":
@@ -183,8 +172,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
 
           break;
         case "amenities":
@@ -193,8 +181,7 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
           break;
         case "amenities_info":
           this.setAmenitiesInfo(
@@ -202,55 +189,45 @@ public class CopyDataHandler extends RestActionHandler {
               params.getRequiredParam("layerName"),
               params.getRequest().getParameterValues("tableUP"),
               params.getRequest().getParameterValues("table"),
-              params.getRequiredParam("scenarioId")
-            );
+              params.getRequiredParam("scenarioId"));
           break;
         default:
           break;
       }
       ResponseHelper.writeResponse(
-        params,
-        new JSONObject().put("Errors", errors)
-      );
+          params,
+          new JSONObject().put("Errors", errors));
     } catch (Exception e) {
       errorMsg = errorMsg + e.getMessage();
       log.error(e, errorMsg);
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
         ResponseHelper.writeError(
-          params,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            params,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(CopyDataHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(CopyDataHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(CopyDataHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(CopyDataHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
     }
   }
 
   private void setAmenities(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  ) {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId) {
     String tableUP[] = new String[tableup.length + 2];
     System.arraycopy(tableup, 0, tableUP, 0, tableup.length);
     tableUP[tableup.length] = "scenario";
@@ -260,13 +237,12 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            " st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += " st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -275,11 +251,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -291,31 +266,24 @@ public class CopyDataHandler extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     try (
-      Connection connection = DriverManager.getConnection(
-        upURL,
-        upUser,
-        upPassword
-      )
-    ) {
+        Connection connection = DriverManager.getConnection(
+            upURL,
+            upUser,
+            upPassword)) {
       Statement statement = connection.createStatement();
-      query =
-        "select distinct " +
-        values +
-        " from user_layer\n" +
-        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-        " where user_layer.id=" +
-        layer;
+      query = "select distinct " +
+          values +
+          " from user_layer\n" +
+          " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+          " where user_layer.id=" +
+          layer;
 
       errors.put(
-        JSONHelper.createJSONObject(
-          Obj.writeValueAsString(
-            new PostStatus(
-              "OK",
-              "Amenities executing query:" + statement.toString()
-            )
-          )
-        )
-      );
+          JSONHelper.createJSONObject(
+              Obj.writeValueAsString(
+                  new PostStatus(
+                      "OK",
+                      "Amenities executing query:" + statement.toString()))));
       ResultSet data = statement.executeQuery(query);
 
       ArrayList<UPAmenities> data_in = new ArrayList<>();
@@ -326,11 +294,9 @@ public class CopyDataHandler extends RestActionHandler {
         for (int i = 0; i < tableUP.length; i++) {
           Field f = c.getDeclaredField(tableUP[i]);
           f.setAccessible(true);
-          if (
-            !tableUP[i].equals("scenario") &&
-            !tableUP[i].equals("amenities_id") &&
-            !tableUP[i].equals("oskari_code")
-          ) {
+          if (!tableUP[i].equals("scenario") &&
+              !tableUP[i].equals("amenities_id") &&
+              !tableUP[i].equals("oskari_code")) {
             f.set(o, data.getString(tableUP[i]));
           } else if (tableUP[i].equals("scenario")) {
             Integer val = (Integer) data.getInt(tableUP[i]);
@@ -340,7 +306,8 @@ public class CopyDataHandler extends RestActionHandler {
             f.set(o, val);
           } else if (tableUP[i].equals("location")) {
             f.set(o, data.getString(tableUP[i]));
-          } else if (tableUP[i].equals("amenities_id")) {}
+          } else if (tableUP[i].equals("amenities_id")) {
+          }
         }
         data_in.add((UPAmenities) o);
       }
@@ -348,49 +315,40 @@ public class CopyDataHandler extends RestActionHandler {
 
       RestTemplate restTemplate = new RestTemplate();
       restTemplate.postForObject(
-        "http://" + upwsHost + ":" + upwsPort + "/amenities/",
-        final_data,
-        PostStatus.class
-      );
+          "http://" + upwsHost + ":" + upwsPort + "/amenities/",
+          final_data,
+          PostStatus.class);
     } catch (Exception e) {
       try {
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
         errors.put(
-          JSONHelper.createJSONObject(
-            Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))
-          )
-        );
+            JSONHelper.createJSONObject(
+                Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
         ResponseHelper.writeError(
-          null,
-          "",
-          500,
-          new JSONObject().put("Errors", errors)
-        );
+            null,
+            "",
+            500,
+            new JSONObject().put("Errors", errors));
       } catch (JsonProcessingException ex) {
-        java
-          .util.logging.Logger.getLogger(CopyDataHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(CopyDataHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       } catch (JSONException ex) {
-        java
-          .util.logging.Logger.getLogger(CopyDataHandler.class.getName())
-          .log(Level.SEVERE, null, ex);
+        java.util.logging.Logger.getLogger(CopyDataHandler.class.getName())
+            .log(Level.SEVERE, null, ex);
       }
       log.error(e, errorMsg + query);
     }
   }
 
   private void setAmenitiesInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     PostStatus postStatus = new PostStatus();
     postStatus.status = "OK";
     String values = "";
@@ -405,10 +363,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -428,30 +385,24 @@ public class CopyDataHandler extends RestActionHandler {
 
     String query = "";
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Amenities attribures executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Amenities attribures executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPAmenitiesInfo> data_in = new ArrayList<>();
@@ -485,20 +436,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/amenities_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/amenities_info/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setMmu(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     PostStatus postStatus = new PostStatus();
     postStatus.status = "OK";
     String values = "";
@@ -510,13 +459,12 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            " st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += " st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -525,11 +473,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -542,30 +489,24 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Minimum mapping unit executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Minimum mapping unit executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
 
@@ -594,20 +535,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/mmu/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/mmu/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setMmuInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
 
     String tableUP[] = new String[tableup.length + 3];
@@ -620,10 +559,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "oskari_code":
           values += "user_layer_data.id as " + tableUP[i];
@@ -644,31 +582,25 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Minimum mapping unit attributes executing query:" +
-            statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Minimum mapping unit attributes executing query:" +
+                        statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPMmuInfo> data_in = new ArrayList<>();
@@ -703,20 +635,18 @@ public class CopyDataHandler extends RestActionHandler {
     RestTemplate restTemplate = new RestTemplate();
 
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/mmu_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/mmu_info/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setTransit(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
     String tableUP[] = new String[tableup.length + 2];
     System.arraycopy(tableup, 0, tableUP, 0, tableup.length);
@@ -726,13 +656,12 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            "st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += "st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -741,11 +670,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -758,27 +686,22 @@ public class CopyDataHandler extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus("OK", "Executing query:" + statement.toString())
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus("OK", "Executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
 
@@ -790,11 +713,9 @@ public class CopyDataHandler extends RestActionHandler {
       for (int i = 0; i < tableUP.length; i++) {
         Field f = c.getDeclaredField(tableUP[i]);
         f.setAccessible(true);
-        if (
-          !tableUP[i].equals("scenario") &&
-          !tableUP[i].equals("transit_id") &&
-          !tableUP[i].equals("oskari_code")
-        ) {
+        if (!tableUP[i].equals("scenario") &&
+            !tableUP[i].equals("transit_id") &&
+            !tableUP[i].equals("oskari_code")) {
           f.set(o, data.getString(tableUP[i]));
         } else if (tableUP[i].equals("scenario")) {
           Integer val = (Integer) data.getInt(tableUP[i]);
@@ -804,29 +725,28 @@ public class CopyDataHandler extends RestActionHandler {
           f.set(o, val);
         } else if (tableUP[i].equals("location")) {
           f.set(o, data.getString(tableUP[i]));
-        } else if (tableUP[i].equals("transit_id")) {}
+        } else if (tableUP[i].equals("transit_id")) {
+        }
       }
       data_in.add((UPTransit) o);
-      //return postStatus;
+      // return postStatus;
     }
     Tables<UPTransit> final_data = new Tables<UPTransit>(data_in);
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/transit/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/transit/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setTransitInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
 
     String tableUP[] = new String[tableup.length + 3];
@@ -839,10 +759,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -862,19 +781,17 @@ public class CopyDataHandler extends RestActionHandler {
 
     String query = "";
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPTransitInfo> data_in = new ArrayList<>();
 
@@ -907,20 +824,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/transit_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/transit_info/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setRoads(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
     String tableUP[] = new String[tableup.length + 2];
     System.arraycopy(tableup, 0, tableUP, 0, tableup.length);
@@ -930,13 +845,12 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            "st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += "st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -945,11 +859,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -963,27 +876,22 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus("OK", "Roads executing query:" + statement.toString())
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus("OK", "Roads executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
 
@@ -995,11 +903,9 @@ public class CopyDataHandler extends RestActionHandler {
       for (int i = 0; i < tableUP.length; i++) {
         Field f = c.getDeclaredField(tableUP[i]);
         f.setAccessible(true);
-        if (
-          !tableUP[i].equals("scenario") &&
-          !tableUP[i].equals("roads_id") &&
-          !tableUP[i].equals("oskari_code")
-        ) {
+        if (!tableUP[i].equals("scenario") &&
+            !tableUP[i].equals("roads_id") &&
+            !tableUP[i].equals("oskari_code")) {
           f.set(o, data.getString(tableUP[i]));
         } else if (tableUP[i].equals("scenario")) {
           Integer val = (Integer) data.getInt(tableUP[i]);
@@ -1009,29 +915,28 @@ public class CopyDataHandler extends RestActionHandler {
           f.set(o, val);
         } else if (tableUP[i].equals("location")) {
           f.set(o, data.getString(tableUP[i]));
-        } else if (tableUP[i].equals("roads_id")) {}
+        } else if (tableUP[i].equals("roads_id")) {
+        }
       }
       data_in.add((UPRoads) o);
-      //return postStatus;
+      // return postStatus;
     }
     Tables<UPRoads> final_data = new Tables<UPRoads>(data_in);
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/roads/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/roads/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setRoadsInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
 
     String tableUP[] = new String[tableup.length + 3];
@@ -1044,10 +949,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -1068,30 +972,24 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Roads attributes executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Roads attributes executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPRoadsInfo> data_in = new ArrayList<>();
@@ -1125,20 +1023,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/roads_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/roads_info/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setJobs(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = " ";
     String tableUP[] = new String[tableup.length + 2];
     System.arraycopy(tableup, 0, tableUP, 0, tableup.length);
@@ -1148,13 +1044,12 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "location":
-          values +=
-            "st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            tableUP[i];
+          values += "st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -1163,11 +1058,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -1181,19 +1075,17 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
     ResultSet data = statement.executeQuery(query);
 
     ArrayList<UPJobs> data_in = new ArrayList<>();
@@ -1204,11 +1096,9 @@ public class CopyDataHandler extends RestActionHandler {
       for (int i = 0; i < tableUP.length; i++) {
         Field f = c.getDeclaredField(tableUP[i]);
         f.setAccessible(true);
-        if (
-          !tableUP[i].equals("scenario") &&
-          !tableUP[i].equals("jobs_id") &&
-          !tableUP[i].equals("oskari_code")
-        ) {
+        if (!tableUP[i].equals("scenario") &&
+            !tableUP[i].equals("jobs_id") &&
+            !tableUP[i].equals("oskari_code")) {
           f.set(o, data.getString(tableUP[i]));
         } else if (tableUP[i].equals("scenario")) {
           Integer val = (Integer) data.getInt(tableUP[i]);
@@ -1218,7 +1108,8 @@ public class CopyDataHandler extends RestActionHandler {
           f.set(o, val);
         } else if (tableUP[i].equals("location")) {
           f.set(o, data.getString(tableUP[i]));
-        } else if (tableUP[i].equals("jobs_id")) {}
+        } else if (tableUP[i].equals("jobs_id")) {
+        }
       }
 
       data_in.add((UPJobs) o);
@@ -1227,20 +1118,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/jobs/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/jobs/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setJobsInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
 
     String tableUP[] = new String[tableup.length + 3];
@@ -1253,10 +1142,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -1276,30 +1164,24 @@ public class CopyDataHandler extends RestActionHandler {
 
     String query = "";
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Jobs attributes executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Jobs attributes executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPJobsInfo> data_in = new ArrayList<>();
@@ -1333,20 +1215,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/jobs_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/jobs_info/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setFootprint(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
     String tableUP[] = new String[tableup.length + 1];
     tableUP[tableup.length] = "scenario";
@@ -1357,39 +1237,35 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "name":
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text)) as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text)) as " +
+              tableUP[i];
           group += "CAST(property_json->'" + table[i] + "' AS text)";
           break;
         case "value":
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text)) as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text)) as " +
+              tableUP[i];
           break;
         case "location":
-          //values += "st_astext("+table[i]+")";
-          values +=
-            " st_astext(st_union(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326))) as " +
-            tableUP[i];
+          // values += "st_astext("+table[i]+")";
+          values += " st_astext(st_union(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326))) as " +
+              tableUP[i];
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              tableUP[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -1401,32 +1277,26 @@ public class CopyDataHandler extends RestActionHandler {
     String errorMsg = "";
     String query = "";
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer +
-      " group by " +
-      group;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer +
+        " group by " +
+        group;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Footprint executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Footprint executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
 
@@ -1443,9 +1313,8 @@ public class CopyDataHandler extends RestActionHandler {
           f.set(o, val);
         } else if (tableUP[i].equals("location")) {
           f.set(o, data.getString(tableUP[i]));
-        } else if (tableUP[i].equals("footprint_id")) {} else if (
-          tableUP[i].equals("name")
-        ) {
+        } else if (tableUP[i].equals("footprint_id")) {
+        } else if (tableUP[i].equals("name")) {
           f.set(o, data.getString(tableUP[i]));
         } else if (tableUP[i].equals("value")) {
           f.set(o, data.getFloat(tableUP[i]));
@@ -1457,20 +1326,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/footprint/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/footprint/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setRisk(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
     String tableUP[] = new String[tableup.length + 2];
     tableUP[tableup.length] = "scenario";
@@ -1479,21 +1346,19 @@ public class CopyDataHandler extends RestActionHandler {
     for (int i = 0; i < tableUP.length; i++) {
       switch (tableUP[i]) {
         case "fclass":
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text)) as " +
-            tableUP[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text)) as " +
+              tableUP[i];
           break;
         case "location":
-          //values += "st_astext("+table[i]+")";
-          values +=
-            " st_astext(st_transform(st_setsrid(" +
-            table[i] +
-            "," +
-            upProjection +
-            "),4326)) as " +
-            table[i];
+          // values += "st_astext("+table[i]+")";
+          values += " st_astext(st_transform(st_setsrid(" +
+              table[i] +
+              "," +
+              upProjection +
+              "),4326)) as " +
+              table[i];
           break;
         case "scenario":
           values += scenarioId + " as scenario";
@@ -1502,11 +1367,10 @@ public class CopyDataHandler extends RestActionHandler {
           values += " user_layer_data.id as oskari_code";
           break;
         default:
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))  as " +
-            table[i];
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))  as " +
+              table[i];
           break;
       }
       if (i < tableUP.length - 1) {
@@ -1519,27 +1383,22 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus("OK", "Risk executing query:" + statement.toString())
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus("OK", "Risk executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
 
@@ -1559,13 +1418,13 @@ public class CopyDataHandler extends RestActionHandler {
           f.set(o, val);
         } else if (tableUP[i].equals("location")) {
           f.set(o, data.getString(table[i]));
-        } else if (tableUP[i].equals("risk_id")) {} else if (
-          tableUP[i].equals("fclass")
-        ) {
+        } else if (tableUP[i].equals("risk_id")) {
+        } else if (tableUP[i].equals("fclass")) {
           f.set(o, data.getString(tableUP[i]));
         } else if (tableUP[i].equals("value")) {
           f.set(o, data.getFloat(tableUP[i]));
-        } else {}
+        } else {
+        }
       }
       data_in.add((UPRisk) o);
     }
@@ -1573,20 +1432,18 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/risk/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/risk/",
+        final_data,
+        PostStatus.class);
   }
 
   private void setRiskInfo(
-    String layerUP,
-    String layer,
-    String[] tableup,
-    String[] table,
-    String scenarioId
-  )
-    throws Exception {
+      String layerUP,
+      String layer,
+      String[] tableup,
+      String[] table,
+      String scenarioId)
+      throws Exception {
     String values = "";
 
     String tableUP[] = new String[tableup.length + 3];
@@ -1599,10 +1456,9 @@ public class CopyDataHandler extends RestActionHandler {
       switch (tableUP[i]) {
         case "value":
           values += " '" + table[i] + "' as name, ";
-          values +=
-            " trim(both '\"' from CAST(property_json->'" +
-            table[i] +
-            "' AS text))::double precision as value";
+          values += " trim(both '\"' from CAST(property_json->'" +
+              table[i] +
+              "' AS text))::double precision as value";
           break;
         case "scenario":
           values += scenarioId + " as " + tableUP[i];
@@ -1623,30 +1479,24 @@ public class CopyDataHandler extends RestActionHandler {
     String query = "";
 
     Connection connection = DriverManager.getConnection(
-      upURL,
-      upUser,
-      upPassword
-    );
+        upURL,
+        upUser,
+        upPassword);
 
     Statement statement = connection.createStatement();
-    query =
-      "select distinct " +
-      values.replaceAll(",,", ",") +
-      " from user_layer\n" +
-      " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
-      " where user_layer.id=" +
-      layer;
+    query = "select distinct " +
+        values.replaceAll(",,", ",") +
+        " from user_layer\n" +
+        " inner join user_layer_data on user_layer.id = user_layer_data.user_layer_id\n" +
+        " where user_layer.id=" +
+        layer;
 
     errors.put(
-      JSONHelper.createJSONObject(
-        Obj.writeValueAsString(
-          new PostStatus(
-            "OK",
-            "Risk attributes executing query:" + statement.toString()
-          )
-        )
-      )
-    );
+        JSONHelper.createJSONObject(
+            Obj.writeValueAsString(
+                new PostStatus(
+                    "OK",
+                    "Risk attributes executing query:" + statement.toString()))));
 
     ResultSet data = statement.executeQuery(query);
     ArrayList<UPRiskInfo> data_in = new ArrayList<>();
@@ -1680,9 +1530,8 @@ public class CopyDataHandler extends RestActionHandler {
 
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(
-      "http://" + upwsHost + ":" + upwsPort + "/risk_info/",
-      final_data,
-      PostStatus.class
-    );
+        "http://" + upwsHost + ":" + upwsPort + "/risk_info/",
+        final_data,
+        PostStatus.class);
   }
 }

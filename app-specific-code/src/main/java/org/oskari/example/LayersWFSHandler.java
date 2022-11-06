@@ -34,7 +34,6 @@ import fi.nls.oskari.util.JSONHelper;
 import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
 
-
 /**
  * Dummy Rest action route
  */
@@ -48,7 +47,7 @@ public class LayersWFSHandler extends RestActionHandler {
     private static String upwsHost;
     private static String upwsPort;
     private static String upProjection;
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
 
@@ -67,8 +66,9 @@ public class LayersWFSHandler extends RestActionHandler {
         upURL = PropertyUtil.get("db.url");
         upUser = PropertyUtil.get("db.username");
         upPassword = PropertyUtil.get("up.db.password");
-        upProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
-        
+        upProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+
         errors = new JSONArray();
         Obj = new ObjectMapper();
     }
@@ -81,11 +81,11 @@ public class LayersWFSHandler extends RestActionHandler {
         Long user_id = params.getUser().getId();
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             if ("list_layers".equals(params.getRequiredParam("action"))) {
                 Directories dir = new Directories();
                 dir.setData("my_wfs");
@@ -99,21 +99,22 @@ public class LayersWFSHandler extends RestActionHandler {
                     final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                     out.put(json);
                 }
-                
+
                 tree.setData(directories);
                 final JSONObject outs = JSONHelper.createJSONObject(Obj.writeValueAsString(tree));
-                
+
                 ResponseHelper.writeResponse(params, outs);
             } else if ("list_columns".equals(params.getRequiredParam("action"))) {
                 Layers layers = new Layers();
-                layers.setColumns(getWfsColumns(Integer.valueOf(params.getRequiredParam("layer_name"))));                
+                layers.setColumns(getWfsColumns(Integer.valueOf(params.getRequiredParam("layer_name"))));
                 final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(layers));
                 ResponseHelper.writeResponse(params, json);
             }
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error ", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(LayersWFSHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -125,15 +126,20 @@ public class LayersWFSHandler extends RestActionHandler {
         }
     }
 
-    private ArrayList<Directories> getWfsLayers() throws Exception{
+    private ArrayList<Directories> getWfsLayers() throws Exception {
         String errorMsg = "getWfsLayers";
         ArrayList<Directories> children = new ArrayList<Directories>();
         try (
-            // idealmente tendríamos que traer la conexión de oskari,a menos que se garantice que son la misma
-            Connection connection = DriverManager.getConnection(upURL, upUser, upPassword)) {
-            // Idealmente hemos insertado a CAPSUS como data provider, buscamos su id y limitamos a ese id:
-            // PreparedStatement statement = connection.prepareStatement("select id, name, url from oskari_maplayer WHERE dataprovider_id=ID_CAPSUS AND type LIKE 'wfslayer' ;",
-            PreparedStatement statement = connection.prepareStatement("select id, name, url from oskari_maplayer WHERE type LIKE 'wfslayer' ;");
+                // idealmente tendríamos que traer la conexión de oskari,a menos que se
+                // garantice que son la misma
+                Connection connection = DriverManager.getConnection(upURL, upUser, upPassword)) {
+            // Idealmente hemos insertado a CAPSUS como data provider, buscamos su id y
+            // limitamos a ese id:
+            // PreparedStatement statement = connection.prepareStatement("select id, name,
+            // url from oskari_maplayer WHERE dataprovider_id=ID_CAPSUS AND type LIKE
+            // 'wfslayer' ;",
+            PreparedStatement statement = connection
+                    .prepareStatement("select id, name, url from oskari_maplayer WHERE type LIKE 'wfslayer' ;");
             boolean status = statement.execute();
             if (status) {
                 ResultSet data = statement.getResultSet();
@@ -151,7 +157,8 @@ public class LayersWFSHandler extends RestActionHandler {
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error ", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(LayersWFSHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -169,7 +176,8 @@ public class LayersWFSHandler extends RestActionHandler {
         ResponseEntity<WFSResult> tmp;
 
         try (Connection connection = DriverManager.getConnection(upURL, upUser, upPassword)) {
-            PreparedStatement pst = connection.prepareStatement("select name, url,version from oskari_maplayer WHERE type LIKE 'wfslayer' AND id=? ;");
+            PreparedStatement pst = connection.prepareStatement(
+                    "select name, url,version from oskari_maplayer WHERE type LIKE 'wfslayer' AND id=? ;");
             pst.setInt(1, id);
             boolean status = pst.execute();
             log.info("pst status : " + status);
@@ -181,12 +189,13 @@ public class LayersWFSHandler extends RestActionHandler {
             data.next();
             log.info("el nombrees ::: " + data.getString("name"));
 
-            res = columns_reader(data.getString("url"), id.toString() ,data.getString("name"));
+            res = columns_reader(data.getString("url"), id.toString(), data.getString("name"));
 
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error ", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Detail ", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(LayersWFSHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -197,9 +206,9 @@ public class LayersWFSHandler extends RestActionHandler {
         }
         return res;
     }
-    
-    private ArrayList<String> columns_reader(String url,String id,String name) throws Exception {
-        log.info(url,id,name);
+
+    private ArrayList<String> columns_reader(String url, String id, String name) throws Exception {
+        log.info(url, id, name);
         handler = new UPTGetWFSFeaturesHandler();
         handler.init();
         OskariLayer layer = new OskariLayer();
@@ -208,18 +217,22 @@ public class LayersWFSHandler extends RestActionHandler {
         layer.setUrl(url);
         layer.setName(name);
         CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857", true);
-        PropertyUtil.addProperty("oskari.native.srs", "EPSG:"+upProjection, true);
-        Envelope envelope = new Envelope(-13149614.848125,4383204.949375,-12523442.7125,5009377.085);
-        ReferencedEnvelope bbox = new ReferencedEnvelope(envelope, webMercator);
-        
-        
+        PropertyUtil.addProperty("oskari.native.srs", "EPSG:" + upProjection, true);
+        Envelope envelope = new Envelope(-13149614.848125, 4383204.949375, -12523442.7125, 5009377.085);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                -13149614.848125,
+                4383204.949375,
+                -12523442.7125,
+                5009377.085,
+                webMercator);
+
         SimpleFeatureCollection sfc = handler.featureClient.getFeatures(id, layer, bbox, webMercator, Optional.empty());
-        
-        List<AttributeDescriptor> columns= sfc.getSchema().getAttributeDescriptors();
-        
-        ArrayList<String> columns_list=new ArrayList<>();
-        
-        for(AttributeDescriptor column: columns){
+
+        List<AttributeDescriptor> columns = sfc.getSchema().getAttributeDescriptors();
+
+        ArrayList<String> columns_list = new ArrayList<>();
+
+        for (AttributeDescriptor column : columns) {
             columns_list.add(column.getLocalName());
         }
         return columns_list;

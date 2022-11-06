@@ -73,7 +73,8 @@ public class UPScenarioHandler extends RestActionHandler {
 
         upwsHost = PropertyUtil.get("upws.db.host");
         upwsPort = PropertyUtil.get("upws.db.port");
-        upProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+        upProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
         user_id = params.getUser().getId();
 
         errors = new JSONArray();
@@ -82,29 +83,29 @@ public class UPScenarioHandler extends RestActionHandler {
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "Scenario UP get ";
         ResponseEntity<List<ScenarioUP>> returns = null;
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             Connection connection = DriverManager.getConnection(
-                        upURL,
-                        upUser,
-                        upPassword);
+                    upURL,
+                    upUser,
+                    upPassword);
             PreparedStatement statement = connection.prepareStatement("select id from up_scenario where owner_id=?");
             statement.setLong(1, params.getUser().getId());
-            
-            ResultSet uScenarios=statement.executeQuery();
-            ArrayList<Integer> scenarios=new ArrayList<>();
-            while(uScenarios.next()){
+
+            ResultSet uScenarios = statement.executeQuery();
+            ArrayList<Integer> scenarios = new ArrayList<>();
+            while (uScenarios.next()) {
                 scenarios.add(uScenarios.getInt("id"));
             }
-            
+
             String transactionUrl = "http://" + upwsHost + ":" + upwsPort + "/scenario/";
             RestTemplate restTemplate = new RestTemplate();
             returns = restTemplate.exchange(
@@ -112,13 +113,13 @@ public class UPScenarioHandler extends RestActionHandler {
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<ScenarioUP>>() {
-            });
+                    });
 
             List<ScenarioUP> response = returns.getBody();
             JSONArray out = new JSONArray();
             for (ScenarioUP index : response) {
-                //Convert to Json Object
-                if(scenarios.contains(index.scenario_id)){
+                // Convert to Json Object
+                if (scenarios.contains(index.scenario_id)) {
                     final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                     out.put(json);
                 }
@@ -141,15 +142,15 @@ public class UPScenarioHandler extends RestActionHandler {
 
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "Scenario UP post ";
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             ScenarioUP scenario = new ScenarioUP();
 
             scenario.setName(params.getRequiredParam("name"));
@@ -160,11 +161,11 @@ public class UPScenarioHandler extends RestActionHandler {
             String indicator = params.getRequiredParam("indicators");
             String studyArea = params.getRequiredParam("studyAreaId");
             String[] indicators = indicator.split(java.util.regex.Pattern.quote("_"));
-            //Create Scenario
+            // Create Scenario
             long row = this.setScenario(scenario);
             if (row > 0) {
                 scenario.setScenarioId((int) row);
-                //Create Indicators for sceanrio
+                // Create Indicators for sceanrio
                 for (String index : indicators) {
                     this.setScenarioIndicators(index, row);
                 }
@@ -174,7 +175,7 @@ public class UPScenarioHandler extends RestActionHandler {
                     scenario.setName("Error: scenario not created");
                 }
 
-                //Get Assumptions
+                // Get Assumptions
                 Map<Integer, Assumptions> Layers = new TreeMap<>();
                 PostStatus assumptionState = new PostStatus();
                 try (
@@ -184,17 +185,17 @@ public class UPScenarioHandler extends RestActionHandler {
                                 upPassword);
                         PreparedStatement statement = connection.prepareStatement(
                                 "SELECT  ? as study_area, ? as scenario, category, name, value,units,description,source\n"
-                                + "FROM public.up_assumptions\n"
-                                + "where scenario=(select min(scenario) from public.up_assumptions where study_area=?)"
-                        );) {
+                                        + "FROM public.up_assumptions\n"
+                                        + "where scenario=(select min(scenario) from public.up_assumptions where study_area=?)");) {
                     statement.setLong(1, Long.parseLong(studyArea));
                     statement.setLong(2, row);
                     statement.setLong(3, Long.parseLong(studyArea));
 
-                    errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
+                    errors.put(JSONHelper.createJSONObject(
+                            Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
 
                     ResultSet data = statement.executeQuery();
-                    
+
                     Integer i = 0;
                     while (data.next()) {
                         Assumptions assumption = new Assumptions();
@@ -206,12 +207,12 @@ public class UPScenarioHandler extends RestActionHandler {
                         assumption.units = data.getString("units");
                         assumption.description = data.getString("description");
                         assumption.source = data.getString("source");
-                        assumption.owner_id=user_id;
+                        assumption.owner_id = user_id;
 
                         Layers.put(i, assumption);
                         i++;
                     }
-                    //create assumptions for new study areas
+                    // create assumptions for new study areas
                     if (Layers.size() > 0) {
                         assumptionState = saveAssumptions(Layers);
                         setCreateAssumptions(scenario.scenario_id, studyArea);
@@ -219,7 +220,8 @@ public class UPScenarioHandler extends RestActionHandler {
 
                 } catch (Exception e) {
                     try {
-                        errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
+                        errors.put(JSONHelper
+                                .createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                         ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
                     } catch (JsonProcessingException ex) {
                         java.util.logging.Logger.getLogger(STLayersHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -239,7 +241,8 @@ public class UPScenarioHandler extends RestActionHandler {
                         PreparedStatement statement = connection.prepareStatement(
                                 " select case when count(study_area) is null then 0 when count(study_area) =0 then 0 else 1 end as has_assumptions from up_assumptions where study_area=?");) {
                     statement.setLong(1, Long.parseLong(studyArea));
-                    errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
+                    errors.put(JSONHelper.createJSONObject(
+                            Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
                     ResultSet data = statement.executeQuery();
 
                     while (data.next()) {
@@ -248,7 +251,8 @@ public class UPScenarioHandler extends RestActionHandler {
                 } catch (Exception e) {
                     errorMsg += e.toString();
                     try {
-                        errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
+                        errors.put(JSONHelper
+                                .createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                         ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
                     } catch (JsonProcessingException ex) {
                         java.util.logging.Logger.getLogger(STLayersHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -275,15 +279,15 @@ public class UPScenarioHandler extends RestActionHandler {
 
     @Override
     public void handlePut(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "Scenario UP post ";
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             ScenarioUP scenario = new ScenarioUP();
             scenario.setScenarioId(Integer.parseInt(params.getRequiredParam("scenarioId")));
             scenario.setName(params.getRequiredParam("name"));
@@ -291,10 +295,10 @@ public class UPScenarioHandler extends RestActionHandler {
             scenario.setDescription(params.getRequiredParam("description"));
             scenario.setIsBase(Integer.parseInt(params.getRequiredParam("isBase")));
             scenario.setStudyArea(Integer.parseInt(params.getRequiredParam("studyArea")));
-            
+
             String studyArea = params.getRequiredParam("studyArea");
-            
-            //Create Scenario
+
+            // Create Scenario
             long row = this.updateScenario(scenario);
             if (row > 0) {
                 boolean status = setUpdateScenario(scenario);
@@ -325,30 +329,32 @@ public class UPScenarioHandler extends RestActionHandler {
         params.requireLoggedInUser();
         String errorMsg = "Scenario UP post ";
         try {
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             Integer scenarioId = Integer.parseInt(params.getRequiredParam("scenario_id"));
-            //delete Scenario
+            // delete Scenario
             boolean row = deleteScenarioUP(scenarioId.toString());
             if (row) {
                 row = deleteAssumptionsUP(scenarioId.toString());
             }
             if (row) {
-                Connection connection = DriverManager.getConnection(upURL,upUser,upPassword);
-                PreparedStatement statement = connection.prepareStatement("SELECT user_layer_id FROM up_scenario_buffers where scenario=?");
+                Connection connection = DriverManager.getConnection(upURL, upUser, upPassword);
+                PreparedStatement statement = connection
+                        .prepareStatement("SELECT user_layer_id FROM up_scenario_buffers where scenario=?");
                 statement.setInt(1, scenarioId);
                 statement.executeQuery();
-                ResultSet res = statement.getResultSet();                
-                while(res.next()){
-                    HttpServletRequest requestParam=params.getRequest();
-                    row=deleteBuffersUP(params,res.getLong("user_layer_id"));
+                ResultSet res = statement.getResultSet();
+                while (res.next()) {
+                    HttpServletRequest requestParam = params.getRequest();
+                    row = deleteBuffersUP(params, res.getLong("user_layer_id"));
                 }
             }
             if (row) {
-                deleteScenarioIndicators(Long.parseLong(scenarioId.toString()));;
+                deleteScenarioIndicators(Long.parseLong(scenarioId.toString()));
+                ;
                 row = this.deleteScenario(scenarioId);
             }
             log.debug("User:  " + user_id.toString() + " -> " + scenarioId.toString());
@@ -387,13 +393,14 @@ public class UPScenarioHandler extends RestActionHandler {
                 val.category = data_set.getString("category");
                 val.name = data_set.getString("name");
                 val.value = data_set.getDouble("value");
-                val.owner_id=user_id;
+                val.owner_id = user_id;
                 data_in.add(val);
             }
             Tables<Assumptions> final_data = new Tables<>(data_in);
 
             RestTemplate restTemplate = new RestTemplate();
-            PostStatus postStatus = restTemplate.postForObject("http://" + upwsHost + ":" + upwsPort + "/assumptions/", final_data, PostStatus.class);
+            PostStatus postStatus = restTemplate.postForObject("http://" + upwsHost + ":" + upwsPort + "/assumptions/",
+                    final_data, PostStatus.class);
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
@@ -408,7 +415,8 @@ public class UPScenarioHandler extends RestActionHandler {
         try {
             ScenarioUP returns;
             RestTemplate restTemplate = new RestTemplate();
-            returns = restTemplate.postForObject("http://" + upwsHost + ":" + upwsPort + "/scenario/", scenario, ScenarioUP.class);
+            returns = restTemplate.postForObject("http://" + upwsHost + ":" + upwsPort + "/scenario/", scenario,
+                    ScenarioUP.class);
             return returns.getScenarioId() != -1;
         } catch (Exception e) {
             try {
@@ -445,14 +453,16 @@ public class UPScenarioHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO public.up_scenario(name, description, owner_id, study_area, is_base) VALUES (?, ?, ?, ?, ?);",
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO public.up_scenario(name, description, owner_id, study_area, is_base) VALUES (?, ?, ?, ?, ?);",
                         Statement.RETURN_GENERATED_KEYS);) {
             statement.setString(1, scenario.getName());
             statement.setString(2, scenario.getDescription());
             statement.setInt(3, scenario.getOwneId());
             statement.setLong(4, scenario.getStudyArea());
             statement.setInt(5, scenario.getIsBase());
-            errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
+            errors.put(JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("Executing query: ", statement.toString()))));
             result = statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()) {
@@ -509,7 +519,9 @@ public class UPScenarioHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO public.up_scenario_modules( module, scenario)	VALUES (  (SELECT id FROM public.up_modules_translation where name='" + module + "'), " + scenario + ");",
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO public.up_scenario_modules( module, scenario)	VALUES (  (SELECT id FROM public.up_modules_translation where name='"
+                                + module + "'), " + scenario + ");",
                         Statement.RETURN_GENERATED_KEYS);) {
             result = statement.execute();
             return result;
@@ -532,7 +544,8 @@ public class UPScenarioHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO public.up_assumptions(study_area, scenario, category, name, value,units,description,source) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO public.up_assumptions(study_area, scenario, category, name, value,units,description,source) VALUES (?, ?, ?, ?, ?, ?, ?, ?);",
                         Statement.RETURN_GENERATED_KEYS);) {
             connection.setAutoCommit(false);
             for (Map.Entry m : Layers.entrySet()) {
@@ -570,7 +583,8 @@ public class UPScenarioHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                PreparedStatement statement = connection.prepareStatement("delete from public.up_scenario where id=?;");) {
+                PreparedStatement statement = connection
+                        .prepareStatement("delete from public.up_scenario where id=?;");) {
             statement.setInt(1, scenario);
             statement.execute();
             return true;
@@ -615,7 +629,8 @@ public class UPScenarioHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                PreparedStatement statement = connection.prepareStatement("delete from public.up_scenario where id=?;");) {
+                PreparedStatement statement = connection
+                        .prepareStatement("delete from public.up_scenario where id=?;");) {
             statement.setLong(1, scenario);
             result = statement.execute();
             return result;
@@ -651,7 +666,8 @@ public class UPScenarioHandler extends RestActionHandler {
             throw new Exception();
         }
     }
-    protected boolean deleteBuffersUP(ActionParameters params,Long layer_id) throws Exception {
+
+    protected boolean deleteBuffersUP(ActionParameters params, Long layer_id) throws Exception {
         String errorMsg = "Scenario UP delete ";
         UserLayerDbService userLayerDbService;
         try {
@@ -663,7 +679,7 @@ public class UPScenarioHandler extends RestActionHandler {
             }
             if (!userLayer.isOwnedBy(params.getUser().getUuid())) {
                 throw new ActionDeniedException("UserLayer belongs to another user");
-            }            
+            }
             userLayerDbService.deleteUserLayer(userLayer);
             AuditLog.user(params.getClientIp(), params.getUser())
                     .withParam("layer_id", userLayer.getId())

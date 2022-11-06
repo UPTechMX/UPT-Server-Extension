@@ -16,12 +16,12 @@ public class FriendlyUrlHandler {
     @Autowired
     private MapController controller;
 
-    @RequestMapping(value={"/view/{lang}/{mapId}", "/published/{lang}/{mapId}"})
+    @RequestMapping(value = { "/view/{lang}/{mapId}", "/published/{lang}/{mapId}" })
     public String redirectToMapView(@PathVariable("lang") String lang,
-                                    @PathVariable("mapId") String mapId,
-                                    Model model,
-                                    @OskariParam ActionParameters params) throws Exception {
-        if(!isSupported(lang)) {
+            @PathVariable("mapId") String mapId,
+            Model model,
+            @OskariParam ActionParameters params) throws Exception {
+        if (!isSupported(lang)) {
             lang = PropertyUtil.getDefaultLanguage();
         }
         String url = "/?lang=" + lang + "&uuid=" + mapId;
@@ -30,15 +30,15 @@ public class FriendlyUrlHandler {
 
     @RequestMapping("/example")
     public String redirectToExample(Model model,
-                                    @OskariParam ActionParameters params) throws Exception {
+            @OskariParam ActionParameters params) throws Exception {
         return redirectToExample(PropertyUtil.getDefaultLanguage(), model, params);
     }
 
     @RequestMapping("/example/{lang}")
     public String redirectToExample(@PathVariable("lang") String lang,
-                                    Model model,
-                                    @OskariParam ActionParameters params) throws Exception {
-        if(!isSupported(lang)) {
+            Model model,
+            @OskariParam ActionParameters params) throws Exception {
+        if (!isSupported(lang)) {
             lang = PropertyUtil.getDefaultLanguage();
         }
         String url = "/?lang=" + lang + "&viewId=4";
@@ -49,8 +49,8 @@ public class FriendlyUrlHandler {
         if (lang == null || lang.isEmpty()) {
             return false;
         }
-        for(String l: PropertyUtil.getSupportedLanguages()) {
-            if(l.equalsIgnoreCase(lang)) {
+        for (String l : PropertyUtil.getSupportedLanguages()) {
+            if (l.equalsIgnoreCase(lang)) {
                 return true;
             }
         }
@@ -58,13 +58,13 @@ public class FriendlyUrlHandler {
     }
 
     private String attachQuery(String path, String query) {
-        if(query == null) {
+        if (query == null) {
             return path;
         }
-        if(path.indexOf('?') == -1) {
+        if (path.indexOf('?') == -1) {
             return path + "?" + query;
         }
-        if(path.endsWith("?")) {
+        if (path.endsWith("?")) {
             return path + query;
         }
         return path + "&" + query;

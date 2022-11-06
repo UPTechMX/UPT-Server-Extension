@@ -30,7 +30,7 @@ public class OskariLayersHandler extends RestActionHandler {
     private static String upURL;
     private static String upUser;
     private static String upPassword;
-    
+
     private static final Logger log = LogFactory.getLogger(OskariLayersHandler.class);
     String user_uuid;
 
@@ -48,32 +48,32 @@ public class OskariLayersHandler extends RestActionHandler {
 
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
-        
+
         String errorMsg = "Layers UP get ";
         Data tree = new Data();
         ArrayList<Directories> directories = new ArrayList<Directories>();
         Long user_id = params.getUser().getId();
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
-            //Get directories
+
+            // Get directories
             Directories dir = new Directories();
             dir.setData("my_data");
             dir.setLabel("My Data");
             dir.setIcon(null);
             directories.add(dir);
 
-            //Get layers
+            // Get layers
             ArrayList<Directories> layers = getLayers();
             dir.setChildren(layers);
 
             JSONArray out = new JSONArray();
             for (Directories index : directories) {
-                //Convert to Json Object
+                // Convert to Json Object
                 ObjectMapper Obj = new ObjectMapper();
                 final JSONObject json = JSONHelper.createJSONObject(Obj.writeValueAsString(index));
                 out.put(json);
@@ -115,8 +115,9 @@ public class OskariLayersHandler extends RestActionHandler {
                         upURL,
                         upUser,
                         upPassword);
-                        PreparedStatement statement = connection.prepareStatement("select id,layer_name from user_layer where uuid=? and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'");) {
-                            statement.setString(1, user_uuid);
+                PreparedStatement statement = connection.prepareStatement(
+                        "select id,layer_name from user_layer where uuid=? and lower(layer_name) not like '%buffer%' and lower(layer_name) not like '%distance%'");) {
+            statement.setString(1, user_uuid);
             boolean status = statement.execute();
             if (status) {
                 ResultSet data = statement.getResultSet();

@@ -60,19 +60,21 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
   private JSONArray errors;
   private ObjectMapper Obj;
 
-  /* @Override
-  public void preProcess(ActionParameters params) throws ActionException {
-    // common method called for all request methods
-    log.info(params.getUser(), "accessing route", getName());
-    PropertyUtil.loadProperties("/oskari-ext.properties");
-    stURL = PropertyUtil.get("db.url");
-    stUser = PropertyUtil.get("db.username");
-    stPassword = PropertyUtil.get("db.password");
-
-    //user_uuid = params.getUser().getUuid();
-    errors = new JSONArray();
-    Obj = new ObjectMapper();
-  } */
+  /*
+   * @Override
+   * public void preProcess(ActionParameters params) throws ActionException {
+   * // common method called for all request methods
+   * log.info(params.getUser(), "accessing route", getName());
+   * PropertyUtil.loadProperties("/oskari-ext.properties");
+   * stURL = PropertyUtil.get("db.url");
+   * stUser = PropertyUtil.get("db.username");
+   * stPassword = PropertyUtil.get("db.password");
+   * 
+   * //user_uuid = params.getUser().getUuid();
+   * errors = new JSONArray();
+   * Obj = new ObjectMapper();
+   * }
+   */
 
   @Before
   public void init(ActionParameters params) {
@@ -82,13 +84,12 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
     stUser = PropertyUtil.get("db.username");
     stPassword = PropertyUtil.get("db.password");
 
-    //user_uuid = params.getUser().getUuid();
+    // user_uuid = params.getUser().getUuid();
     errors = new JSONArray();
     Obj = new ObjectMapper();
     handler = new UPTGetWFSFeaturesHandler();
     handler.init();
-    stProjection =
-      PropertyUtil
+    stProjection = PropertyUtil
         .get("oskari.native.srs")
         .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
   }
@@ -96,23 +97,26 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
   @Test
   @Ignore("Depends on an outside resource")
   public void testGetFeatures(
-    Long studyArea,
-    String uuid,
-    ActionParameters params
-  )
-    throws Exception {
+      Long studyArea,
+      String uuid,
+      ActionParameters params)
+      throws Exception {
     String errorMsg = "Layers get";
     OskariLayer ml = LAYER_SERVICE.find(studyArea.intValue());
     CoordinateReferenceSystem webMercator = CRS.decode("EPSG:3857", true);
     // PropertyUtil.addProperty("oskari.native.srs", "EPSG:" + stProjection, true);
     PropertyUtil.addProperty("oskari.native.srs", "EPSG:3857", true);
     Envelope envelope = new Envelope(
-      -20016250.811,
-      19934883.938,
-      20097617.684,
-      -19772150.192
-    );
-    ReferencedEnvelope bbox = new ReferencedEnvelope(envelope, webMercator);
+        -20016250.811,
+        19934883.938,
+        20097617.684,
+        -19772150.192);
+    ReferencedEnvelope bbox = new ReferencedEnvelope(
+        -20016250.811,
+        19934883.938,
+        20097617.684,
+        -19772150.192,
+        webMercator);
 
     String layerUrl = ml.getUrl();
     String layerVersion = ml.getVersion();
@@ -126,12 +130,11 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
     layer.setName(layerTypename);
 
     SimpleFeatureCollection sfc = handler.featureClient.getFeatures(
-      studyArea.toString(),
-      layer,
-      bbox,
-      webMercator,
-      Optional.empty()
-    );
+        studyArea.toString(),
+        layer,
+        bbox,
+        webMercator,
+        Optional.empty());
     SimpleFeatureIterator iterator = sfc.features();
     try {
       while (iterator.hasNext()) {
@@ -140,20 +143,20 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
         JSONArray attributes = new JSONArray(feature.getAttributes());
         JSONObject fullFeature = new JSONObject();
         List<AttributeDescriptor> list = feature
-          .getType()
-          .getAttributeDescriptors();
+            .getType()
+            .getAttributeDescriptors();
         Iterator<AttributeDescriptor> attrIterator = list.iterator();
         try {
           while (attrIterator.hasNext()) {
             AttributeDescriptor attr = attrIterator.next();
             names.put(attr.getLocalName());
           }
-        } finally {}
+        } finally {
+        }
         for (int i = 0; i < names.length(); i++) {
           fullFeature.put(
-            names.get(i).toString(),
-            attributes.get(i).toString()
-          );
+              names.get(i).toString(),
+              attributes.get(i).toString());
         }
         Iterator<String> featureKeys = fullFeature.keys();
         String geomKey = "";
@@ -164,22 +167,20 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
               geomKey = tmp;
             }
           }
-        } finally {}
+        } finally {
+        }
         PostStatus status = new PostStatus();
         String query = "";
         try (
-          Connection connection = DriverManager.getConnection(
-            stURL,
-            stUser,
-            stPassword
-          );
-          PreparedStatement statement = connection.prepareStatement(
-            "INSERT INTO public.public_layer_data(public_layer_id, uuid, feature_id,property_json, geometry)VALUES ( ?, ?, ?,?,ST_GeomFromText(?));"
-          );
-        ) {
+            Connection connection = DriverManager.getConnection(
+                stURL,
+                stUser,
+                stPassword);
+            PreparedStatement statement = connection.prepareStatement(
+                "INSERT INTO public.public_layer_data(public_layer_id, uuid, feature_id,property_json, geometry)VALUES ( ?, ?, ?,?,ST_GeomFromText(?));");) {
           params.requireLoggedInUser();
           ArrayList<String> roles = new UPTRoles()
-          .handleGet(params, params.getUser());
+              .handleGet(params, params.getUser());
           if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
             throw new Exception("User privilege is not enough for this action");
           }
@@ -191,76 +192,58 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
           statement.setString(5, fullFeature.get(geomKey).toString());
 
           errors.put(
-            JSONHelper.createJSONObject(
-              Obj.writeValueAsString(
-                new PostStatus("OK", "Executing query: " + statement.toString())
-              )
-            )
-          );
+              JSONHelper.createJSONObject(
+                  Obj.writeValueAsString(
+                      new PostStatus("OK", "Executing query: " + statement.toString()))));
           status.message = statement.toString();
-          //statement.execute();
+          // statement.execute();
 
           errors.put(
-            JSONHelper.createJSONObject(
-              Obj.writeValueAsString(new PostStatus("OK", "Layer registered"))
-            )
-          );
+              JSONHelper.createJSONObject(
+                  Obj.writeValueAsString(new PostStatus("OK", "Layer registered"))));
           ResponseHelper.writeResponse(
-            params,
-            new JSONObject().put("Errors", errors)
-          );
+              params,
+              new JSONObject().put("Errors", errors));
         } catch (SQLException e) {
           log.error(e);
           try {
             errors.put(
-              JSONHelper.createJSONObject(
-                Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-              )
-            );
+                JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
             ResponseHelper.writeError(
-              params,
-              "",
-              500,
-              new JSONObject().put("Errors", errors)
-            );
+                params,
+                "",
+                500,
+                new JSONObject().put("Errors", errors));
           } catch (JsonProcessingException ex) {
-            java
-              .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           } catch (JSONException ex) {
-            java
-              .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           }
         } catch (JsonProcessingException ex) {
-          java
-            .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-            .log(Level.SEVERE, null, ex);
+          java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+              .log(Level.SEVERE, null, ex);
         } catch (JSONException ex) {
-          java
-            .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-            .log(Level.SEVERE, null, ex);
+          java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+              .log(Level.SEVERE, null, ex);
         } catch (Exception e) {
           try {
             errors.put(
-              JSONHelper.createJSONObject(
-                Obj.writeValueAsString(new PostStatus("Error", e.toString()))
-              )
-            );
+                JSONHelper.createJSONObject(
+                    Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
             ResponseHelper.writeError(
-              params,
-              "",
-              500,
-              new JSONObject().put("Errors", errors)
-            );
+                params,
+                "",
+                500,
+                new JSONObject().put("Errors", errors));
           } catch (JsonProcessingException ex) {
-            java
-              .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           } catch (JSONException ex) {
-            java
-              .util.logging.Logger.getLogger(STLayersHandler.class.getName())
-              .log(Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(STLayersHandler.class.getName())
+                .log(Level.SEVERE, null, ex);
           }
         }
       }
@@ -268,9 +251,9 @@ public class GetWFSFeaturesHandlerTest extends RestActionHandler {
       iterator.close();
     }
     CoordinateReferenceSystem actualCRS = sfc
-      .getSchema()
-      .getGeometryDescriptor()
-      .getCoordinateReferenceSystem();
+        .getSchema()
+        .getGeometryDescriptor()
+        .getCoordinateReferenceSystem();
     assertTrue(CRS.equalsIgnoreMetadata(webMercator, actualCRS));
   }
 }

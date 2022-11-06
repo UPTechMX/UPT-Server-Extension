@@ -45,7 +45,8 @@ public abstract class UPTAbstractWFSFeaturesHandler extends ActionHandler {
             permissionHelper = new PermissionHelper(
                     ServiceFactory.getMapLayerService(),
                     OskariComponentManager.getComponentOfType(PermissionService.class));
-        };
+        }
+        ;
         Map<String, UserLayerService> components = OskariComponentManager.getComponentsOfType(UserLayerService.class);
         this.userContentProcessors = components.values();
     }
@@ -77,7 +78,7 @@ public abstract class UPTAbstractWFSFeaturesHandler extends ActionHandler {
             throw new ActionParamsException(ERR_LAYER_TYPE_NOT_WFS);
         }
     }
-    
+
     private int getLayerId(String id, Optional<UserLayerService> processor) throws ActionParamsException {
         try {
             return processor.map(UserLayerService::getBaselayerId)
@@ -86,6 +87,5 @@ public abstract class UPTAbstractWFSFeaturesHandler extends ActionHandler {
             throw new ActionParamsException(ERR_INVALID_ID);
         }
     }
-    
-}
 
+}

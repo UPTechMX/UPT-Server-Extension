@@ -14,14 +14,14 @@ public class FileHelper {
 
   /**
    * A constants for buffer size used to read/write data
-   * */
+   */
   private static final int BUFFER_SIZE = 4096;
 
   /**
    * Processes and unzips a zip-archive to the defined path.
    *
    * @param pathToZip the path to the original zip-archive on disk
-   * @param destDir the destination for the unzipped file(s)/folder(s)
+   * @param destDir   the destination for the unzipped file(s)/folder(s)
    */
   public static void unzipArchive(String pathToZip, File destDir) {
     byte[] buffer = new byte[1024];
@@ -68,24 +68,24 @@ public class FileHelper {
       }
       zos.flush();
       zos.close();
-    } catch (Exception ex) {}
+    } catch (Exception ex) {
+    }
   }
 
   /**
    * Adds a directory to the current zip output stream
    *
-   * @param folder the directory to be  added
+   * @param folder       the directory to be added
    * @param parentFolder the path of parent directory
-   * @param zos the current zip output stream
+   * @param zos          the current zip output stream
    * @throws FileNotFoundException
    * @throws IOException
    */
   private static void zipDirectory(
-    File folder,
-    String parentFolder,
-    ZipOutputStream zos
-  )
-    throws FileNotFoundException, IOException {
+      File folder,
+      String parentFolder,
+      ZipOutputStream zos)
+      throws FileNotFoundException, IOException {
     for (File file : folder.listFiles()) {
       if (file.isDirectory()) {
         zipDirectory(file, parentFolder + "/" + file.getName(), zos);
@@ -93,8 +93,7 @@ public class FileHelper {
       }
       zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
       BufferedInputStream bis = new BufferedInputStream(
-        new FileInputStream(file)
-      );
+          new FileInputStream(file));
       long bytesRead = 0;
       byte[] bytesIn = new byte[BUFFER_SIZE];
       int read = 0;
@@ -110,14 +109,13 @@ public class FileHelper {
    * Adds a file to the current zip output stream
    *
    * @param file the file to be added
-   * @param zos the current zip output stream
+   * @param zos  the current zip output stream
    */
   private static void zipFile(File file, ZipOutputStream zos) {
     try {
       zos.putNextEntry(new ZipEntry(file.getName()));
       BufferedInputStream bis = new BufferedInputStream(
-        new FileInputStream(file)
-      );
+          new FileInputStream(file));
       long bytesRead = 0;
       byte[] bytesIn = new byte[BUFFER_SIZE];
       int read = 0;
@@ -126,11 +124,12 @@ public class FileHelper {
         bytesRead += read;
       }
       zos.closeEntry();
-    } catch (Exception ex) {}
+    } catch (Exception ex) {
+    }
   }
 
   private static File newFile(File destinationDir, ZipEntry zipEntry)
-    throws IOException {
+      throws IOException {
     File destFile = new File(destinationDir, zipEntry.getName());
 
     String destDirPath = destinationDir.getCanonicalPath();
@@ -143,8 +142,7 @@ public class FileHelper {
 
     if (!destFilePath.startsWith(destDirPath + File.separator)) {
       throw new IOException(
-        "Entry is outside of the target dir: " + zipEntry.getName()
-      );
+          "Entry is outside of the target dir: " + zipEntry.getName());
     }
 
     return destFile;
@@ -159,9 +157,8 @@ public class FileHelper {
    * @return file name or null if a file is not found
    */
   public static String getFileNameFromZip(
-    String zipFilePath,
-    String fileExtension
-  ) {
+      String zipFilePath,
+      String fileExtension) {
     ZipFile zipFile = null;
     String fileName = null;
     try {
@@ -190,11 +187,10 @@ public class FileHelper {
   }
 
   public static File renameFilesInZip(
-    String dataFilePath,
-    File destFolder,
-    String toBeReplaced,
-    String replacement
-  ) {
+      String dataFilePath,
+      File destFolder,
+      String toBeReplaced,
+      String replacement) {
     unzipArchive(dataFilePath, destFolder);
     renameFilesInFolder(destFolder, toBeReplaced, replacement);
     String newZipPath = dataFilePath.replace(".zip", "_new.zip");
@@ -203,31 +199,27 @@ public class FileHelper {
   }
 
   public static void renameFilesInFolder(
-    File folder,
-    String toBeReplaced,
-    String replacement
-  ) {
+      File folder,
+      String toBeReplaced,
+      String replacement) {
     File[] files = folder.listFiles();
     iterateFolder(files, toBeReplaced, replacement);
   }
 
   private static void iterateFolder(
-    File[] files,
-    String toBeReplaced,
-    String replacement
-  ) {
+      File[] files,
+      String toBeReplaced,
+      String replacement) {
     for (File file : files) {
       if (file.isDirectory()) {
         iterateFolder(file.listFiles(), toBeReplaced, replacement);
       } else {
         File destFile = new File(
-          file.getAbsolutePath().replaceAll(toBeReplaced, replacement)
-        );
+            file.getAbsolutePath().replaceAll(toBeReplaced, replacement));
 
         if (file.renameTo(destFile)) {
           LOG.info(
-            String.format("File renamed successfully to %s", destFile.getName())
-          );
+              String.format("File renamed successfully to %s", destFile.getName()));
         } else {
           LOG.info(String.format("Failed to rename file %s", file.getName()));
         }

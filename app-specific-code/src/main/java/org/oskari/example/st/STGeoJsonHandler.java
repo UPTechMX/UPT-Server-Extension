@@ -58,8 +58,6 @@ import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
 import org.oskari.example.UPTRoles;
 
-
-
 @OskariActionRoute("st_store_heatmap")
 public class STGeoJsonHandler extends AbstractLayerAdminHandler {
 
@@ -81,12 +79,11 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
     private static final String PARAM_SOURCE_EPSG_KEY = "crs";
     private final String targetEPSG = PropertyUtil.get(PROPERTY_TARGET_EPSG, "EPSG:4326");
 
-
     private final DiskFileItemFactory diskFileItemFactory = new DiskFileItemFactory(MAX_SIZE_MEMORY, null);
     private final int userlayerMaxFileSize = PropertyUtil.getOptional(PROPERTY_USERLAYER_MAX_FILE_SIZE_MB, 10) * MB;
 
     private UserLayerDbService userLayerService;
-    
+
     private JSONArray errors;
     private ObjectMapper Obj;
 
@@ -106,16 +103,16 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
         params.requireLoggedInUser();
-        ResponseHelper.writeResponse(params, "json servcie action.... should be a post with a json file... " + params.getUser().getFullName());
+        ResponseHelper.writeResponse(params,
+                "json servcie action.... should be a post with a json file... " + params.getUser().getFullName());
 
     }
 
     @Override
     public void handlePost(ActionParameters params) throws ActionException {
 
-
         String sourceEPSG = params.getHttpParam(PARAM_SOURCE_EPSG_KEY);
-        
+
         SimpleFeatureCollection fc;
         Map<String, String> formParams;
         Set<String> validFiles = new HashSet<>();
@@ -123,50 +120,49 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
 
         try {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             CoordinateReferenceSystem sourceCRS = decodeCRS(sourceEPSG);
             CoordinateReferenceSystem targetCRS = decodeCRS(targetEPSG);
 
             ObjectMapper om = new ObjectMapper();
-            TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String,Object>>() {};
+            TypeReference<Map<String, Object>> typeRef = new TypeReference<Map<String, Object>>() {
+            };
             Map<String, Object> geojson = null;
 
-            //read geoJson string from parameter instead of a file 
+            // read geoJson string from parameter instead of a file
             String initialString = "text";
             InputStream targetStream = null;
             targetStream = IOUtils.toInputStream(params.getRequiredParam("geojson"));
-            
-            //try (InputStream in = jsonfile.getInputStream()) {
+
+            // try (InputStream in = jsonfile.getInputStream()) {
             try (InputStream in = targetStream) {
                 geojson = om.readValue(in, typeRef);
-                if(geojson.containsKey("0")){
-                    geojson = (Map<String, Object>)geojson.get("0");
+                if (geojson.containsKey("0")) {
+                    geojson = (Map<String, Object>) geojson.get("0");
                     ArrayList tmpArr = (ArrayList) geojson.get("features");
-                    if(tmpArr.size() > 0) {
-                        Map<String, Object> tmp = (Map<String, Object>)tmpArr.get(0);
+                    if (tmpArr.size() > 0) {
+                        Map<String, Object> tmp = (Map<String, Object>) tmpArr.get(0);
                         tmp = (Map<String, Object>) tmp.get("properties");
 
-                        
-                        if(!(tmp.get("value") instanceof Double)){
-                            if( tmp.get("value") instanceof Integer)
-                                tmp.put("value", new Double((Integer)tmp.get("value")));
+                        if (!(tmp.get("value") instanceof Double)) {
+                            if (tmp.get("value") instanceof Integer)
+                                tmp.put("value", new Double((Integer) tmp.get("value")));
                         }
                     }
                 }
-            }catch(IOException ioex){
+            } catch (IOException ioex) {
                 LOG.error("Failed reading the input stream");
             }
 
-            try{
-            CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
-            SimpleFeatureType schema = GeoJSONSchemaDetector.getSchema(geojson, crs);
+            try {
+                CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
+                SimpleFeatureType schema = GeoJSONSchemaDetector.getSchema(geojson, crs);
 
-            SimpleFeatureCollection original = GeoJSONReader2.toFeatureCollection(geojson, schema);
-
+                SimpleFeatureCollection original = GeoJSONReader2.toFeatureCollection(geojson, schema);
 
                 try (SimpleFeatureIterator it = original.features()) {
                     while (it.hasNext()) {
@@ -175,23 +171,23 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
                     }
                 }
 
-            UserLayer userLayer = store(original, params.getUser().getUuid(), params);
+                UserLayer userLayer = store(original, params.getUser().getUuid(), params);
 
-            AuditLog.user(params.getClientIp(), params.getUser())
-                    .withParam("filename", params.getRequiredParam("name"))
-                    .withParam("id", userLayer.getId())
-                    .added(AuditLog.ResourceType.USERLAYER);
+                AuditLog.user(params.getClientIp(), params.getUser())
+                        .withParam("filename", params.getRequiredParam("name"))
+                        .withParam("id", userLayer.getId())
+                        .added(AuditLog.ResourceType.USERLAYER);
 
                 writeResponse(params, userLayer);
 
-            } catch(Exception ex){
+            } catch (Exception ex) {
                 LOG.error("Error while storing json layer... ", ex);
             }
 
             UPTDataCleanHandler cleanner = new UPTDataCleanHandler();
             cleanner.handleGet(params);
         } catch (UserLayerException e) {
-            if (!validFiles.isEmpty()){ // avoid to override with empty list
+            if (!validFiles.isEmpty()) { // avoid to override with empty list
                 e.addContent(UserLayerException.InfoType.FILES, validFiles);
             }
             LOG.error("User uuid:", params.getUser().getUuid(),
@@ -207,21 +203,20 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
         } catch (ActionException e) {
             LOG.error("User uuid:", params.getUser().getUuid(),
                     "zip:", jsonfile == null ? "no file" : params.getRequiredParam("name"),
-                    "files found ("+ validFiles.size() + ") including:",
+                    "files found (" + validFiles.size() + ") including:",
                     validFiles.stream().collect(Collectors.joining(",")));
             throw e;
-        } catch(Exception e){
+        } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(STLayersHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        finally{
+        } finally {
         }
     }
-
 
     private List<FileItem> getFileItems(HttpServletRequest request) throws ActionException {
         try {
@@ -233,7 +228,6 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
             throw new ActionException("Failed to read request", e);
         }
     }
-
 
     private CoordinateReferenceSystem decodeCRS(String epsg) throws UserLayerException {
         try {
@@ -252,28 +246,30 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
                         f -> new String(f.get(), StandardCharsets.UTF_8)));
     }
 
-     private UserLayer store(SimpleFeatureCollection fc, String uuid, ActionParameters formParams)
+    private UserLayer store(SimpleFeatureCollection fc, String uuid, ActionParameters formParams)
             throws UserLayerException, ActionException {
-            UserLayer userLayer = createUserLayer(fc, uuid, formParams);
+        JSONObject jsonStyle = createUserLayerStyle(formParams).parseUserLayerStyleToOskariJSON();
+        String style = jsonStyle.toString();
 
-            userLayer.setStyle(createUserLayerStyle(formParams));
+        UserLayer userLayer = createUserLayer(fc, uuid, formParams, style);
 
-            List<UserLayerData> userLayerDataList = UserLayerDataService.createUserLayerData(fc, uuid);
+        List<UserLayerData> userLayerDataList = UserLayerDataService.createUserLayerData(fc, uuid);
 
-            userLayer.setFeatures_count(userLayerDataList.size());
+        userLayer.setFeatures_count(userLayerDataList.size());
 
-            userLayer.setFeatures_skipped(fc.size() - userLayerDataList.size());
+        userLayer.setFeatures_skipped(fc.size() - userLayerDataList.size());
 
-            userLayerService.insertUserLayer(userLayer, userLayerDataList);
+        userLayerService.insertUserLayerAndData(userLayer, userLayerDataList);
 
-            return userLayer;
+        return userLayer;
     }
 
-    private UserLayer createUserLayer(SimpleFeatureCollection fc, String uuid, ActionParameters params) throws ActionException {
+    private UserLayer createUserLayer(SimpleFeatureCollection fc, String uuid, ActionParameters params, String style)
+            throws ActionException {
         String name = params.getRequiredParam(KEY_NAME);
         String desc = params.getRequiredParam(KEY_DESC);
         String source = params.getRequiredParam(KEY_SOURCE);
-        return UserLayerDataService.createUserLayer(fc, uuid, name, desc, source);
+        return UserLayerDataService.createUserLayer(fc, uuid, name, desc, source, style);
     }
 
     private UserDataStyle createUserLayerStyle(ActionParameters params)
@@ -290,7 +286,7 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
         JSONHelper.putValue(userLayer, "featuresCount", ulayer.getFeatures_count());
         JSONObject permissions = UserLayerHandlerHelper.getPermissions();
         JSONHelper.putValue(userLayer, "permissions", permissions);
-        //add warning if features were skipped
+        // add warning if features were skipped
         if (ulayer.getFeatures_skipped() > 0) {
             JSONObject featuresSkipped = new JSONObject();
             JSONHelper.putValue(featuresSkipped, "featuresSkipped", ulayer.getFeatures_skipped());
@@ -298,6 +294,5 @@ public class STGeoJsonHandler extends AbstractLayerAdminHandler {
         }
         ResponseHelper.writeResponse(params, userLayer);
     }
-
 
 }

@@ -102,7 +102,7 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
     private static String upUser;
     private static String upPassword;
 
-    //attributes for layer creation
+    // attributes for layer creation
     private String mapSrs;
     private String name;
     private String desc;
@@ -125,8 +125,9 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
 
         upwsHost = PropertyUtil.get("upws.db.host");
         upwsPort = PropertyUtil.get("upws.db.port");
-        upProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
-        
+        upProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+
         upURL = PropertyUtil.get("db.url");
         upUser = PropertyUtil.get("db.username");
         upPassword = PropertyUtil.get("db.password");
@@ -142,13 +143,13 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
     @Override
     public void handleGet(ActionParameters params) throws ActionException {
         ResponseEntity<List<UPBuffers>> returns = null;
-        try ( Connection connection = DriverManager.getConnection(upURL, upUser, upPassword);) {
+        try (Connection connection = DriverManager.getConnection(upURL, upUser, upPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             String[] scenarios = params.getRequest().getParameterValues("scenariosId");
             Long user_id = params.getUser().getId();
             for (String scenario : scenarios) {
@@ -157,20 +158,22 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
                 param.put("user", user_id.toString());
                 param.put("projection", upProjection);
 
-                UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("http://" + upwsHost + ":" + upwsPort + "/scenario_evaluation/{scenario}/{user}/{projection}");
-                
+                UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(
+                        "http://" + upwsHost + ":" + upwsPort + "/scenario_evaluation/{scenario}/{user}/{projection}");
+
                 RestTemplate restTemplate = new RestTemplate();
                 returns = restTemplate.exchange(
-                
+
                         uriBuilder.buildAndExpand(param).toUri(),
                         HttpMethod.GET,
                         null,
                         new ParameterizedTypeReference<List<UPBuffers>>() {
-                });
+                        });
                 List<UPBuffers> response = returns.getBody();
-                
+
                 String Layer_name = "";
-                PreparedStatement statement1 = connection.prepareStatement("select name from up_scenario where id=? limit 1");
+                PreparedStatement statement1 = connection
+                        .prepareStatement("select name from up_scenario where id=? limit 1");
                 statement1.setInt(1, Integer.parseInt(scenario));
                 ResultSet layers_name = statement1.executeQuery();
                 LOG.error(statement1.toString());
@@ -197,10 +200,12 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
             LOG.error(e, e.getMessage());
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException | JSONException ex) {
-                java.util.logging.Logger.getLogger(STDistanceEvaluationHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(STDistanceEvaluationHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
 
@@ -208,7 +213,6 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
 
     public void handleLayerCreation(ActionParameters params) throws ActionException {
 
-        
         Set<String> validFiles = new HashSet<>();
         FileItem jsonfile = null;
 
@@ -221,22 +225,21 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
             };
             Map<String, Object> geojson = null;
 
-            //read geoJson string from parameter instead of a file 
+            // read geoJson string from parameter instead of a file
             InputStream targetStream = null;
-            
+
             targetStream = IOUtils.toInputStream(geojson_in);
-            
-            try ( InputStream in = targetStream) {
+
+            try (InputStream in = targetStream) {
                 geojson = om.readValue(in, typeRef);
                 if (geojson.containsKey("0")) {
-            
+
                     geojson = (Map<String, Object>) geojson.get("0");
                     ArrayList tmpArr = (ArrayList) geojson.get("features");
                     if (tmpArr.size() > 0) {
                         Map<String, Object> tmp = (Map<String, Object>) tmpArr.get(0);
                         tmp = (Map<String, Object>) tmp.get("properties");
 
-           
                         if (!(tmp.get("value") instanceof Double)) {
                             if (tmp.get("value") instanceof Integer) {
                                 tmp.put("value", new Double((Integer) tmp.get("value")));
@@ -257,10 +260,11 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
 
                 SimpleFeatureCollection original = GeoJSONReader2.toFeatureCollection(geojson, schema);
 
-                try ( SimpleFeatureIterator it = original.features()) {
+                try (SimpleFeatureIterator it = original.features()) {
                     while (it.hasNext()) {
                         SimpleFeature feature = it.next();
-                        LOG.info(feature.getID() + " " + feature.getAttribute("value") + " de " + feature.getAttributeCount());
+                        LOG.info(feature.getID() + " " + feature.getAttribute("value") + " de "
+                                + feature.getAttributeCount());
 
                     }
                 }
@@ -278,8 +282,8 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
                 throw new ActionException("Found an error");
             }
 
-            UPTDataCleanHandler cleanner = new UPTDataCleanHandler();
-            cleanner.handleGet(params);
+            // UPTDataCleanHandler cleanner = new UPTDataCleanHandler();
+            // cleanner.handleGet(params);
         } catch (UserLayerException e) {
             if (!validFiles.isEmpty()) { // avoid to override with empty list
                 e.addContent(UserLayerException.InfoType.FILES, validFiles);
@@ -308,7 +312,8 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(STLayersHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -336,17 +341,17 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
     private UserLayer store(SimpleFeatureCollection fc)
             throws UserLayerException, ActionException {
         UserLayer userLayer = createUserLayer(fc);
-        
+
         userLayer.setStyle(createUserLayerStyle());
-        
+
         List<UserLayerData> userLayerDataList = UserLayerDataService.createUserLayerData(fc, uuid);
-        
+
         userLayer.setFeatures_count(userLayerDataList.size());
-        
+
         userLayer.setFeatures_skipped(fc.size() - userLayerDataList.size());
-        
+
         userLayerService.insertUserLayer(userLayer, userLayerDataList);
-        
+
         return userLayer;
     }
 
@@ -370,7 +375,7 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
             JSONHelper.putValue(userLayer, "featuresCount", ulayer.getFeatures_count());
             JSONObject permissions = UserLayerHandlerHelper.getPermissions();
             JSONHelper.putValue(userLayer, "permissions", permissions);
-            //add warning if features were skipped
+            // add warning if features were skipped
             if (ulayer.getFeatures_skipped() > 0) {
                 JSONObject featuresSkipped = new JSONObject();
                 JSONHelper.putValue(featuresSkipped, "featuresSkipped", ulayer.getFeatures_skipped());
@@ -378,16 +383,17 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
             }
             layers_saved.put(userLayer);
         }
-        
+
         ResponseHelper.writeResponse(params, layers_saved);
     }
 
     private void registerLayers(Integer scenario) {
-        //save relation
-        try ( Connection connection = DriverManager.getConnection(upURL, upUser, upPassword);) {
-            //connection.setAutoCommit(false);
+        // save relation
+        try (Connection connection = DriverManager.getConnection(upURL, upUser, upPassword);) {
+            // connection.setAutoCommit(false);
             for (UserLayer ulayer : layers_store) {
-                PreparedStatement statement = connection.prepareStatement("insert into up_scenario_buffers(scenario,user_layer_id) values(?,?) on conflict(scenario,user_layer_id) do nothing;");
+                PreparedStatement statement = connection.prepareStatement(
+                        "insert into up_scenario_buffers(scenario,user_layer_id) values(?,?) on conflict(scenario,user_layer_id) do nothing;");
                 statement.setInt(1, scenario);
                 statement.setLong(2, ulayer.getId());
                 LOG.debug(statement.toString(), ulayer);
@@ -397,7 +403,8 @@ public class UPBuffersHandler extends AbstractLayerAdminHandler {
             LOG.error(e);
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));                
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(UPBuffersHandler.class.getName()).log(Level.SEVERE, null, ex);
             }

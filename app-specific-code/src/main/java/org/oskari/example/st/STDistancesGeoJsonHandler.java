@@ -63,8 +63,6 @@ import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
 import org.oskari.example.UPTRoles;
 
-
-
 @OskariActionRoute("evaluate_distances_new_layers")
 public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
@@ -102,7 +100,7 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
     private static String stUser;
     private static String stPassword;
 
-    //attributes for layer creation
+    // attributes for layer creation
     private String mapSrs;
     private String name;
     private String desc;
@@ -125,9 +123,10 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
         stwsHost = PropertyUtil.get("stws.db.host");
         stwsPort = PropertyUtil.get("stws.db.port");
-        stProjection = PropertyUtil.get("oskari.native.srs").substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
+        stProjection = PropertyUtil.get("oskari.native.srs")
+                .substring(PropertyUtil.get("oskari.native.srs").indexOf(":") + 1);
 
-        //PropertyUtil.loadProperties("/oskari-ext.properties");
+        // PropertyUtil.loadProperties("/oskari-ext.properties");
         stURL = PropertyUtil.get("db.url");
         stUser = PropertyUtil.get("db.username");
         stPassword = PropertyUtil.get("db.password");
@@ -145,14 +144,15 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         ResponseEntity<List<STDistanceGeoJSON>> returns = null;
         try (Connection connection = DriverManager.getConnection(stURL, stUser, stPassword);) {
             params.requireLoggedInUser();
-            ArrayList<String> roles = new UPTRoles().handleGet(params,params.getUser());
-            if (!roles.contains("uptadmin") && !roles.contains("uptuser") ){
+            ArrayList<String> roles = new UPTRoles().handleGet(params, params.getUser());
+            if (!roles.contains("uptadmin") && !roles.contains("uptuser")) {
                 throw new Exception("User privilege is not enough for this action");
             }
-            
+
             String studyArea = params.getRequiredParam("study_area");
             Long user_id = params.getUser().getId();
-            UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/")
+            UriComponentsBuilder uriBuilder = UriComponentsBuilder
+                    .fromHttpUrl("http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/")
                     .queryParam("study_area", studyArea)
                     .queryParam("user_id", user_id)
                     .queryParam("projection", stProjection);
@@ -162,31 +162,34 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
                     HttpMethod.GET,
                     null,
                     new ParameterizedTypeReference<List<STDistanceGeoJSON>>() {
-            });
+                    });
             List<STDistanceGeoJSON> response = returns.getBody();
 
             for (STDistanceGeoJSON index : response) {
                 String Layer_name = "";
                 String Study_area_name = "";
-                PreparedStatement statement1 = connection.prepareStatement("select layer_name from user_layer where id=? limit 1");
+                PreparedStatement statement1 = connection
+                        .prepareStatement("select layer_name from user_layer where id=? limit 1");
                 statement1.setLong(1, index.layer_id);
                 ResultSet layers_name = statement1.executeQuery();
-                
-                if(layers_name.next()) {
-                  Layer_name  = layers_name.getString("layer_name");
+
+                if (layers_name.next()) {
+                    Layer_name = layers_name.getString("layer_name");
                 }
 
-                PreparedStatement statement2 = connection.prepareStatement("select layer_name from user_layer where id=? limit 1");
+                PreparedStatement statement2 = connection
+                        .prepareStatement("select layer_name from user_layer where id=? limit 1");
                 statement2.setLong(1, index.study_area);
                 ResultSet study_areas_name = statement2.executeQuery();
-                
-                if(study_areas_name.next()) {
-                  Study_area_name  = study_areas_name.getString("layer_name");
+
+                if (study_areas_name.next()) {
+                    Study_area_name = study_areas_name.getString("layer_name");
                 }
 
                 mapSrs = "EPSG:" + stProjection;
-                name = Study_area_name +" "+ Layer_name +" " + index.name;
-                desc = "This layer was created by Distances Module using layer " + Layer_name + " within study area " + Study_area_name;
+                name = Study_area_name + " " + Layer_name + " " + index.name;
+                desc = "This layer was created by Distances Module using layer " + Layer_name + " within study area "
+                        + Study_area_name;
                 source = "Distance Module";
                 uuid = params.getUser().getUuid();
                 sourceEPSG = "EPSG:" + stProjection;
@@ -201,17 +204,19 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
             LOG.error(e, e.getMessage());
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
                 ResponseHelper.writeError(params, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException | JSONException ex) {
-                java.util.logging.Logger.getLogger(STDistanceEvaluationHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(STDistanceEvaluationHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
         }
 
     }
 
     public void handleLayerCreation() throws ActionException {
-        
+
         Set<String> validFiles = new HashSet<>();
         FileItem jsonfile = null;
 
@@ -224,7 +229,7 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
             };
             Map<String, Object> geojson = null;
 
-            //read geoJson string from parameter instead of a file 
+            // read geoJson string from parameter instead of a file
             InputStream targetStream = null;
             targetStream = IOUtils.toInputStream(geojson_in);
             try (InputStream in = targetStream) {
@@ -274,9 +279,9 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
                 throw new ActionException("Found an error");
             }
 
-            UPTDataCleanHandler cleanner = new UPTDataCleanHandler();
-            ActionParameters par=new ActionParameters();
-            cleanner.handleGet(new ActionParameters());
+            // UPTDataCleanHandler cleanner = new UPTDataCleanHandler();
+            ActionParameters par = new ActionParameters();
+            // cleanner.handleGet(new ActionParameters());
         } catch (UserLayerException e) {
             if (!validFiles.isEmpty()) { // avoid to override with empty list
                 e.addContent(UserLayerException.InfoType.FILES, validFiles);
@@ -299,13 +304,15 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
             throw e;
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
-                errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
+                errors.put(
+                        JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.getMessage()))));
             } catch (JsonProcessingException ex) {
                 java.util.logging.Logger.getLogger(STLayersHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -360,7 +367,7 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
             JSONHelper.putValue(userLayer, "featuresCount", ulayer.getFeatures_count());
             JSONObject permissions = UserLayerHandlerHelper.getPermissions();
             JSONHelper.putValue(userLayer, "permissions", permissions);
-            //add warning if features were skipped
+            // add warning if features were skipped
             if (ulayer.getFeatures_skipped() > 0) {
                 JSONObject featuresSkipped = new JSONObject();
                 JSONHelper.putValue(featuresSkipped, "featuresSkipped", ulayer.getFeatures_skipped());
@@ -370,23 +377,26 @@ public class STDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
         }
         ResponseHelper.writeResponse(params, layers_saved);
     }
-    
-    private void deleteData(String studyArea,String userId) throws Exception{
+
+    private void deleteData(String studyArea, String userId) throws Exception {
         try {
             Map<String, String> params = new HashMap<>();
             params.put("study_area", studyArea.toString());
             params.put("user_id", userId.toString());
 
             RestTemplate restTemplate = new RestTemplate();
-            restTemplate.delete("http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/{study_area}/{user_id}", params);
+            restTemplate.delete("http://" + stwsHost + ":" + stwsPort + "/distances_evaluation/{study_area}/{user_id}",
+                    params);
         } catch (Exception e) {
             try {
                 errors.put(JSONHelper.createJSONObject(Obj.writeValueAsString(new PostStatus("Error", e.toString()))));
                 ResponseHelper.writeError(null, "", 500, new JSONObject().put("Errors", errors));
             } catch (JsonProcessingException ex) {
-                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             } catch (JSONException ex) {
-                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(STDistancesGeoJsonHandler.class.getName()).log(Level.SEVERE, null,
+                        ex);
             }
             throw e;
         }

@@ -211,8 +211,7 @@ BEGIN
     (user_layer_id);
 
     DROP TABLE IF EXISTS unique_mmu;
-    TimeUnit.SECONDS.sleep(10);
-
+    SELECT pg_sleep(10);
     create temp table unique_mmu as
     select distinct mmu_code,geometry from mmu_layers;
 

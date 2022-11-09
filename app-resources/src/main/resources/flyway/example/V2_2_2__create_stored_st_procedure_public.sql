@@ -592,5 +592,6 @@ BEGIN
 	FROM
 		test_public_geoms;
                 --test_geoms, test_public_geoms;
+-- SE GUARDARON
 END;
 $$;

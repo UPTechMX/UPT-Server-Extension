@@ -1,4 +1,4 @@
-package flyway.wbidp;
+package flyway.upt;
 
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;

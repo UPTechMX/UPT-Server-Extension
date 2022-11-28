@@ -27,10 +27,17 @@
             <artifactId>app-specific-code</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.oskari</groupId>
+            <artifactId>control-admin</artifactId>
+            <version>${oskari.version}</version>
+            <type>jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.oskari</groupId>
             <artifactId>download-basket</artifactId>
+            <version>${oskari.version}</version>
         </dependency>
 
         <!-- Replace icu4j version included by axiom-api with newer version

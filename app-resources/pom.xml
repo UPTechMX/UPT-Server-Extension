@@ -18,6 +18,12 @@
         </dependency>
         <dependency>
             <groupId>org.oskari</groupId>
+            <artifactId>control-admin</artifactId>
+            <version>${oskari.version}</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.oskari</groupId>
             <artifactId>download-basket</artifactId>
             <version>${oskari.version}</version>
         </dependency>

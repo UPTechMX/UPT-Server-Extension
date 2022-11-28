@@ -7,11 +7,11 @@ import fi.nls.oskari.annotation.OskariActionRoute;
 import fi.nls.oskari.control.ActionException;
 import fi.nls.oskari.control.ActionParameters;
 import fi.nls.oskari.control.ActionParamsException;
-import fi.nls.oskari.control.layer.AbstractLayerAdminHandler;
+import fi.nls.oskari.control.admin.AbstractLayerAdminHandler;
 import fi.nls.oskari.domain.User;
-import fi.nls.oskari.domain.map.UserDataStyle;
 import fi.nls.oskari.domain.map.userlayer.UserLayer;
 import fi.nls.oskari.domain.map.userlayer.UserLayerData;
+import fi.nls.oskari.domain.map.wfs.WFSLayerOptions;
 import fi.nls.oskari.log.LogFactory;
 import fi.nls.oskari.log.Logger;
 import fi.nls.oskari.util.JSONHelper;
@@ -380,7 +380,7 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
 
   private UserLayer store(SimpleFeatureCollection fc)
       throws UserLayerException, ActionException {// userLayer.setStyle(createUserLayerStyle());
-    JSONObject jsonStyle = createUserLayerStyle().parseUserLayerStyleToOskariJSON();
+    JSONObject jsonStyle = createUserLayerStyle();
     String style = jsonStyle.toString();
 
     UserLayer userLayer = createUserLayer(fc, style);
@@ -398,11 +398,9 @@ public class STPublicDistancesGeoJsonHandler extends AbstractLayerAdminHandler {
     return UserLayerDataService.createUserLayer(fc, uuid, name, desc, source, style);
   }
 
-  private UserDataStyle createUserLayerStyle()
+  private JSONObject createUserLayerStyle()
       throws UserLayerException, ActionParamsException {
-    final UserDataStyle style = new UserDataStyle();
-    style.initDefaultStyle();
-    return style;
+    return WFSLayerOptions.getDefaultOskariStyle();
   }
 
   private void writeResponse(ActionParameters params) {

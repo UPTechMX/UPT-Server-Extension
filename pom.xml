@@ -10,7 +10,7 @@
     <name>demo.oskari.org</name>
 
     <properties>
-        <oskari.version>2.9.0</oskari.version>
+        <oskari.version>2.6.0</oskari.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <junit.version>4.13.2</junit.version>
@@ -41,7 +41,7 @@
             <dependency>
                 <groupId>org.oskari</groupId>
                 <artifactId>oskari-server</artifactId>
-                <version>2.1.0</version>
+                <version>${oskari.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -67,7 +67,7 @@
 
             <plugin>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>

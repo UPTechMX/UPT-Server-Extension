@@ -9,7 +9,7 @@ import fi.nls.oskari.control.ActionParameters;
 import fi.nls.oskari.control.ActionParamsException;
 import fi.nls.oskari.control.RestActionHandler;
 import fi.nls.oskari.control.feature.GetWFSFeaturesHandler;
-import fi.nls.oskari.control.layer.GetWFSDescribeFeatureHandler;
+import fi.nls.oskari.control.layer.GetWFSLayerFieldsHandler;
 import fi.nls.oskari.db.DatasourceHelper;
 import fi.nls.oskari.domain.User;
 import fi.nls.oskari.domain.map.OskariLayer;
@@ -19,7 +19,7 @@ import fi.nls.oskari.map.layer.OskariLayerService;
 import fi.nls.oskari.util.JSONHelper;
 import fi.nls.oskari.util.PropertyUtil;
 import fi.nls.oskari.util.ResponseHelper;
-import fi.nls.oskari.util.WFSDescribeFeatureHelper;
+import fi.nls.oskari.util.WFSGetLayerFields;
 import java.lang.reflect.Field;
 import java.sql.Array;
 import java.sql.Connection;
@@ -73,7 +73,7 @@ public class LayersSTHandler extends RestActionHandler {
     private static final Logger log = LogFactory.getLogger(LayersSTHandler.class);
 
     private static OskariLayerService LAYER_SERVICE = ServiceFactory.getMapLayerService();
-    private static GetWFSDescribeFeatureHandler describeFeature = new GetWFSDescribeFeatureHandler();
+    private static GetWFSLayerFieldsHandler describeFeature = new GetWFSLayerFieldsHandler();
     private static GetWFSFeaturesHandler featuresList = new GetWFSFeaturesHandler();
     private static GetWFSFeaturesHandlerTest testFeatures = new GetWFSFeaturesHandlerTest();
 
@@ -419,9 +419,8 @@ public class LayersSTHandler extends RestActionHandler {
                 OskariLayer ml = LAYER_SERVICE.find(
                         Integer.parseInt(params.getRequiredParam("layer_id")));
 
-                JSONObject mapFields = WFSDescribeFeatureHelper.getFeatureTypesTextOrNumeric(
-                        ml,
-                        params.getRequiredParam("layer_id"));
+                JSONObject mapFields = WFSGetLayerFields.getLayerFields(
+                        ml);
                 JSONObject propertyTypes = mapFields.getJSONObject("propertyTypes");
                 JSONArray ptArray = propertyTypes.names();
                 ArrayList<String> pt = new ArrayList<String>();
